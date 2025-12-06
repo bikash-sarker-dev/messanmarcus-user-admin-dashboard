@@ -10,6 +10,7 @@ import {
   Clock,
   Shield,
 } from "lucide-react";
+import Link from "next/link";
 
 interface User {
   id: number;
@@ -300,13 +301,13 @@ const UserManagement: React.FC = () => {
                         {activeActionMenu === user.id && (
                           <div className="absolute right-0 z-10 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
                             <div className="py-2">
-                              <button
-                                onClick={() => handleViewDetails(user)}
+                              <Link
+                                href={"/user-management/details"}
                                 className="flex w-full items-center gap-2 px-4 py-2 text-left transition-colors hover:bg-gray-50"
                               >
                                 <User className="h-4 w-4" />
                                 <span>View Details</span>
-                              </button>
+                              </Link>
                               <button
                                 onClick={() => handleSuspendUser(user.id)}
                                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-red-600 transition-colors hover:bg-gray-50"
