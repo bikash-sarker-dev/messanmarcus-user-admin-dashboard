@@ -23,7 +23,7 @@ export const NAV_DATA = [
       },
       {
         title: "Subscriptions",
-        url: "/profile",
+        url: "/subscriptions",
         icon: Icons.User,
         items: [],
       },
