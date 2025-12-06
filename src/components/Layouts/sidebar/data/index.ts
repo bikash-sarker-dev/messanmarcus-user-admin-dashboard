@@ -32,7 +32,7 @@ export const NAV_DATA: NavSection[] = [
       {
         title: "Settings",
         icon: Icons.Alphabet,
-        url: "/pages/settings",
+        url: "/settings",
         items: [],
       },
     ],
