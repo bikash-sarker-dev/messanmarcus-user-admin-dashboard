@@ -1,6 +1,7 @@
 import * as Icons from "../icons";
+import type { NavSection } from "./types";
 
-export const NAV_DATA = [
+export const NAV_DATA: NavSection[] = [
   {
     label: "MAIN MENU",
     items: [
@@ -8,12 +9,7 @@ export const NAV_DATA = [
         title: "Dashboard",
         icon: Icons.HomeIcon,
         url: "/",
-        items: [
-          // {
-          //   title: "eCommerce",
-          //   url: "/",
-          // },
-        ],
+        items: [],
       },
       {
         title: "User Management",
@@ -30,9 +26,9 @@ export const NAV_DATA = [
       {
         title: "Notifications",
         icon: Icons.Alphabet,
+        url: "/notifications",
         items: [],
       },
-
       {
         title: "Settings",
         icon: Icons.Alphabet,

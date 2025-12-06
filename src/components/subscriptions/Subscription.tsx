@@ -200,7 +200,7 @@ const SubscriptionPlan: React.FC = () => {
                   </ul>
                 </div>
                 <Link
-                  href={`/subscriptions/eidt-plan`}
+                  href={`/subscriptions/edit-plan`}
                   className="flex w-full items-center justify-center gap-2 font-medium text-gray-700 transition hover:text-purple-600"
                 >
                   Edit Plan
