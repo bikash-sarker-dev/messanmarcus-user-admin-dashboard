@@ -10,22 +10,21 @@ import { Header } from "@/components/Layouts/header";
 import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
-import { Providers } from "./providers";
+import { Providers } from "./dashboard/providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NextAdmin - Next.js Dashboard Kit",
-    default: "NextAdmin - Next.js Dashboard Kit",
+    template: "jacob_odin",
+    default: "jacob_odin",
   },
-  description:
-    "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+  description: "jacob_odin",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <Providers>
+      <body cz-shortcut-listen="true">
+        {/* <Providers>
           <NextTopLoader color="#5750F1" showSpinner={false} />
 
           <div className="flex min-h-screen">
@@ -39,7 +38,8 @@ export default function RootLayout({ children }: PropsWithChildren) {
               </main>
             </div>
           </div>
-        </Providers>
+        </Providers> */}
+        <main className="">{children}</main>
       </body>
     </html>
   );
