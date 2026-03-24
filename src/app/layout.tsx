@@ -14,10 +14,10 @@ import { Providers } from "./dashboard/providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "jacob_odin",
-    default: "jacob_odin",
+    template: "messanmarcus-user-admin-dashboard",
+    default: "messanmarcus-user-admin-dashboard",
   },
-  description: "jacob_odin",
+  description: "messanmarcus-user-admin-dashboard",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
