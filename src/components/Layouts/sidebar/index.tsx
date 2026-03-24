@@ -158,7 +158,7 @@ export function Sidebar() {
           </div>
 
           {/* Logout */}
-          <div className="mt-auto border-t pt-5">
+          {/* <div className="mt-auto border-t pt-5">
             <button
               onClick={handleLogout}
               className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 hover:bg-red-50"
@@ -166,6 +166,54 @@ export function Sidebar() {
               <LogOutIcon className="size-6" />
               <span className="font-medium">Logout</span>
             </button>
+          </div> */}
+
+          <div className="-ml-5 border-t px-2 pt-5">
+            <div className="w-full max-w-md rounded-3xl border border-t-2 border-[#E5E7EB] bg-white px-3 py-3 shadow-lg">
+              {/* Profile Section */}
+              <div className="mb-5 flex items-center gap-4">
+                <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-teal-700">
+                  <img
+                    src={
+                      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
+                    }
+                    alt="Alex Rahman"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {/* {user?.name} */} Saifur Rahman
+                  </h2>
+                  <p className="text-sm text-gray-600"> Admin</p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-xl bg-red-50 px-4 py-3 text-red-600 hover:bg-red-100"
+              >
+                <LogOutIcon className="size-6" />
+                <span className="font-medium">Logout</span>
+              </button>
+
+              {/* Logout Button */}
+              {/* <button
+                onClick={handleLogout}
+                className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-red-100 bg-red-50 px-4 py-2 font-semibold text-red-500 transition-colors duration-200 hover:bg-red-100"
+              >
+                {loading ? (
+                  <>
+                    <LoaderCircle size={20} className="animate-spin" />{" "}
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="h-6 w-6" />
+                  </>
+                )}
+                <span className="text-base">Logout</span>
+              </button> */}
+            </div>
           </div>
         </div>
       </aside>
