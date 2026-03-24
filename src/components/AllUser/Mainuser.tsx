@@ -465,7 +465,7 @@ function StepBar({
   if (idx === -1) return null;
   return (
     <div className="border-b border-gray-100 bg-white px-4 py-2.5 sm:px-6">
-      <div className="scrollbar-hide mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto sm:gap-2">
+      <div className="scrollbar-hide mx-auto flex max-w-7xl items-center justify-center gap-1 overflow-x-auto sm:gap-2">
         <button
           onClick={() => onStepClick("dashboard")}
           className="flex shrink-0 items-center gap-1 text-xs text-gray-400 transition-colors hover:text-orange-500"
@@ -906,7 +906,7 @@ function RecognizeScreen({
   const canContinue = name.trim() !== "" && email.trim() !== "";
 
   return (
-    <div className="flex min-h-screen">
+    <div className="">
       <div className="flex w-full flex-1 items-center justify-center p-4 sm:p-8 lg:justify-start lg:p-10">
         <div className="mx-auto w-full max-w-lg rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
           <h1 className="mb-1 text-xl font-bold text-orange-500 sm:text-2xl">
@@ -1039,7 +1039,7 @@ function SelectDetailsScreen({
 
   return (
     <div className="min-h-[calc(100vh-60px)] bg-gray-50">
-      <div className="mx-auto max-w-6xl px-3 py-5 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-8">
         <div className="flex flex-col items-start gap-5 lg:flex-row lg:gap-6">
           {/* LEFT */}
           <div className="w-full space-y-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:space-y-8 sm:p-8 lg:flex-1">
@@ -1106,7 +1106,7 @@ function SelectDetailsScreen({
           </div>
 
           {/* RIGHT — Assign Points */}
-          <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-20 lg:w-72 lg:shrink-0">
+          <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-20 lg:w-75 lg:shrink-0">
             <h2 className="mb-5 text-lg font-bold text-orange-500 sm:text-xl">
               Assign Points
             </h2>
@@ -1214,11 +1214,11 @@ function CardPreviewScreen({
 
   return (
     <div className="min-h-[calc(100vh-60px)] bg-gray-50">
-      <div className="mx-auto max-w-5xl px-3 py-5 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-8">
         <div className="flex flex-col items-start gap-5 lg:flex-row lg:gap-8">
           {/* Orange Card */}
           <div className="flex w-full justify-center lg:flex-1">
-            <div className="w-full max-w-[420px] rounded-2xl bg-orange-500 p-6 shadow-xl sm:p-8">
+            <div className="w-full max-w-[620px] rounded-2xl bg-orange-500 p-6 shadow-xl sm:p-8">
               <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-white sm:mb-8 sm:text-4xl">
                 Greetely
               </h1>
@@ -1246,7 +1246,7 @@ function CardPreviewScreen({
           </div>
 
           {/* Actions */}
-          <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:w-72 lg:shrink-0">
+          <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:w-[400px] lg:shrink-0">
             <h2 className="mb-4 text-lg font-bold text-orange-500 sm:mb-5 sm:text-xl">
               Actions
             </h2>
