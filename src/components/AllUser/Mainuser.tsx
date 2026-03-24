@@ -549,10 +549,10 @@ function Navbar({
                 SR
               </div>
               <div className="hidden leading-tight sm:block">
-                <p className="whitespace-nowrap text-[11px] font-semibold">
+                <p className="whitespace-nowrap text-[13px] font-semibold">
                   Saifur Rahman
                 </p>
-                <p className="whitespace-nowrap text-[9px] text-gray-400">
+                <p className="whitespace-nowrap text-[11px] text-gray-400">
                   example.xyz@gmail.com
                 </p>
               </div>
@@ -811,7 +811,7 @@ function DashboardScreen({
               className="flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 sm:px-4 sm:py-2.5 sm:text-sm"
             >
               <I.Plus /> <span className="xs:inline hidden">Send </span>
-              Recognition
+              Send Recognition
             </button>
           </div>
 
