@@ -8,12 +8,12 @@ export const NAV_DATA: NavSection[] = [
       {
         title: "Dashboard",
         icon: Icons.House,
-        url: "/",
+        url: "/dashboard",
         items: [],
       },
       {
         title: "Recognitions",
-        url: "/user-management",
+        url: "/dashboard/recognitions",
         icon: Icons.Award,
         items: [],
       },
