@@ -186,3 +186,15 @@ export function ArrowLeftIcon(props: PropsType) {
     </svg>
   );
 }
+export {
+  House,
+  Users,
+  CreditCard,
+  Bell,
+  Settings,
+  Building2,
+  ChartLineIcon,
+  BotMessageSquare,
+  Brain,
+  Award,
+} from "lucide-react";

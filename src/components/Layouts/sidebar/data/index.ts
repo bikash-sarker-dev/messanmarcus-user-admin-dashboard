@@ -7,38 +7,38 @@ export const NAV_DATA: NavSection[] = [
     items: [
       {
         title: "Dashboard",
-        icon: Icons.HomeIcon,
+        icon: Icons.House,
         url: "/",
         items: [],
       },
       {
-        title: "User Management",
+        title: "Recognitions",
         url: "/user-management",
-        icon: Icons.Calendar,
+        icon: Icons.Award,
         items: [],
       },
       {
-        title: "Subscriptions",
+        title: "Directory",
         url: "/subscriptions",
-        icon: Icons.User,
+        icon: Icons.Users,
         items: [],
       },
       {
-        title: "Notifications",
-        icon: Icons.Alphabet,
+        title: "Reports",
+        icon: Icons.ChartLineIcon,
         url: "/notifications",
         items: [],
       },
       {
         title: "Settings",
-        icon: Icons.Alphabet,
+        icon: Icons.Settings,
         url: "/settings",
         items: [],
       },
     ],
   },
-  {
-    label: "OTHERS",
-    items: [],
-  },
+  // {
+  //   label: "OTHERS",
+  //   items: [],
+  // },
 ];
