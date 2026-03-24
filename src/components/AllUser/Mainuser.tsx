@@ -526,77 +526,56 @@ function Navbar({
 
   return (
     <nav className="sticky top-0 z-40 border-b border-gray-100 bg-white px-4 shadow-sm sm:px-6">
-      <div className="flex h-[60px] items-center justify-between">
-        <button
-          onClick={() => {
-            onLogoClick();
-            setMenuOpen(false);
-          }}
-          className="group flex shrink-0 items-center gap-2"
-        >
-          <div className="h-9 w-9 shrink-0">
-            <I.Logo />
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-orange-500 transition-colors group-hover:text-orange-600">
-            Greetely
-          </span>
-        </button>
-
-        {isDashboard && (
-          <div className="hidden items-center gap-1 lg:flex">
-            {["Dashboard", "Leaderboard", "Rewards", "Reports"].map(
-              (item, i) => (
-                <button
-                  key={item}
-                  onClick={i === 0 ? onLogoClick : () => {}}
-                  className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${i === 0 ? "bg-orange-50 text-orange-600" : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"}`}
-                >
-                  {item}
-                </button>
-              ),
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={onSendRecognition}
-            className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 sm:px-4 md:flex"
-          >
-            <I.Plus /> Send Recognition
-          </button>
-
-          <div className="flex items-center gap-2 rounded-full bg-gray-900 py-1 pl-1 pr-2 text-white shadow-sm sm:pr-4">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-orange-600 text-[10px] font-bold">
-              SR
-            </div>
-            <div className="hidden leading-tight sm:block">
-              <p className="whitespace-nowrap text-[11px] font-semibold">
-                Saifur Rahman
-              </p>
-              <p className="whitespace-nowrap text-[9px] text-gray-400">
-                example.xyz@gmail.com
-              </p>
-            </div>
-          </div>
-
+      <div className="mx-auto max-w-7xl">
+        <div className="flex h-[70px] items-center justify-between">
           <button
             onClick={() => {
               onLogoClick();
               setMenuOpen(false);
             }}
-            className="hidden h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white shadow transition-colors hover:bg-orange-600 sm:flex"
-            title="Logout"
+            className="group flex shrink-0 items-center gap-2"
           >
-            <I.Logout />
+            <div className="h-9 w-9 shrink-0">
+              <I.Logo />
+            </div>
+            <span className="text-xl font-extrabold tracking-tight text-orange-500 transition-colors group-hover:text-orange-600">
+              Greetely
+            </span>
           </button>
 
-          <button
-            onClick={() => setMenuOpen((o) => !o)}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 transition-colors hover:bg-gray-200 sm:hidden"
-          >
-            {menuOpen ? <I.Close /> : <I.Menu />}
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 rounded-full bg-gray-900 py-1 pl-1 pr-2 text-white shadow-sm sm:pr-4">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-orange-600 text-[10px] font-bold">
+                SR
+              </div>
+              <div className="hidden leading-tight sm:block">
+                <p className="whitespace-nowrap text-[11px] font-semibold">
+                  Saifur Rahman
+                </p>
+                <p className="whitespace-nowrap text-[9px] text-gray-400">
+                  example.xyz@gmail.com
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                onLogoClick();
+                setMenuOpen(false);
+              }}
+              className="hidden h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white shadow transition-colors hover:bg-orange-600 sm:flex"
+              title="Logout"
+            >
+              <I.Logout />
+            </button>
+
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 transition-colors hover:bg-gray-200 sm:hidden"
+            >
+              {menuOpen ? <I.Close /> : <I.Menu />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -769,7 +748,7 @@ function DashboardScreen({
         onSend={onSendRecognition}
       />
 
-      <main className="mx-auto max-w-6xl space-y-5 px-3 py-5 sm:space-y-6 sm:px-6 sm:py-8">
+      <main className="mx-auto max-w-7xl space-y-5 px-3 py-5 sm:space-y-6 sm:px-6 sm:py-8">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           <div className="rounded-2xl bg-orange-500 p-5 shadow-sm">
@@ -927,9 +906,9 @@ function RecognizeScreen({
   const canContinue = name.trim() !== "" && email.trim() !== "";
 
   return (
-    <div className="flex min-h-[calc(100vh-60px)] flex-col bg-gray-50 lg:flex-row">
-      <div className="flex flex-1 items-start justify-center p-4 sm:p-8 lg:justify-start lg:p-10">
-        <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+    <div className="flex min-h-screen">
+      <div className="flex w-full flex-1 items-center justify-center p-4 sm:p-8 lg:justify-start lg:p-10">
+        <div className="mx-auto w-full max-w-lg rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
           <h1 className="mb-1 text-xl font-bold text-orange-500 sm:text-2xl">
             Who would you like to recognize?
           </h1>
@@ -1012,7 +991,6 @@ function RecognizeScreen({
           </button>
         </div>
       </div>
-      <div className="hidden w-80 bg-gray-200/50 lg:block" />
     </div>
   );
 }
