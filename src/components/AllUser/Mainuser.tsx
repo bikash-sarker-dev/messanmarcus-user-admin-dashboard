@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import Logo from "@/assets/logo_messan.png";
+import Image from "next/image";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -526,7 +528,7 @@ function Navbar({
 
   return (
     <nav className="sticky top-0 z-40 border-b border-gray-100 bg-white px-4 shadow-sm sm:px-6">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-[70px] items-center justify-between">
           <button
             onClick={() => {
@@ -535,12 +537,7 @@ function Navbar({
             }}
             className="group flex shrink-0 items-center gap-2"
           >
-            <div className="h-9 w-9 shrink-0">
-              <I.Logo />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight text-orange-500 transition-colors group-hover:text-orange-600">
-              Greetely
-            </span>
+            <Image src={Logo} width={110} height={110} alt="logo" />
           </button>
 
           <div className="flex items-center gap-2 sm:gap-3">
