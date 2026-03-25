@@ -65,7 +65,7 @@ export function Sidebar() {
           isOpen ? "w-full" : "w-0",
         )}
       >
-        <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
+        <div className="flex h-full flex-col py-5 pl-[25px] pr-[7px]">
           {/* Logo */}
           <div className="relative pr-4.5">
             <Link
@@ -168,7 +168,7 @@ export function Sidebar() {
             </button>
           </div> */}
 
-          <div className="-ml-5 border-t px-2 pt-5">
+          <div className="-ml-5 px-2">
             <div className="w-full max-w-md rounded-3xl border border-t-2 border-[#E5E7EB] bg-white px-3 py-3 shadow-lg">
               {/* Profile Section */}
               <div className="mb-5 flex items-center gap-4">
