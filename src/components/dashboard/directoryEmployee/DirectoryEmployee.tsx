@@ -894,7 +894,7 @@ export default function EmployeeDirectory() {
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-1.5">
-                          {/* ✏️ Edit — opens modal pre-filled with this employee's data */}
+                          {/*  Edit — opens modal pre-filled with this employee's data */}
                           <button
                             onClick={() =>
                               setModal({ type: "edit", employee: emp })
@@ -937,7 +937,7 @@ export default function EmployeeDirectory() {
                             </svg>
                           </button>
                           {/* 👁 View */}
-                          <button
+                          {/* <button
                             title="View employee"
                             className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
                           >
@@ -948,7 +948,7 @@ export default function EmployeeDirectory() {
                             >
                               <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z" />
                             </svg>
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>
