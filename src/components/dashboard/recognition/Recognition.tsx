@@ -515,7 +515,7 @@ export default function RecognitionsTable() {
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           {/* Header */}
           <div className="flex flex-col justify-between gap-4 border-b border-gray-100 px-5 pb-4 pt-5 sm:flex-row sm:items-center sm:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold text-gray-900 lg:text-3xl">
               Recognitions
             </h1>
             <div className="flex flex-wrap gap-2">
