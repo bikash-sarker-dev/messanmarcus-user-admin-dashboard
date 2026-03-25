@@ -19,20 +19,20 @@ export const NAV_DATA: NavSection[] = [
       },
       {
         title: "Directory",
-        url: "/subscriptions",
+        url: "/dashboard/directory",
         icon: Icons.Users,
         items: [],
       },
       {
         title: "Reports",
         icon: Icons.ChartLineIcon,
-        url: "/notifications",
+        url: "/dashboard/reports",
         items: [],
       },
       {
         title: "Settings",
         icon: Icons.Settings,
-        url: "/settings",
+        url: "/dashboard/settings",
         items: [],
       },
     ],
