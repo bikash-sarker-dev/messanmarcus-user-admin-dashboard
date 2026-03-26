@@ -78,7 +78,7 @@ export function UserInfo() {
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
-          <Link
+          {/* <Link
             href={"/profile"}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
@@ -86,10 +86,10 @@ export function UserInfo() {
             <UserIcon />
 
             <span className="mr-auto text-base font-medium">View profile</span>
-          </Link>
+          </Link> */}
 
           <Link
-            href={"/pages/settings"}
+            href={"/dashboard/settings"}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
           >
@@ -106,7 +106,10 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              router.push("http://206.162.244.131:3041/");
+            }}
           >
             <LogOutIcon />
 
