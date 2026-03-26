@@ -1316,6 +1316,7 @@ function CardPreviewScreen({
 // ROOT
 // ══════════════════════════════════════════════════════════════════════════════
 export default function GreetelyDashboard() {
+  const router = useRouter();
   const [screen, setScreen] = useState<Screen>("dashboard");
   const [showModal, setShowModal] = useState(true);
   const [recipient, setRecipient] = useState<RecipientState>({
@@ -1335,12 +1336,9 @@ export default function GreetelyDashboard() {
     setScreen("recognize");
   }, []);
 
-  // ✅ FIX: goHome resets modal-dismissed flag so it doesn't reappear,
-  // but does NOT re-show the modal on return to dashboard
-  const goHome = useCallback(() => {
-    setScreen("dashboard");
-  }, []);
-
+  const logOutHandle = () => {
+    router.push("http://206.162.244.131:3041/");
+  };
   // ✅ FIX: Step navigation — allow going back but not forward beyond current
   const handleStepClick = useCallback(
     (s: Screen) => {
@@ -1356,7 +1354,7 @@ export default function GreetelyDashboard() {
     <div className="min-h-screen bg-gray-50">
       <Navbar
         screen={screen}
-        onLogoClick={goHome}
+        onLogoClick={logOutHandle}
         onSendRecognition={startRecognition}
       />
 
