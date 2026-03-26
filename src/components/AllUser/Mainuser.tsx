@@ -805,7 +805,7 @@ function DashboardScreen({
             </h2>
             <button
               onClick={onSendRecognition}
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 sm:px-4 sm:py-2.5 sm:text-sm"
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-md bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 sm:px-4 sm:py-2.5 sm:text-sm"
             >
               <I.Plus /> <span className="xs:inline hidden">Send </span>
               Send Recognition
