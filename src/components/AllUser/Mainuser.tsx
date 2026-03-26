@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import Logo from "@/assets/logo_messan.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -523,6 +524,7 @@ function Navbar({
   onLogoClick: () => void;
   onSendRecognition: () => void;
 }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const isDashboard = screen === "dashboard";
 
@@ -559,6 +561,7 @@ function Navbar({
               onClick={() => {
                 onLogoClick();
                 setMenuOpen(false);
+                router.push("http://206.162.244.131:3041/");
               }}
               className="hidden h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white shadow transition-colors hover:bg-orange-600 sm:flex"
               title="Logout"
