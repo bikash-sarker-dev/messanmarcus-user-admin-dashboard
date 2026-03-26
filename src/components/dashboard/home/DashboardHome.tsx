@@ -478,7 +478,7 @@ export default function HomeDashboard() {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-slate-600 transition-colors hover:bg-gray-50 disabled:opacity-40"
+                className="flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:bg-gray-50 disabled:opacity-40 lg:text-sm"
                 disabled={currentPage === 1}
               >
                 <ChevronIcon dir="left" /> Previous
@@ -488,7 +488,7 @@ export default function HomeDashboard() {
                 <button
                   key={n}
                   onClick={() => setCurrentPage(n)}
-                  className={`h-8 w-8 rounded-lg text-sm font-medium transition-colors ${
+                  className={`h-4 w-4 rounded-lg text-xs font-medium transition-colors lg:h-8 lg:w-8 lg:text-sm ${
                     currentPage === n
                       ? "bg-orange-500 text-white"
                       : "text-slate-600 hover:bg-gray-100"
@@ -515,7 +515,7 @@ export default function HomeDashboard() {
                 onClick={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
-                className="flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-sm text-white transition-colors hover:bg-orange-600 disabled:opacity-40"
+                className="flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1.5 text-xs text-white transition-colors hover:bg-orange-600 disabled:opacity-40 lg:px-3 lg:text-sm"
                 disabled={currentPage === totalPages}
               >
                 Next <ChevronIcon dir="right" />
