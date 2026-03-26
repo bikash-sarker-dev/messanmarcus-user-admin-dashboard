@@ -566,17 +566,17 @@ function Navbar({
               <I.Logout />
             </button>
 
-            <button
+            {/* <button
               onClick={() => setMenuOpen((o) => !o)}
               className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 transition-colors hover:bg-gray-200 sm:hidden"
             >
               {menuOpen ? <I.Close /> : <I.Menu />}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
 
-      {menuOpen && (
+      {/* {menuOpen && (
         <div className="space-y-1 border-t border-gray-100 py-3 sm:hidden">
           {isDashboard &&
             ["Dashboard", "Leaderboard", "Rewards", "Reports"].map(
@@ -612,7 +612,7 @@ function Navbar({
             <I.Logout /> Logout
           </button>
         </div>
-      )}
+      )} */}
     </nav>
   );
 }
