@@ -561,7 +561,6 @@ function Navbar({
               onClick={() => {
                 onLogoClick();
                 setMenuOpen(false);
-                router.push("http://206.162.244.131:3041/");
               }}
               className="hidden h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white shadow transition-colors hover:bg-orange-600 sm:flex"
               title="Logout"
