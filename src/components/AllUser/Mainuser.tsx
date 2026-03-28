@@ -128,13 +128,27 @@ const VALUES = [
   "Integrity in Action",
   "Customer Champion",
 ];
-const CARD_MSGS = [
+export const CARD_MSGS = [
   (n: string) =>
-    `${n}, your exceptional work on the Q4 project truly exemplifies our core value of Excellence. Your dedication and attention to detail made a significant impact on the team's success. Thank you for your outstanding contribution!`,
+    `${n}, your exceptional work on the Q4 project truly exemplifies our core value of excellence and professionalism. Throughout the entire process, you demonstrated not only strong technical skills but also a deep sense of responsibility and ownership. Your dedication, attention to detail, and commitment to delivering high-quality results played a crucial role in the success of our team.
+
+What truly stands out is your ability to stay focused under pressure while maintaining a positive attitude. You consistently approached challenges with a solution-oriented mindset, ensuring that every obstacle became an opportunity to improve. Your collaboration with team members, willingness to support others, and clear communication helped create a productive and motivating work environment.
+
+Your contributions have not gone unnoticed. You have set a high standard for performance, and your efforts have inspired those around you to aim higher. Thank you for your outstanding contribution!`,
+
   (n: string) =>
-    `${n}, the way you consistently go above and beyond inspires everyone around you. Your commitment to quality and collaborative spirit make our team stronger every single day. We're incredibly grateful to have you!`,
+    `${n}, the way you consistently go above and beyond expectations is truly inspiring to everyone around you. Your dedication to your work, combined with your positive mindset and strong collaborative spirit, has made a lasting impact on our entire team.
+
+Every day, you bring energy and enthusiasm that motivates others to perform at their best. Your ability to adapt, learn quickly, and take initiative sets you apart. You are always willing to lend a helping hand and ensure that everyone succeeds together.
+
+We truly appreciate everything you do and the positive influence you bring. Keep growing, keep inspiring, and continue being amazing!`,
+
   (n: string) =>
-    `${n}, your creative problem-solving and relentless drive have set a new standard for what's possible. This recognition is a small token of our appreciation for the big difference you make. Keep being amazing!`,
+    `${n}, your creative problem-solving skills and relentless drive have set a new benchmark for excellence within our team. You consistently approach challenges with innovation and determination, turning complex situations into successful outcomes.
+
+What makes your contribution truly special is not just your talent, but your attitude. You remain focused, resilient, and committed even in difficult situations. Your passion inspires others to push their limits.
+
+We deeply appreciate your hard work and dedication. Keep innovating and achieving great things!`,
 ];
 
 const PER_PAGE = 11;
@@ -1210,14 +1224,15 @@ function CardPreviewScreen({
 }) {
   const [msgIdx, setMsgIdx] = useState(0);
   const [sent, setSent] = useState(false);
+  const [message, setMessage] = useState("");
 
   return (
     <div className="min-h-[calc(100vh-60px)] bg-gray-50">
       <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-8">
-        <div className="flex flex-col items-start gap-5 lg:flex-row lg:gap-8">
+        <div className="flex flex-col items-start gap-5 lg:flex-row">
           {/* Orange Card */}
-          <div className="flex w-full justify-center lg:flex-1">
-            <div className="w-full max-w-[620px] rounded-2xl bg-orange-500 p-6 shadow-xl sm:p-8">
+          <div className="flex w-full lg:flex-1">
+            <div className="w-full max-w-[500px] rounded-2xl bg-orange-500 p-6 shadow-xl">
               <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-white sm:mb-8 sm:text-4xl">
                 Greetely
               </h1>
@@ -1228,8 +1243,13 @@ function CardPreviewScreen({
               <p className="mb-4 mt-0.5 text-xs text-white/60 sm:mb-5">
                 {recipient.dept || "Engineering Department"}
               </p>
-              <div className="mb-5 min-h-[110px] rounded-xl bg-white/20 p-4 sm:mb-6 sm:min-h-[130px] sm:p-5">
+              {/* <div className="mb-5 min-h-[110px] rounded-xl bg-white/20 p-4 sm:mb-6 sm:min-h-[130px] sm:p-5">
                 <p className="text-sm leading-relaxed text-white">
+                  {CARD_MSGS[msgIdx](recipient.name || "Sarah Ahmed")}
+                </p>
+              </div> */}
+              <div className="mb-5 max-h-[150px] overflow-y-auto rounded-xl bg-white/20 p-4 sm:mb-6 sm:max-h-[210px] sm:p-5">
+                <p className="whitespace-pre-line text-sm leading-relaxed text-white">
                   {CARD_MSGS[msgIdx](recipient.name || "Sarah Ahmed")}
                 </p>
               </div>
@@ -1243,9 +1263,27 @@ function CardPreviewScreen({
               </div>
             </div>
           </div>
+          {/* optional message  */}
+          <div className="max-w-[400px] lg:flex-1">
+            <label className="mb-2 block text-lg font-bold text-primary">
+              Write Message
+            </label>
+
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={16}
+              placeholder="Type your message here..."
+              className="w-full resize-none rounded-lg border border-orange-300 p-3 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+
+            <p className="mt-2 text-xs text-primary">
+              {message.length} characters
+            </p>
+          </div>
 
           {/* Actions */}
-          <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:w-[400px] lg:shrink-0">
+          <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:w-[300px] lg:shrink-0">
             <h2 className="mb-4 text-lg font-bold text-orange-500 sm:mb-5 sm:text-xl">
               Actions
             </h2>
