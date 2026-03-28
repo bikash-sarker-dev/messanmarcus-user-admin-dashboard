@@ -3158,7 +3158,7 @@ function SelectDetailsScreen({
             {/* Tone */}
             <section>
               <h2 className="mb-3 text-base font-bold text-orange-500 sm:mb-4 sm:text-lg">
-                Choose Tone
+                Choose Tone of the Recognation
               </h2>
               <div className="flex flex-wrap gap-2">
                 {TONES.map((t) => (
@@ -3335,8 +3335,8 @@ function CardPreviewScreen({
           {/* Orange Card — color driven by selected template */}
           <div className="flex w-full lg:flex-1">
             <div
-              className="w-full max-w-[500px] rounded-2xl p-6 shadow-xl"
-              style={{ background: cardColor }}
+              className="w-full max-w-[500px] rounded-2xl bg-primary p-6 shadow-xl"
+              // style={{ background: cardColor }}
             >
               <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-white sm:mb-8 sm:text-4xl">
                 Greetely
