@@ -1068,7 +1068,7 @@ function SelectDetailsScreen({
             <div className="border-t border-gray-100" />
             <section>
               <h2 className="mb-3 text-base font-bold text-orange-500 sm:mb-4 sm:text-lg">
-                Choose Tone of Value
+                Choose Tone
               </h2>
               <div className="flex flex-wrap gap-2">
                 {TONES.map((t) => (
