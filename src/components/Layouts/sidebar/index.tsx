@@ -46,7 +46,7 @@ export function Sidebar() {
 
   const handleLogout = () => {
     if (isMobile) toggleSidebar();
-    router.push("http://206.162.244.131:3041/");
+    router.push("http://206.162.244.175:3041");
   };
 
   return (

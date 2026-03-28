@@ -110,7 +110,7 @@ export function UserInfo() {
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             onClick={() => {
               setIsOpen(false);
-              router.push("http://206.162.244.131:3041/");
+              router.push("http://206.162.244.175:3041");
             }}
           >
             <LogOutIcon />
