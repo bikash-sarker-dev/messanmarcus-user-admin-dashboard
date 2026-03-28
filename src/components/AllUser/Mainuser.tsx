@@ -1266,7 +1266,10 @@ function CardPreviewScreen({
           {/* optional message  */}
           <div className="max-w-[400px] lg:flex-1">
             <label className="mb-2 block text-lg font-bold text-primary">
-              Write Message
+              Write Message{" "}
+              <span className="text-sm font-normal text-gray-400">
+                (optional)
+              </span>
             </label>
 
             <textarea
