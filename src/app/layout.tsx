@@ -11,6 +11,7 @@ import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./dashboard/providers";
+import ReduxProvider from "@/redux/Provider";
 
 export const metadata: Metadata = {
   title: {
@@ -39,7 +40,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
             </div>
           </div>
         </Providers> */}
-        <main className="">{children}</main>
+        <ReduxProvider>
+          <main className="">{children}</main>
+        </ReduxProvider>
       </body>
     </html>
   );
