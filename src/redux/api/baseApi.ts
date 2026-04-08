@@ -22,7 +22,8 @@ export const baseApi = createApi({
     "UserManagement",
     "TeamManagement",
     "CompanyManagement",
-    "reportAnalysis"
+    "reportAnalysis",
+    "mainUser",
   ],
 });
 

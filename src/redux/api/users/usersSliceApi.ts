@@ -2,23 +2,46 @@ import baseApi from "../baseApi";
 
 export const allUsersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    uploadAnalysisFile: builder.mutation({
+    aiGeneratePost: builder.mutation({
       query: (body) => ({
-        url: "/report-analysis/extract-report",
+        url: "/ai/generate",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["reportAnalysis"],
+      invalidatesTags: ["mainUser"],
     }),
 
-    // get report history signle data
-    getReportHistorySignle: builder.query({
-      query: (id) => ({
-        url: `/report-analysis/water-reports/${id}`,
+    aiReGeneratePost: builder.mutation({
+      query: (body) => ({
+        url: "/ai/regenerate",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["mainUser"],
+    }),
+
+    sendRecongition: builder.mutation({
+      query: (body) => ({
+        url: "/recognition/send",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["mainUser"],
+    }),
+
+    getAllUsers: builder.query({
+      query: () => ({
+        url: `/user/all-users`,
         method: "GET",
       }),
+      providesTags: ["mainUser"],
     }),
   }),
 });
 
-export const {} = allUsersApi;
+export const {
+  useAiGeneratePostMutation,
+  useAiReGeneratePostMutation,
+  useGetAllUsersQuery,
+  useSendRecongitionMutation,
+} = allUsersApi;
