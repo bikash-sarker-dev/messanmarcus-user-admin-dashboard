@@ -29,12 +29,16 @@ export const allUsersApi = baseApi.injectEndpoints({
       invalidatesTags: ["mainUser"],
     }),
 
+    // getAllUsers: builder.query({
+    //   query: () => ({
+    //     url: `/user/all-users`,
+    //     method: "GET",
+    //   }),
+    //   providesTags: ["mainUser"],
+    // }),
+
     getAllUsers: builder.query({
-      query: () => ({
-        url: `/user/all-users`,
-        method: "GET",
-      }),
-      providesTags: ["mainUser"],
+      query: ({ page = 1, limit = 10 }) => `/user/all-users`,
     }),
   }),
 });
