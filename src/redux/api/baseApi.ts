@@ -10,7 +10,7 @@ export const baseApi = createApi({
       const token = Cookies?.get("accessToken");
       console.log("token:", token);
       if (token) {
-        headers.set("Authorization", `${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
@@ -29,3 +29,25 @@ export const baseApi = createApi({
 
 // Export hooks for usage in functional components
 export default baseApi;
+
+// import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+// export const baseApi = createApi({
+//   baseQuery: fetchBaseQuery({
+//     baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
+//     credentials: "include", // ✅ send cookies automatically
+//     // No prepareHeaders needed for cookie auth
+//   }),
+//   endpoints: () => ({}),
+//   tagTypes: [
+//     "User",
+//     "SubscriptionPan",
+//     "UserManagement",
+//     "TeamManagement",
+//     "CompanyManagement",
+//     "categorise",
+//     "mainUser",
+//   ],
+// });
+
+// export default baseApi;

@@ -3495,6 +3495,7 @@ function CardPreviewScreen({
   );
   const [sent, setSent] = useState(false);
   const [additionalMessage, setAdditionalMessage] = useState("");
+  const [editableMessage, setEditableMessage] = useState("");
   const [apiError, setApiError] = useState("");
 
   const [aiGenerateMassage, { isLoading: messLoading }] =
@@ -3513,15 +3514,15 @@ function CardPreviewScreen({
         department: recipient.dept || "General",
         recipient_name: recipient.name,
         recognition_values: details.values,
-        sender_name: senderName,
         tone: details.tone,
       };
       const res = await aiGenerateMassage(payload).unwrap();
       setGeneratedData(res.data);
+      setEditableMessage(res.data.message);
     } catch (err) {
       setApiError("Failed to generate message. Please try again.");
     }
-  }, [details, recipient, senderName, aiGenerateMassage]);
+  }, [details, recipient, aiGenerateMassage]);
 
   useEffect(() => {
     generateMessage();
@@ -3536,11 +3537,12 @@ function CardPreviewScreen({
         department: recipient.dept || "General",
         recipient_name: recipient.name,
         recognition_values: details.values,
-        sender_name: senderName,
         tone: details.tone,
       };
       const res = await aiReGenerateMassage(payload).unwrap();
+
       setGeneratedData(res.data);
+      setEditableMessage(res.data.message);
     } catch (err) {
       setApiError("Failed to regenerate message. Please try again.");
     }
@@ -3556,7 +3558,7 @@ function CardPreviewScreen({
         image: details.selectedImageUrl ?? "",
         points: details.points,
         messageId: generatedData.messageId,
-        additionalMessage: additionalMessage,
+        additionalMessage: editableMessage,
       };
       await sendRecognitionMessage(payload).unwrap();
       setSent(true);
@@ -3565,7 +3567,6 @@ function CardPreviewScreen({
     }
   };
 
-  const displayMessage = generatedData?.message ?? "";
   const isGenerating = messLoading;
   const isRegenerating = messReLoading;
 
@@ -3600,7 +3601,7 @@ function CardPreviewScreen({
               </p>
 
               <div className="mb-5 max-h-[180px] overflow-y-auto rounded-xl bg-white/20 p-4 sm:mb-6 sm:max-h-[220px] sm:p-5">
-                {isGenerating ? (
+                {/* {isGenerating ? (
                   <div className="flex items-center justify-center gap-2 py-4 text-white/80">
                     <I.Spinner />{" "}
                     <span className="text-sm">Generating your message…</span>
@@ -3609,6 +3610,26 @@ function CardPreviewScreen({
                   <p className="whitespace-pre-line text-sm leading-relaxed text-white">
                     {displayMessage}
                   </p>
+                )} */}
+                {isGenerating ? (
+                  <div className="flex items-center justify-center gap-2 py-4 text-white/80">
+                    <I.Spinner />{" "}
+                    <span className="text-sm">Generating your message…</span>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <textarea
+                      value={editableMessage}
+                      onChange={(e) => setEditableMessage(e.target.value)}
+                      disabled={sent}
+                      rows={8}
+                      className="w-full resize-none rounded-lg bg-white/10 p-3 text-sm leading-relaxed text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 disabled:opacity-60"
+                      placeholder="Your message will appear here..."
+                    />
+                    <span className="absolute bottom-2 right-2 text-[10px] text-white/40">
+                      {editableMessage.length} chars
+                    </span>
+                  </div>
                 )}
               </div>
 
