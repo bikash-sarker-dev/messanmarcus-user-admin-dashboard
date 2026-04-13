@@ -18,7 +18,7 @@ export const categoriseAip = baseApi.injectEndpoints({
     //   }),
     //   providesTags: ["categorise"],
     // }),
-    getCategorise: builder.query<any, void>({
+    getCategorise: builder.query({
       query: () => "/category",
       providesTags: ["categorise"],
     }),
