@@ -11,13 +11,6 @@ export const categoriseAip = baseApi.injectEndpoints({
       invalidatesTags: ["mainUser"],
     }),
 
-    // getCategorise: builder.query({
-    //   query: () => ({
-    //     url: `/category`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["categorise"],
-    // }),
     getCategorise: builder.query({
       query: () => "/category",
       providesTags: ["categorise"],
