@@ -1476,17 +1476,8 @@ function CardPreviewScreen({
                 {recipient.dept || "Your Organization"}
               </p>
 
-              <div className="mb-5 max-h-[180px] overflow-y-auto rounded-xl bg-white/20 p-4 sm:mb-6 sm:max-h-[220px] sm:p-5">
-                {/* {isGenerating ? (
-                  <div className="flex items-center justify-center gap-2 py-4 text-white/80">
-                    <I.Spinner />{" "}
-                    <span className="text-sm">Generating your message…</span>
-                  </div>
-                ) : (
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-white">
-                    {displayMessage}
-                  </p>
-                )} */}
+              {/* <div className="mb-5 max-h-[150px] rounded-xl bg-white/20 p-4 sm:mb-6 sm:max-h-[220px] sm:p-5">
+        
                 {isGenerating ? (
                   <div className="flex items-center justify-center gap-2 py-4 text-white/80">
                     <I.Spinner />{" "}
@@ -1505,6 +1496,39 @@ function CardPreviewScreen({
                     <span className="absolute bottom-2 right-2 text-[10px] text-white/40">
                       {editableMessage.length} chars
                     </span>
+                  </div>
+                )}
+              </div> */}
+
+              <div className="mb-6 rounded-2xl border border-white/20 bg-white/10 p-5 shadow-lg backdrop-blur-md">
+                {isGenerating ? (
+                  <div className="flex flex-col items-center justify-center gap-3 py-6 text-white/80">
+                    <I.Spinner />
+                    <span className="text-sm tracking-wide">
+                      Generating your message...
+                    </span>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <textarea
+                      value={editableMessage}
+                      onChange={(e) => setEditableMessage(e.target.value)}
+                      disabled={sent}
+                      rows={6}
+                      className="w-full resize-none rounded-xl bg-white/5 p-4 text-sm leading-relaxed text-white transition-all duration-200 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-400/50 disabled:opacity-50"
+                      placeholder="✍️ Your message will appear here..."
+                    />
+
+                    {/* Footer */}
+                    <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+                      <span>{editableMessage.length} characters</span>
+
+                      {!sent && (
+                        <span className="italic text-white/40">
+                          You can edit before sending
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
