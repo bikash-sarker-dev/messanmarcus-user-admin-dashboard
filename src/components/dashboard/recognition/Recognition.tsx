@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Eye, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { ALL_DATA } from "./recognitionData";
+import { useGetRecognitionHistoryQuery } from "@/redux/api/dashboardHome/homeSliceApi";
 
 interface DropdownOption {
   label: string;
@@ -78,6 +79,14 @@ export default function RecognitionsTable() {
   const [rowsPerPage, setRowsPerPage] = useState(11);
   const [sortKey, setSortKey] = useState<SortKey>("dateVal");
   const [sortAsc, setSortAsc] = useState(false);
+
+  const [pageSize, setPageSize] = useState(10);
+
+  const { data: historyRes, isLoading: historyLoading } =
+    useGetRecognitionHistoryQuery({
+      page: currentPage,
+      limit: pageSize,
+    });
 
   const filtered = useMemo(() => {
     return ALL_DATA.filter((r) => {
