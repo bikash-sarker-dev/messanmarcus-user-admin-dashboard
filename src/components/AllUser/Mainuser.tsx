@@ -11,6 +11,7 @@ import {
   useGetAllUsersQuery,
   useSendRecongitionMutation,
 } from "@/redux/api/users/usersSliceApi";
+import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -461,6 +462,8 @@ function StepBar({
 // NAVBAR
 // ══════════════════════════════════════════════════════════════════════════════
 function Navbar({ onLogoClick }: { onLogoClick: () => void }) {
+  const { data, isLoading } = useGetMeProfileQuery("");
+  const user = data?.data || {};
   return (
     <nav className="sticky top-0 z-40 border-b border-gray-100 bg-white px-4 shadow-sm sm:px-6">
       <div className="mx-auto max-w-7xl px-4">
@@ -478,10 +481,10 @@ function Navbar({ onLogoClick }: { onLogoClick: () => void }) {
               </div>
               <div className="hidden leading-tight sm:block">
                 <p className="whitespace-nowrap text-[13px] font-semibold">
-                  Saifur Rahman
+                  {user?.name}
                 </p>
                 <p className="whitespace-nowrap text-[11px] text-gray-400">
-                  example.xyz@gmail.com
+                  {user?.email}
                 </p>
               </div>
             </div>
