@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  useGetDashboardHomeQuery,
+  useGetRecognitionHistroyQuery,
+} from "@/redux/api/dashboardHome/homeSliceApi";
 import React, { useState } from "react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -330,6 +334,12 @@ const Avatar = ({ initials, faded }: { initials: string; faded?: boolean }) => (
 export default function HomeDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 16;
+
+  // hooks api
+
+  const { data, isLoading } = useGetDashboardHomeQuery("");
+  const { data: recongitionHistory, isLoading: RecongLoading } =
+    useGetRecognitionHistroyQuery("");
 
   return (
     <div className="">
