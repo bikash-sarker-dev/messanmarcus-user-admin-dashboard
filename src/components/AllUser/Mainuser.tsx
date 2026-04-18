@@ -1450,7 +1450,7 @@ function CardPreviewScreen({
   const isRegenerating = messReLoading;
 
   return (
-    <div className="min-h-[calc(100vh-60px)] bg-gray-50">
+    <div className="bg-gray-50">
       <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-8">
         {apiError && (
           <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
