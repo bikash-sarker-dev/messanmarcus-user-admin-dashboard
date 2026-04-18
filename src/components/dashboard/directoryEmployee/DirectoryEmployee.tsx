@@ -1120,68 +1120,1006 @@
 //     </div>
 //   );
 // }
+// "use client";
+
+// import { useGetAllUsersQuery } from "@/redux/api/users/usersSliceApi";
+// import React, { useState, useMemo } from "react";
+
+// // ─── Types ────────────────────────────────────────────────────────────────────
+// type Role = "Employee" | "Manager" | "Admin";
+// type Department =
+//   | "Engineering"
+//   | "Developer"
+//   | "Designer"
+//   | "HR"
+//   | "Product"
+//   | "Marketing"
+//   | string;
+// type Status = "Delivered" | "Pending" | "Inactive";
+
+// interface Employee {
+//   id: string;
+//   name: string;
+//   email: string;
+//   department: Department;
+//   pointsBalance: number;
+//   role: Role;
+//   status: Status;
+//   isActive: string;
+// }
+
+// // ─── API User → Employee mapper ───────────────────────────────────────────────
+// function mapApiUserToEmployee(user: any): Employee {
+//   const roleMap: Record<string, Role> = {
+//     SUPER_ADMIN: "Admin",
+//     ADMIN: "Admin",
+//     MANAGER: "Manager",
+//     USER: "Employee",
+//   };
+//   const statusMap: Record<string, Status> = {
+//     ACTIVE: "Delivered",
+//     INACTIVE: "Inactive",
+//     PENDING: "Pending",
+//   };
+
+//   return {
+//     id: user._id,
+//     name: user.name,
+//     email: user.email,
+//     department: user.department ?? "Engineering",
+//     pointsBalance: user.wallet?.pointsBalance ?? 0,
+//     role: roleMap[user.role] ?? "Employee",
+//     status: statusMap[user.isActive] ?? "Delivered",
+//     isActive: user.isActive,
+//   };
+// }
+
+// const DEPARTMENTS = [
+//   "Engineering",
+//   "Developer",
+//   "Designer",
+//   "HR",
+//   "Product",
+//   "Marketing",
+// ];
+// const ROLES: Role[] = ["Employee", "Manager", "Admin"];
+// const STATUSES: Status[] = ["Delivered", "Pending", "Inactive"];
+// const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
+
+// // ─── Helpers ──────────────────────────────────────────────────────────────────
+// function getInitials(name: string) {
+//   return name
+//     .split(" ")
+//     .map((n) => n[0])
+//     .join("")
+//     .toUpperCase()
+//     .slice(0, 2);
+// }
+
+// const AVATAR_COLORS = [
+//   "bg-orange-100 text-orange-600",
+//   "bg-blue-100 text-blue-600",
+//   "bg-green-100 text-green-600",
+//   "bg-purple-100 text-purple-600",
+//   "bg-pink-100 text-pink-600",
+//   "bg-teal-100 text-teal-600",
+// ];
+
+// function avatarColor(id: string) {
+//   const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+//   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+// }
+
+// // ─── Badges ───────────────────────────────────────────────────────────────────
+// function RoleBadge({ role }: { role: Role }) {
+//   const styles: Record<Role, string> = {
+//     Employee: "bg-gray-100 text-gray-600",
+//     Manager: "bg-purple-100 text-purple-600",
+//     Admin: "bg-orange-100 text-orange-600",
+//   };
+//   return (
+//     <span
+//       className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[role]}`}
+//     >
+//       {role}
+//     </span>
+//   );
+// }
+
+// function StatusBadge({ status }: { status: Status }) {
+//   const styles: Record<Status, string> = {
+//     Delivered: "bg-green-50 text-green-600 border border-green-200",
+//     Pending: "bg-yellow-50 text-yellow-600 border border-yellow-200",
+//     Inactive: "bg-red-50 text-red-500 border border-red-200",
+//   };
+//   return (
+//     <span
+//       className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}
+//     >
+//       {status}
+//     </span>
+//   );
+// }
+
+// // ─── Shared Field wrapper ─────────────────────────────────────────────────────
+// function Field({
+//   label,
+//   error,
+//   hint,
+//   children,
+// }: {
+//   label: string;
+//   error?: string;
+//   hint?: string;
+//   children: React.ReactNode;
+// }) {
+//   return (
+//     <div>
+//       <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+//         {label}
+//       </label>
+//       {children}
+//       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+//       {!error && hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+//     </div>
+//   );
+// }
+
+// const inputCls = (err?: string) =>
+//   `w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 ${err ? "border-red-400 bg-red-50/30" : "border-gray-200"}`;
+
+// const selectCls =
+//   "w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-orange-500 font-medium outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 appearance-none bg-white";
+
+// function SelectWrapper({ children }: { children: React.ReactNode }) {
+//   return (
+//     <div className="relative">
+//       {children}
+//       <svg
+//         className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+//         fill="none"
+//         stroke="currentColor"
+//         viewBox="0 0 24 24"
+//       >
+//         <path
+//           strokeLinecap="round"
+//           strokeLinejoin="round"
+//           strokeWidth={2}
+//           d="M19 9l-7 7-7-7"
+//         />
+//       </svg>
+//     </div>
+//   );
+// }
+
+// // ─── Employee Modal ───────────────────────────────────────────────────────────
+// type FormState = {
+//   name: string;
+//   email: string;
+//   department: Department;
+//   role: Role;
+//   status: Status;
+//   pointsBalance: number;
+// };
+
+// interface EmployeeModalProps {
+//   mode: "add" | "edit";
+//   initial?: Employee;
+//   onClose: () => void;
+//   onSave: (data: Omit<Employee, "id">) => void;
+// }
+
+// function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
+//   const [form, setForm] = useState<FormState>({
+//     name: initial?.name ?? "",
+//     email: initial?.email ?? "",
+//     department: initial?.department ?? "Engineering",
+//     role: initial?.role ?? "Employee",
+//     status: initial?.status ?? "Delivered",
+//     pointsBalance: initial?.pointsBalance ?? 1000,
+//   });
+//   const [errors, setErrors] = useState<
+//     Partial<Record<keyof FormState, string>>
+//   >({});
+
+//   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
+//     setForm((f) => ({ ...f, [key]: val }));
+//     setErrors((e) => ({ ...e, [key]: undefined }));
+//   }
+
+//   function validate() {
+//     const e: Partial<Record<keyof FormState, string>> = {};
+//     if (!form.name.trim()) e.name = "Full name is required";
+//     if (!form.email.trim()) e.email = "Email is required";
+//     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
+//     if (form.pointsBalance < 0) e.pointsBalance = "Points must be ≥ 0";
+//     return e;
+//   }
+
+//   function handleSubmit() {
+//     const e = validate();
+//     if (Object.keys(e).length) {
+//       setErrors(e);
+//       return;
+//     }
+//     onSave({ ...form, isActive: "ACTIVE" });
+//     onClose();
+//   }
+
+//   const isEdit = mode === "edit";
+
+//   return (
+//     <div
+//       className="fixed inset-0 z-50 flex items-center justify-center p-4"
+//       onClick={onClose}
+//     >
+//       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+//       <div
+//         className="relative mx-auto w-full max-w-lg rounded-2xl bg-white shadow-2xl"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4 pt-6">
+//           <div className="flex items-center gap-3">
+//             {isEdit && initial && (
+//               <div
+//                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${avatarColor(initial.id)}`}
+//               >
+//                 {getInitials(initial.name)}
+//               </div>
+//             )}
+//             <div>
+//               <h2 className="text-xl font-bold text-gray-900">
+//                 {isEdit ? "Edit Employee" : "Add New Employee"}
+//               </h2>
+//               {isEdit && initial && (
+//                 <p className="mt-0.5 text-xs text-gray-400">
+//                   ID #{initial.id.slice(-6)}
+//                 </p>
+//               )}
+//             </div>
+//           </div>
+//           <button
+//             onClick={onClose}
+//             className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+//           >
+//             <svg
+//               className="h-5 w-5"
+//               fill="none"
+//               stroke="currentColor"
+//               viewBox="0 0 24 24"
+//             >
+//               <path
+//                 strokeLinecap="round"
+//                 strokeLinejoin="round"
+//                 strokeWidth={2}
+//                 d="M6 18L18 6M6 6l12 12"
+//               />
+//             </svg>
+//           </button>
+//         </div>
+
+//         <div className="max-h-[65vh] space-y-4 overflow-y-auto px-6 py-5">
+//           <Field label="Full Name" error={errors.name}>
+//             <input
+//               type="text"
+//               placeholder="John Doe"
+//               value={form.name}
+//               onChange={(e) => set("name", e.target.value)}
+//               className={inputCls(errors.name)}
+//             />
+//           </Field>
+
+//           <Field
+//             label="Email"
+//             error={errors.email}
+//             hint={
+//               isEdit
+//                 ? "Changing email will trigger a verification."
+//                 : "Employee will receive a welcome email with login instructions"
+//             }
+//           >
+//             <input
+//               type="email"
+//               placeholder="xyz@gmail.com"
+//               value={form.email}
+//               onChange={(e) => set("email", e.target.value)}
+//               className={inputCls(errors.email)}
+//             />
+//           </Field>
+
+//           <div className="grid grid-cols-2 gap-4">
+//             <Field label="Department">
+//               <SelectWrapper>
+//                 <select
+//                   value={form.department}
+//                   onChange={(e) => set("department", e.target.value)}
+//                   className={selectCls}
+//                 >
+//                   {DEPARTMENTS.map((d) => (
+//                     <option key={d}>{d}</option>
+//                   ))}
+//                 </select>
+//               </SelectWrapper>
+//             </Field>
+//             <Field label="Role">
+//               <SelectWrapper>
+//                 <select
+//                   value={form.role}
+//                   onChange={(e) => set("role", e.target.value as Role)}
+//                   className={selectCls}
+//                 >
+//                   {ROLES.map((r) => (
+//                     <option key={r}>{r}</option>
+//                   ))}
+//                 </select>
+//               </SelectWrapper>
+//             </Field>
+//           </div>
+
+//           {isEdit && (
+//             <Field label="Status">
+//               <SelectWrapper>
+//                 <select
+//                   value={form.status}
+//                   onChange={(e) => set("status", e.target.value as Status)}
+//                   className={selectCls}
+//                 >
+//                   {STATUSES.map((s) => (
+//                     <option key={s}>{s}</option>
+//                   ))}
+//                 </select>
+//               </SelectWrapper>
+//             </Field>
+//           )}
+
+//           <Field
+//             label={isEdit ? "Points Balance" : "Starting Points Balance"}
+//             error={errors.pointsBalance}
+//             hint={
+//               isEdit
+//                 ? "Adjust the employee's current points balance."
+//                 : "Default quarterly allocation (can be adjusted later)"
+//             }
+//           >
+//             <input
+//               type="number"
+//               placeholder="1000"
+//               value={form.pointsBalance}
+//               onChange={(e) => set("pointsBalance", Number(e.target.value))}
+//               className={inputCls(errors.pointsBalance)}
+//             />
+//           </Field>
+//         </div>
+
+//         <div className="flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-100 bg-gray-50/60 px-6 py-4">
+//           <button
+//             onClick={onClose}
+//             className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={handleSubmit}
+//             className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600"
+//           >
+//             {isEdit ? (
+//               <>
+//                 <svg
+//                   className="h-4 w-4"
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth={2}
+//                     d="M5 13l4 4L19 7"
+//                   />
+//                 </svg>
+//                 Save Changes
+//               </>
+//             ) : (
+//               <>
+//                 <svg
+//                   className="h-4 w-4"
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth={2}
+//                     d="M12 4v16m8-8H4"
+//                   />
+//                 </svg>
+//                 Add Employee
+//               </>
+//             )}
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// // ─── Sort Icon ────────────────────────────────────────────────────────────────
+// function SortIcon({
+//   field,
+//   sortField,
+//   sortDir,
+// }: {
+//   field: string;
+//   sortField: string;
+//   sortDir: "asc" | "desc";
+// }) {
+//   const active = sortField === field;
+//   return (
+//     <span className="ml-1 inline-flex flex-col opacity-50">
+//       <svg
+//         className={`-mb-0.5 h-2.5 w-2.5 ${active && sortDir === "asc" ? "text-orange-500 opacity-100" : ""}`}
+//         viewBox="0 0 10 6"
+//         fill="currentColor"
+//       >
+//         <path d="M5 0L10 6H0z" />
+//       </svg>
+//       <svg
+//         className={`h-2.5 w-2.5 ${active && sortDir === "desc" ? "text-orange-500 opacity-100" : ""}`}
+//         viewBox="0 0 10 6"
+//         fill="currentColor"
+//       >
+//         <path d="M5 6L0 0H10z" />
+//       </svg>
+//     </span>
+//   );
+// }
+
+// // ─── Skeleton Row ─────────────────────────────────────────────────────────────
+// function SkeletonRow() {
+//   return (
+//     <tr className="animate-pulse">
+//       {Array.from({ length: 7 }).map((_, i) => (
+//         <td key={i} className="px-4 py-3.5">
+//           <div className="h-4 rounded bg-gray-100" />
+//         </td>
+//       ))}
+//     </tr>
+//   );
+// }
+
+// // ─── Modal state ──────────────────────────────────────────────────────────────
+// type ModalState =
+//   | { type: "none" }
+//   | { type: "add" }
+//   | { type: "edit"; employee: Employee };
+
+// // ─── Main Component ───────────────────────────────────────────────────────────
+// export default function EmployeeDirectory() {
+//   const [modal, setModal] = useState<ModalState>({ type: "none" });
+//   const [localOverrides, setLocalOverrides] = useState<
+//     Record<string, Employee>
+//   >({});
+//   const [localAdded, setLocalAdded] = useState<Employee[]>([]);
+//   const [localRemoved, setLocalRemoved] = useState<Set<string>>(new Set());
+
+//   const [selectedDept, setSelectedDept] = useState<string>("All");
+//   const [showDeptDrop, setShowDeptDrop] = useState(false);
+//   const [page, setPage] = useState(1);
+//   const [pageSize, setPageSize] = useState(10);
+//   const [sortField, setSortField] = useState<keyof Employee>("name");
+//   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+//   // ── API call — pass page + limit so the server paginates ──────────────────
+//   const {
+//     data: apiResponse,
+//     isLoading,
+//     isFetching,
+//   } = useGetAllUsersQuery({
+//     page,
+//     limit: pageSize,
+//   });
+
+//   const meta = apiResponse?.meta;
+//   // Total comes from server; add locally-added count, subtract removed
+//   const serverTotal: number = meta?.total ?? 0;
+//   const totalRecords = serverTotal + localAdded.length - localRemoved.size;
+//   const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
+
+//   // ── Map API users → Employee, merge local overrides/removals ─────────────
+//   const apiEmployees: Employee[] = useMemo(() => {
+//     if (!apiResponse?.data) return [];
+//     return (apiResponse.data as any[])
+//       .filter((u) => !localRemoved.has(u._id))
+//       .map((u) => localOverrides[u._id] ?? mapApiUserToEmployee(u));
+//   }, [apiResponse, localOverrides, localRemoved]);
+
+//   // Merge locally-added employees (shown on page 1 only when they were added)
+//   const allEmployees: Employee[] = useMemo(() => {
+//     const addedNotRemoved = localAdded.filter((e) => !localRemoved.has(e.id));
+//     // Show local additions at the top of page 1
+//     return page === 1 ? [...addedNotRemoved, ...apiEmployees] : apiEmployees;
+//   }, [apiEmployees, localAdded, localRemoved, page]);
+
+//   // Client-side dept filter + sort on current page's data
+//   const displayEmployees = useMemo(() => {
+//     let list =
+//       selectedDept === "All"
+//         ? allEmployees
+//         : allEmployees.filter((e) => e.department === selectedDept);
+//     return [...list].sort((a, b) => {
+//       const va = String(a[sortField]).toLowerCase();
+//       const vb = String(b[sortField]).toLowerCase();
+//       return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+//     });
+//   }, [allEmployees, selectedDept, sortField, sortDir]);
+
+//   function handleSort(field: keyof Employee) {
+//     if (sortField === field) setSortDir(sortDir === "asc" ? "desc" : "asc");
+//     else {
+//       setSortField(field);
+//       setSortDir("asc");
+//     }
+//     setPage(1);
+//   }
+
+//   function handleAdd(formData: Omit<Employee, "id">) {
+//     const newEmp: Employee = {
+//       ...formData,
+//       id: `local-${Date.now()}`,
+//     };
+//     setLocalAdded((prev) => [newEmp, ...prev]);
+//     setPage(1);
+//   }
+
+//   function handleEdit(formData: Omit<Employee, "id">) {
+//     if (modal.type !== "edit") return;
+//     const targetId = modal.employee.id;
+//     const updated: Employee = { ...formData, id: targetId };
+//     if (targetId.startsWith("local-")) {
+//       setLocalAdded((prev) =>
+//         prev.map((e) => (e.id === targetId ? updated : e)),
+//       );
+//     } else {
+//       setLocalOverrides((prev) => ({ ...prev, [targetId]: updated }));
+//     }
+//   }
+
+//   function handleRemove(id: string) {
+//     if (id.startsWith("local-")) {
+//       setLocalAdded((prev) => prev.filter((e) => e.id !== id));
+//     } else {
+//       setLocalRemoved((prev) => new Set([...prev, id]));
+//     }
+//   }
+
+//   // ── Pagination numbers ────────────────────────────────────────────────────
+//   function getPageNumbers() {
+//     if (totalPages <= 5)
+//       return Array.from({ length: totalPages }, (_, i) => i + 1);
+//     if (page <= 3) return [1, 2, 3, "...", totalPages];
+//     if (page >= totalPages - 2)
+//       return [1, "...", totalPages - 2, totalPages - 1, totalPages];
+//     return [1, "...", page - 1, page, page + 1, "...", totalPages];
+//   }
+
+//   const loading = isLoading || isFetching;
+
+//   return (
+//     <div
+//       className="min-h-screen font-sans"
+//       onClick={() => showDeptDrop && setShowDeptDrop(false)}
+//     >
+//       {modal.type === "add" && (
+//         <EmployeeModal
+//           mode="add"
+//           onClose={() => setModal({ type: "none" })}
+//           onSave={handleAdd}
+//         />
+//       )}
+//       {modal.type === "edit" && (
+//         <EmployeeModal
+//           mode="edit"
+//           initial={modal.employee}
+//           onClose={() => setModal({ type: "none" })}
+//           onSave={handleEdit}
+//         />
+//       )}
+
+//       <div>
+//         {/* ── Header ──────────────────────────────────────────────────────── */}
+//         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+//           <div className="flex flex-wrap items-center gap-3">
+//             <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
+//               Employee Directory
+//             </h1>
+
+//             <div className="relative" onClick={(e) => e.stopPropagation()}>
+//               <button
+//                 onClick={() => setShowDeptDrop(!showDeptDrop)}
+//                 className="flex items-center gap-2 rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
+//               >
+//                 {selectedDept === "All" ? "All Department" : selectedDept}
+//                 <svg
+//                   className={`h-4 w-4 text-gray-400 transition-transform ${showDeptDrop ? "rotate-180" : ""}`}
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth={2}
+//                     d="M19 9l-7 7-7-7"
+//                   />
+//                 </svg>
+//               </button>
+//               {showDeptDrop && (
+//                 <div className="absolute left-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
+//                   {(["All", ...DEPARTMENTS] as const).map((dept) => (
+//                     <button
+//                       key={dept}
+//                       onClick={() => {
+//                         setSelectedDept(dept);
+//                         setShowDeptDrop(false);
+//                         setPage(1);
+//                       }}
+//                       className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+//                         selectedDept === dept
+//                           ? "bg-orange-50 font-semibold text-orange-600"
+//                           : "text-gray-700 hover:bg-gray-50"
+//                       }`}
+//                     >
+//                       {dept === "All" ? "All Department" : dept}
+//                     </button>
+//                   ))}
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+
+//           <div className="flex items-center gap-3">
+//             <button
+//               onClick={() => setModal({ type: "add" })}
+//               className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600"
+//             >
+//               <svg
+//                 className="h-4 w-4"
+//                 fill="none"
+//                 stroke="currentColor"
+//                 viewBox="0 0 24 24"
+//               >
+//                 <path
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                   strokeWidth={2}
+//                   d="M12 4v16m8-8H4"
+//                 />
+//               </svg>
+//               Add Employee
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* ── Table Card ───────────────────────────────────────────────────── */}
+//         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+//           <div className="overflow-x-auto">
+//             <table className="w-full">
+//               <thead>
+//                 <tr className="border-b border-gray-100">
+//                   {(
+//                     [
+//                       { label: "Name", field: "name" },
+//                       { label: "Email", field: "email" },
+//                       { label: "Department", field: "department" },
+//                       { label: "Points Balance", field: "pointsBalance" },
+//                       { label: "Role", field: "role" },
+//                       { label: "Status", field: "status" },
+//                     ] as { label: string; field: keyof Employee }[]
+//                   ).map(({ label, field }) => (
+//                     <th
+//                       key={field}
+//                       onClick={() => handleSort(field)}
+//                       className="cursor-pointer select-none whitespace-nowrap px-4 py-4 text-left text-xs font-bold uppercase tracking-wide text-orange-500 transition-colors hover:bg-orange-50/50"
+//                     >
+//                       <span className="inline-flex items-center gap-1">
+//                         {label}
+//                         <SortIcon
+//                           field={field}
+//                           sortField={sortField}
+//                           sortDir={sortDir}
+//                         />
+//                       </span>
+//                     </th>
+//                   ))}
+//                   <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wide text-orange-500">
+//                     Action
+//                   </th>
+//                 </tr>
+//               </thead>
+
+//               <tbody className="divide-y divide-gray-50">
+//                 {loading ? (
+//                   Array.from({ length: pageSize }).map((_, i) => (
+//                     <SkeletonRow key={i} />
+//                   ))
+//                 ) : displayEmployees.length === 0 ? (
+//                   <tr>
+//                     <td
+//                       colSpan={7}
+//                       className="py-16 text-center text-sm text-gray-400"
+//                     >
+//                       No employees found.
+//                     </td>
+//                   </tr>
+//                 ) : (
+//                   displayEmployees.map((emp) => (
+//                     <tr
+//                       key={emp.id}
+//                       className="transition-colors hover:bg-gray-50/70"
+//                     >
+//                       <td className="px-4 py-3.5">
+//                         <div className="flex items-center gap-3">
+//                           <div
+//                             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(emp.id)}`}
+//                           >
+//                             {getInitials(emp.name)}
+//                           </div>
+//                           <span className="whitespace-nowrap text-sm font-medium text-gray-800">
+//                             {emp.name}
+//                           </span>
+//                         </div>
+//                       </td>
+//                       <td className="whitespace-nowrap px-4 py-3.5 text-sm text-gray-500">
+//                         {emp.email}
+//                       </td>
+//                       <td className="whitespace-nowrap px-4 py-3.5 text-sm text-gray-700">
+//                         {emp.department}
+//                       </td>
+//                       <td className="whitespace-nowrap px-4 py-3.5 text-sm font-semibold text-orange-500">
+//                         {emp.pointsBalance.toLocaleString()} pts
+//                       </td>
+//                       <td className="px-4 py-3.5">
+//                         <RoleBadge role={emp.role} />
+//                       </td>
+//                       <td className="px-4 py-3.5">
+//                         <StatusBadge status={emp.status} />
+//                       </td>
+//                       <td className="px-4 py-3.5">
+//                         <div className="flex items-center gap-1.5">
+//                           <button
+//                             onClick={() =>
+//                               setModal({ type: "edit", employee: emp })
+//                             }
+//                             title="Edit employee"
+//                             className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
+//                           >
+//                             <svg
+//                               className="h-4 w-4"
+//                               fill="none"
+//                               stroke="currentColor"
+//                               viewBox="0 0 24 24"
+//                             >
+//                               <path
+//                                 strokeLinecap="round"
+//                                 strokeLinejoin="round"
+//                                 strokeWidth={2}
+//                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+//                               />
+//                             </svg>
+//                           </button>
+//                           <button
+//                             onClick={() => handleRemove(emp.id)}
+//                             title="Remove employee"
+//                             className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+//                           >
+//                             <svg
+//                               className="h-4 w-4"
+//                               fill="none"
+//                               stroke="currentColor"
+//                               viewBox="0 0 24 24"
+//                             >
+//                               <circle cx="12" cy="12" r="9" strokeWidth={2} />
+//                               <path
+//                                 strokeLinecap="round"
+//                                 strokeWidth={2}
+//                                 d="M9 9l6 6M15 9l-6 6"
+//                               />
+//                             </svg>
+//                           </button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ))
+//                 )}
+//               </tbody>
+//             </table>
+//           </div>
+
+//           {/* ── Pagination Footer ─────────────────────────────────────────── */}
+//           <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/50 px-4 py-4 sm:flex-row sm:px-6">
+//             <div className="flex items-center gap-2 text-sm text-gray-500">
+//               <span>Showing</span>
+//               <div className="relative">
+//                 <select
+//                   value={pageSize}
+//                   onChange={(e) => {
+//                     setPageSize(Number(e.target.value));
+//                     setPage(1);
+//                   }}
+//                   className="appearance-none rounded-lg border border-gray-200 bg-white px-3 py-1 pr-7 text-sm font-medium text-gray-700 outline-none focus:border-orange-400"
+//                 >
+//                   {PAGE_SIZE_OPTIONS.map((s) => (
+//                     <option key={s} value={s}>
+//                       {s}
+//                     </option>
+//                   ))}
+//                 </select>
+//                 <svg
+//                   className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400"
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth={2}
+//                     d="M19 9l-7 7-7-7"
+//                   />
+//                 </svg>
+//               </div>
+//               <span>
+//                 out of{" "}
+//                 <strong className="text-gray-700">
+//                   {totalRecords.toLocaleString()}
+//                 </strong>
+//               </span>
+//             </div>
+
+//             <div className="flex items-center gap-1">
+//               <button
+//                 onClick={() => setPage((p) => Math.max(1, p - 1))}
+//                 disabled={page === 1 || loading}
+//                 className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+//               >
+//                 <svg
+//                   className="h-3.5 w-3.5"
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth={2}
+//                     d="M15 19l-7-7 7-7"
+//                   />
+//                 </svg>
+//                 <span className="hidden sm:inline">Previous</span>
+//               </button>
+
+//               {getPageNumbers().map((p, i) =>
+//                 p === "..." ? (
+//                   <span
+//                     key={`e${i}`}
+//                     className="select-none px-2 py-1.5 text-sm text-gray-400"
+//                   >
+//                     …
+//                   </span>
+//                 ) : (
+//                   <button
+//                     key={p}
+//                     onClick={() => setPage(p as number)}
+//                     disabled={loading}
+//                     className={`h-8 w-8 rounded-lg text-sm font-medium transition-colors ${
+//                       page === p
+//                         ? "bg-orange-500 text-white shadow-md shadow-orange-500/25"
+//                         : "border border-gray-200 text-gray-600 hover:bg-gray-100"
+//                     }`}
+//                   >
+//                     {p}
+//                   </button>
+//                 ),
+//               )}
+
+//               <button
+//                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+//                 disabled={page === totalPages || loading}
+//                 className="flex items-center gap-1 rounded-lg border border-orange-500 bg-orange-500 px-3 py-1.5 text-sm text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+//               >
+//                 <span className="hidden sm:inline">Next</span>
+//                 <svg
+//                   className="h-3.5 w-3.5"
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth={2}
+//                     d="M9 5l7 7-7 7"
+//                   />
+//                 </svg>
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
-import { useGetAllUsersQuery } from "@/redux/api/users/usersSliceApi";
+import {
+  useGetAllUsersQuery,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+} from "@/redux/api/users/usersSliceApi";
 import React, { useState, useMemo } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Role = "Employee" | "Manager" | "Admin";
-type Department =
-  | "Engineering"
-  | "Developer"
-  | "Designer"
-  | "HR"
-  | "Product"
-  | "Marketing"
-  | string;
 type Status = "Delivered" | "Pending" | "Inactive";
 
 interface Employee {
   id: string;
   name: string;
   email: string;
-  department: Department;
+  department: string;
   pointsBalance: number;
   role: Role;
   status: Status;
-  isActive: string;
+  // raw API fields kept for update payload
+  rawRole: string;
+  rawIsActive: string;
+  accountType: string;
+  isDeleted: boolean;
+  isVerified: boolean;
 }
 
-// ─── API User → Employee mapper ───────────────────────────────────────────────
-function mapApiUserToEmployee(user: any): Employee {
-  const roleMap: Record<string, Role> = {
-    SUPER_ADMIN: "Admin",
-    ADMIN: "Admin",
-    MANAGER: "Manager",
-    USER: "Employee",
-  };
-  const statusMap: Record<string, Status> = {
-    ACTIVE: "Delivered",
-    INACTIVE: "Inactive",
-    PENDING: "Pending",
-  };
+// ─── API mappers ──────────────────────────────────────────────────────────────
+const ROLE_TO_DISPLAY: Record<string, Role> = {
+  SUPER_ADMIN: "Admin",
+  ADMIN: "Admin",
+  MANAGER: "Manager",
+  USER: "Employee",
+};
+const ROLE_TO_API: Record<Role, string> = {
+  Admin: "ADMIN",
+  Manager: "MANAGER",
+  Employee: "USER",
+};
+const STATUS_TO_DISPLAY: Record<string, Status> = {
+  ACTIVE: "Delivered",
+  INACTIVE: "Inactive",
+  PENDING: "Pending",
+};
+const STATUS_TO_API: Record<Status, string> = {
+  Delivered: "ACTIVE",
+  Pending: "PENDING",
+  Inactive: "INACTIVE",
+};
 
+function mapApiUser(u: any): Employee {
   return {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    department: user.department ?? "Engineering",
-    pointsBalance: user.wallet?.pointsBalance ?? 0,
-    role: roleMap[user.role] ?? "Employee",
-    status: statusMap[user.isActive] ?? "Delivered",
-    isActive: user.isActive,
+    id: u._id,
+    name: u.name,
+    email: u.email,
+    department: u.department ?? "—",
+    pointsBalance: u.wallet?.pointsBalance ?? 0,
+    role: ROLE_TO_DISPLAY[u.role] ?? "Employee",
+    status: STATUS_TO_DISPLAY[u.isActive] ?? "Delivered",
+    rawRole: u.role,
+    rawIsActive: u.isActive,
+    accountType: u.accountType ?? "INDIVIDUAL",
+    isDeleted: u.isDeleted ?? false,
+    isVerified: u.isVerified ?? true,
   };
 }
 
-const DEPARTMENTS = [
-  "Engineering",
-  "Developer",
-  "Designer",
-  "HR",
-  "Product",
-  "Marketing",
-];
 const ROLES: Role[] = ["Employee", "Manager", "Admin"];
 const STATUSES: Status[] = ["Delivered", "Pending", "Inactive"];
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
@@ -1195,7 +2133,6 @@ function getInitials(name: string) {
     .toUpperCase()
     .slice(0, 2);
 }
-
 const AVATAR_COLORS = [
   "bg-orange-100 text-orange-600",
   "bg-blue-100 text-blue-600",
@@ -1204,9 +2141,8 @@ const AVATAR_COLORS = [
   "bg-pink-100 text-pink-600",
   "bg-teal-100 text-teal-600",
 ];
-
 function avatarColor(id: string) {
-  const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hash = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
@@ -1241,7 +2177,7 @@ function StatusBadge({ status }: { status: Status }) {
   );
 }
 
-// ─── Shared Field wrapper ─────────────────────────────────────────────────────
+// ─── Field wrapper ────────────────────────────────────────────────────────────
 function Field({
   label,
   error,
@@ -1292,11 +2228,138 @@ function SelectWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─── Employee Modal ───────────────────────────────────────────────────────────
+// ─── Delete Confirm Modal ─────────────────────────────────────────────────────
+function DeleteModal({
+  employee,
+  onClose,
+  onConfirm,
+  isLoading,
+}: {
+  employee: Employee;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading: boolean;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <div
+        className="relative mx-auto w-full max-w-md rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Icon */}
+        <div className="flex flex-col items-center px-6 pb-2 pt-8 text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+            <svg
+              className="h-7 w-7 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">Remove Employee</h2>
+          <p className="mt-2 text-sm leading-relaxed text-gray-500">
+            Are you sure you want to remove{" "}
+            <span className="font-semibold text-gray-800">{employee.name}</span>
+            ?
+            <br />
+            This action cannot be undone.
+          </p>
+
+          {/* Employee preview */}
+          <div className="mt-4 flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-left">
+            <div
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(employee.id)}`}
+            >
+              {getInitials(employee.name)}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-gray-800">
+                {employee.name}
+              </p>
+              <p className="truncate text-xs text-gray-400">{employee.email}</p>
+            </div>
+            <RoleBadge role={employee.role} />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-6 flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-100 bg-gray-50/60 px-6 py-4">
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="flex items-center gap-2 rounded-xl bg-red-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-500/25 transition-colors hover:bg-red-600 disabled:opacity-50"
+          >
+            {isLoading ? (
+              <>
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
+                </svg>
+                Removing...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+                Yes, Remove
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Employee Modal (Add / Edit) ──────────────────────────────────────────────
 type FormState = {
   name: string;
   email: string;
-  department: Department;
+  department: string;
   role: Role;
   status: Status;
   pointsBalance: number;
@@ -1305,15 +2368,24 @@ type FormState = {
 interface EmployeeModalProps {
   mode: "add" | "edit";
   initial?: Employee;
+  departments: string[];
   onClose: () => void;
-  onSave: (data: Omit<Employee, "id">) => void;
+  onSave: (data: FormState) => void;
+  isSaving?: boolean;
 }
 
-function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
+function EmployeeModal({
+  mode,
+  initial,
+  departments,
+  onClose,
+  onSave,
+  isSaving,
+}: EmployeeModalProps) {
   const [form, setForm] = useState<FormState>({
     name: initial?.name ?? "",
     email: initial?.email ?? "",
-    department: initial?.department ?? "Engineering",
+    department: initial?.department ?? (departments[0] || ""),
     role: initial?.role ?? "Employee",
     status: initial?.status ?? "Delivered",
     pointsBalance: initial?.pointsBalance ?? 1000,
@@ -1342,8 +2414,7 @@ function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
       setErrors(e);
       return;
     }
-    onSave({ ...form, isActive: "ACTIVE" });
-    onClose();
+    onSave(form);
   }
 
   const isEdit = mode === "edit";
@@ -1358,6 +2429,7 @@ function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
         className="relative mx-auto w-full max-w-lg rounded-2xl bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4 pt-6">
           <div className="flex items-center gap-3">
             {isEdit && initial && (
@@ -1398,6 +2470,7 @@ function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
           </button>
         </div>
 
+        {/* Body */}
         <div className="max-h-[65vh] space-y-4 overflow-y-auto px-6 py-5">
           <Field label="Full Name" error={errors.name}>
             <input
@@ -1428,6 +2501,7 @@ function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
+            {/* Department — dynamic from API */}
             <Field label="Department">
               <SelectWrapper>
                 <select
@@ -1435,7 +2509,7 @@ function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
                   onChange={(e) => set("department", e.target.value)}
                   className={selectCls}
                 >
-                  {DEPARTMENTS.map((d) => (
+                  {departments.map((d) => (
                     <option key={d}>{d}</option>
                   ))}
                 </select>
@@ -1491,18 +2565,44 @@ function EmployeeModal({ mode, initial, onClose, onSave }: EmployeeModalProps) {
           </Field>
         </div>
 
+        {/* Footer */}
         <div className="flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-100 bg-gray-50/60 px-6 py-4">
           <button
             onClick={onClose}
-            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+            disabled={isSaving}
+            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600"
+            disabled={isSaving}
+            className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-50"
           >
-            {isEdit ? (
+            {isSaving ? (
+              <>
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
+                </svg>
+                Saving...
+              </>
+            ) : isEdit ? (
               <>
                 <svg
                   className="h-4 w-4"
@@ -1575,7 +2675,6 @@ function SortIcon({
   );
 }
 
-// ─── Skeleton Row ─────────────────────────────────────────────────────────────
 function SkeletonRow() {
   return (
     <tr className="animate-pulse">
@@ -1588,21 +2687,16 @@ function SkeletonRow() {
   );
 }
 
-// ─── Modal state ──────────────────────────────────────────────────────────────
+// ─── Modal state union ────────────────────────────────────────────────────────
 type ModalState =
   | { type: "none" }
   | { type: "add" }
-  | { type: "edit"; employee: Employee };
+  | { type: "edit"; employee: Employee }
+  | { type: "delete"; employee: Employee };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function EmployeeDirectory() {
   const [modal, setModal] = useState<ModalState>({ type: "none" });
-  const [localOverrides, setLocalOverrides] = useState<
-    Record<string, Employee>
-  >({});
-  const [localAdded, setLocalAdded] = useState<Employee[]>([]);
-  const [localRemoved, setLocalRemoved] = useState<Set<string>>(new Set());
-
   const [selectedDept, setSelectedDept] = useState<string>("All");
   const [showDeptDrop, setShowDeptDrop] = useState(false);
   const [page, setPage] = useState(1);
@@ -1610,49 +2704,45 @@ export default function EmployeeDirectory() {
   const [sortField, setSortField] = useState<keyof Employee>("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  // ── API call — pass page + limit so the server paginates ──────────────────
   const {
     data: apiResponse,
     isLoading,
     isFetching,
-  } = useGetAllUsersQuery({
-    page,
-    limit: pageSize,
-  });
+  } = useGetAllUsersQuery({ page, limit: pageSize });
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
-  const meta = apiResponse?.meta;
-  // Total comes from server; add locally-added count, subtract removed
-  const serverTotal: number = meta?.total ?? 0;
-  const totalRecords = serverTotal + localAdded.length - localRemoved.size;
-  const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
-
-  // ── Map API users → Employee, merge local overrides/removals ─────────────
-  const apiEmployees: Employee[] = useMemo(() => {
+  // ── Map API → Employee ────────────────────────────────────────────────────
+  const employees: Employee[] = useMemo(() => {
     if (!apiResponse?.data) return [];
-    return (apiResponse.data as any[])
-      .filter((u) => !localRemoved.has(u._id))
-      .map((u) => localOverrides[u._id] ?? mapApiUserToEmployee(u));
-  }, [apiResponse, localOverrides, localRemoved]);
+    return (apiResponse.data as any[]).map(mapApiUser);
+  }, [apiResponse]);
 
-  // Merge locally-added employees (shown on page 1 only when they were added)
-  const allEmployees: Employee[] = useMemo(() => {
-    const addedNotRemoved = localAdded.filter((e) => !localRemoved.has(e.id));
-    // Show local additions at the top of page 1
-    return page === 1 ? [...addedNotRemoved, ...apiEmployees] : apiEmployees;
-  }, [apiEmployees, localAdded, localRemoved, page]);
+  // ── Build department list dynamically from API data ───────────────────────
+  const departments: string[] = useMemo(() => {
+    const set = new Set(employees.map((e) => e.department).filter(Boolean));
+    return Array.from(set).sort();
+  }, [employees]);
 
-  // Client-side dept filter + sort on current page's data
-  const displayEmployees = useMemo(() => {
-    let list =
-      selectedDept === "All"
-        ? allEmployees
-        : allEmployees.filter((e) => e.department === selectedDept);
-    return [...list].sort((a, b) => {
+  // ── Department filter applied client-side on current page ─────────────────
+  const filtered = useMemo(() => {
+    if (selectedDept === "All") return employees;
+    return employees.filter((e) => e.department === selectedDept);
+  }, [employees, selectedDept]);
+
+  // ── Sort ──────────────────────────────────────────────────────────────────
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
       const va = String(a[sortField]).toLowerCase();
       const vb = String(b[sortField]).toLowerCase();
       return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
     });
-  }, [allEmployees, selectedDept, sortField, sortDir]);
+  }, [filtered, sortField, sortDir]);
+
+  // ── Pagination — server drives total, client drives current page display ──
+  const meta = apiResponse?.meta;
+  const serverTotal: number = meta?.total ?? employees.length;
+  const totalPages = Math.max(1, Math.ceil(serverTotal / pageSize));
 
   function handleSort(field: keyof Employee) {
     if (sortField === field) setSortDir(sortDir === "asc" ? "desc" : "asc");
@@ -1663,33 +2753,38 @@ export default function EmployeeDirectory() {
     setPage(1);
   }
 
-  function handleAdd(formData: Omit<Employee, "id">) {
-    const newEmp: Employee = {
-      ...formData,
-      id: `local-${Date.now()}`,
-    };
-    setLocalAdded((prev) => [newEmp, ...prev]);
-    setPage(1);
-  }
-
-  function handleEdit(formData: Omit<Employee, "id">) {
+  // ── Edit → call updateUser mutation ──────────────────────────────────────
+  async function handleEdit(formData: FormState) {
     if (modal.type !== "edit") return;
-    const targetId = modal.employee.id;
-    const updated: Employee = { ...formData, id: targetId };
-    if (targetId.startsWith("local-")) {
-      setLocalAdded((prev) =>
-        prev.map((e) => (e.id === targetId ? updated : e)),
-      );
-    } else {
-      setLocalOverrides((prev) => ({ ...prev, [targetId]: updated }));
+    const emp = modal.employee;
+    try {
+      await updateUser({
+        id: emp.id,
+        body: {
+          name: formData.name,
+          email: formData.email,
+          department: formData.department,
+          accountType: emp.accountType,
+          role: ROLE_TO_API[formData.role],
+          isActive: STATUS_TO_API[formData.status],
+          isDeleted: emp.isDeleted,
+          isVerified: emp.isVerified,
+        },
+      }).unwrap();
+      setModal({ type: "none" });
+    } catch (err) {
+      console.error("Update failed:", err);
     }
   }
 
-  function handleRemove(id: string) {
-    if (id.startsWith("local-")) {
-      setLocalAdded((prev) => prev.filter((e) => e.id !== id));
-    } else {
-      setLocalRemoved((prev) => new Set([...prev, id]));
+  // ── Delete → call deleteUser mutation ─────────────────────────────────────
+  async function handleDeleteConfirm() {
+    if (modal.type !== "delete") return;
+    try {
+      await deleteUser(modal.employee.id).unwrap();
+      setModal({ type: "none" });
+    } catch (err) {
+      console.error("Delete failed:", err);
     }
   }
 
@@ -1710,19 +2805,31 @@ export default function EmployeeDirectory() {
       className="min-h-screen font-sans"
       onClick={() => showDeptDrop && setShowDeptDrop(false)}
     >
+      {/* ── Modals ──────────────────────────────────────────────────────────── */}
       {modal.type === "add" && (
         <EmployeeModal
           mode="add"
+          departments={departments}
           onClose={() => setModal({ type: "none" })}
-          onSave={handleAdd}
+          onSave={() => setModal({ type: "none" })}
         />
       )}
       {modal.type === "edit" && (
         <EmployeeModal
           mode="edit"
           initial={modal.employee}
+          departments={departments}
           onClose={() => setModal({ type: "none" })}
           onSave={handleEdit}
+          isSaving={isUpdating}
+        />
+      )}
+      {modal.type === "delete" && (
+        <DeleteModal
+          employee={modal.employee}
+          onClose={() => setModal({ type: "none" })}
+          onConfirm={handleDeleteConfirm}
+          isLoading={isDeleting}
         />
       )}
 
@@ -1734,6 +2841,7 @@ export default function EmployeeDirectory() {
               Employee Directory
             </h1>
 
+            {/* Department filter — options built from API data */}
             <div className="relative" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => setShowDeptDrop(!showDeptDrop)}
@@ -1754,9 +2862,22 @@ export default function EmployeeDirectory() {
                   />
                 </svg>
               </button>
+
               {showDeptDrop && (
-                <div className="absolute left-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
-                  {(["All", ...DEPARTMENTS] as const).map((dept) => (
+                <div className="absolute left-0 top-full z-20 mt-1 w-52 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
+                  {/* All option */}
+                  <button
+                    onClick={() => {
+                      setSelectedDept("All");
+                      setShowDeptDrop(false);
+                      setPage(1);
+                    }}
+                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${selectedDept === "All" ? "bg-orange-50 font-semibold text-orange-600" : "text-gray-700 hover:bg-gray-50"}`}
+                  >
+                    All Department
+                  </button>
+                  {/* Dynamic dept options from API */}
+                  {departments.map((dept) => (
                     <button
                       key={dept}
                       onClick={() => {
@@ -1764,13 +2885,9 @@ export default function EmployeeDirectory() {
                         setShowDeptDrop(false);
                         setPage(1);
                       }}
-                      className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
-                        selectedDept === dept
-                          ? "bg-orange-50 font-semibold text-orange-600"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
+                      className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${selectedDept === dept ? "bg-orange-50 font-semibold text-orange-600" : "text-gray-700 hover:bg-gray-50"}`}
                     >
-                      {dept === "All" ? "All Department" : dept}
+                      {dept}
                     </button>
                   ))}
                 </div>
@@ -1778,30 +2895,28 @@ export default function EmployeeDirectory() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setModal({ type: "add" })}
-              className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600"
+          <button
+            onClick={() => setModal({ type: "add" })}
+            className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Add Employee
-            </button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Employee
+          </button>
         </div>
 
-        {/* ── Table Card ───────────────────────────────────────────────────── */}
+        {/* ── Table ───────────────────────────────────────────────────────── */}
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -1843,17 +2958,18 @@ export default function EmployeeDirectory() {
                   Array.from({ length: pageSize }).map((_, i) => (
                     <SkeletonRow key={i} />
                   ))
-                ) : displayEmployees.length === 0 ? (
+                ) : sorted.length === 0 ? (
                   <tr>
                     <td
                       colSpan={7}
                       className="py-16 text-center text-sm text-gray-400"
                     >
-                      No employees found.
+                      No employees found
+                      {selectedDept !== "All" ? ` in "${selectedDept}"` : ""}.
                     </td>
                   </tr>
                 ) : (
-                  displayEmployees.map((emp) => (
+                  sorted.map((emp) => (
                     <tr
                       key={emp.id}
                       className="transition-colors hover:bg-gray-50/70"
@@ -1908,8 +3024,11 @@ export default function EmployeeDirectory() {
                               />
                             </svg>
                           </button>
+                          {/* Opens delete confirm modal */}
                           <button
-                            onClick={() => handleRemove(emp.id)}
+                            onClick={() =>
+                              setModal({ type: "delete", employee: emp })
+                            }
                             title="Remove employee"
                             className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                           >
@@ -1936,7 +3055,7 @@ export default function EmployeeDirectory() {
             </table>
           </div>
 
-          {/* ── Pagination Footer ─────────────────────────────────────────── */}
+          {/* ── Pagination ───────────────────────────────────────────────── */}
           <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/50 px-4 py-4 sm:flex-row sm:px-6">
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Showing</span>
@@ -1972,7 +3091,7 @@ export default function EmployeeDirectory() {
               <span>
                 out of{" "}
                 <strong className="text-gray-700">
-                  {totalRecords.toLocaleString()}
+                  {serverTotal.toLocaleString()}
                 </strong>
               </span>
             </div>
@@ -2012,11 +3131,7 @@ export default function EmployeeDirectory() {
                     key={p}
                     onClick={() => setPage(p as number)}
                     disabled={loading}
-                    className={`h-8 w-8 rounded-lg text-sm font-medium transition-colors ${
-                      page === p
-                        ? "bg-orange-500 text-white shadow-md shadow-orange-500/25"
-                        : "border border-gray-200 text-gray-600 hover:bg-gray-100"
-                    }`}
+                    className={`h-8 w-8 rounded-lg text-sm font-medium transition-colors ${page === p ? "bg-orange-500 text-white shadow-md shadow-orange-500/25" : "border border-gray-200 text-gray-600 hover:bg-gray-100"}`}
                   >
                     {p}
                   </button>

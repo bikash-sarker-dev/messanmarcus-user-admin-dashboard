@@ -39,6 +39,7 @@ export const allUsersApi = baseApi.injectEndpoints({
 
     getAllUsers: builder.query({
       query: ({ page = 1, limit = 10 }) => `/user/all-users`,
+      providesTags: ["mainUser"],
     }),
 
     updateUser: builder.mutation({
