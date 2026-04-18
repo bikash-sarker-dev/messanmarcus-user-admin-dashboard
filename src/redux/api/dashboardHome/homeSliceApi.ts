@@ -16,12 +16,16 @@ export const dashboardHomeAip = baseApi.injectEndpoints({
       // providesTags: ["categorise"],
     }),
 
-    getRecognitionHistroy: builder.query({
-      query: () => "/recognition/history",
-      // providesTags: ["categorise"],
+    // getRecognitionHistroy: builder.query({
+    //   query: () => "/recognition/history",
+    //   // providesTags: ["categorise"],
+    // }),
+    getRecognitionHistory: builder.query({
+      query: ({ page = 1, limit = 10 }) =>
+        `/recognition/history?page=${page}&limit=${limit}`,
     }),
   }),
 });
 
-export const { useGetDashboardHomeQuery, useGetRecognitionHistroyQuery } =
+export const { useGetDashboardHomeQuery, useGetRecognitionHistoryQuery } =
   dashboardHomeAip;
