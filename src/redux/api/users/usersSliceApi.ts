@@ -40,6 +40,23 @@ export const allUsersApi = baseApi.injectEndpoints({
     getAllUsers: builder.query({
       query: ({ page = 1, limit = 10 }) => `/user/all-users`,
     }),
+
+    updateUser: builder.mutation({
+      query: ({ body, id }) => ({
+        url: `/user/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["mainUser"],
+    }),
+
+    deleteUser: builder.mutation({
+      query: (id) => ({
+        url: `/user/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["mainUser"],
+    }),
   }),
 });
 
@@ -48,4 +65,6 @@ export const {
   useAiReGeneratePostMutation,
   useGetAllUsersQuery,
   useSendRecongitionMutation,
+  useDeleteUserMutation,
+  useUpdateUserMutation,
 } = allUsersApi;

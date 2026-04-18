@@ -11,6 +11,7 @@ import { LogOut as LogOutIcon } from "lucide-react";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import type { NavItem } from "./data/types";
+import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -18,6 +19,9 @@ export function Sidebar() {
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const { data, isLoading } = useGetMeProfileQuery("");
+  const user = data?.data || {};
 
   /** ⭐ Correct nested URL detection */
   const isActiveUrl = (url?: string): boolean => {
@@ -183,9 +187,9 @@ export function Sidebar() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">
-                    {/* {user?.name} */} Saifur Rahman
+                    {user?.name}
                   </h2>
-                  <p className="text-sm text-gray-600"> Admin</p>
+                  <p className="text-xs text-gray-600"> {user?.role}</p>
                 </div>
               </div>
 
