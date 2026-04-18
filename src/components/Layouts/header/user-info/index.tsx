@@ -12,14 +12,18 @@ import Link from "next/link";
 import { useState } from "react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 import { useRouter } from "next/navigation";
+import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
+  const { data, isLoading } = useGetMeProfileQuery("");
+  const user = data?.data || {};
+
   const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
+    name: user?.name,
+    email: user?.email,
     img: "/images/user/user-03.png",
   };
 
