@@ -20,6 +20,15 @@ export const settingsAip = baseApi.injectEndpoints({
       invalidatesTags: ["settings"],
     }),
 
+    categoryImageUpload: builder.mutation({
+      query: ({ body, id }) => ({
+        url: `/category/${id}/images`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["settings"],
+    }),
+
     updateCategory: builder.mutation({
       query: ({ body, id }) => ({
         url: `/category/update-category/${id}`,
@@ -31,7 +40,7 @@ export const settingsAip = baseApi.injectEndpoints({
 
     deleteCategory: builder.mutation({
       query: (id) => ({
-        url: `/category/update-category/${id}`,
+        url: `/category/delete-category/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["settings"],
@@ -44,7 +53,7 @@ export const settingsAip = baseApi.injectEndpoints({
 
     pointDristribute: builder.mutation({
       query: (body) => ({
-        url: "/category/create",
+        url: "/wallet/distribute",
         method: "POST",
         body,
       }),
@@ -60,4 +69,5 @@ export const {
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
   usePointDristributeMutation,
+  useCategoryImageUploadMutation,
 } = settingsAip;
