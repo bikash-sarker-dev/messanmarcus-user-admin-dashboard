@@ -24,6 +24,7 @@ export const baseApi = createApi({
     "CompanyManagement",
     "categorise",
     "mainUser",
+    "settings",
   ],
 });
 
