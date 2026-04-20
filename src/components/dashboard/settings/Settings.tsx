@@ -1335,7 +1335,6 @@ import {
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   usePointDristributeMutation,
-  useProfileUpdateMutation,
   useProfileUpdatesMutation,
   useUpdateCategoryMutation,
 } from "@/redux/api/settings/settingsSliceApi";
