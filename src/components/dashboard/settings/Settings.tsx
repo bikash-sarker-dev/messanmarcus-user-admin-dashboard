@@ -3102,12 +3102,12 @@ export default function Settings() {
       short: "Category",
       icon: (a) => <IconCategory active={a} />,
     },
-    {
-      id: "branding",
-      label: "Branding",
-      short: "Brand",
-      icon: (a) => <IconBranding active={a} />,
-    },
+    // {
+    //   id: "branding",
+    //   label: "Branding",
+    //   short: "Brand",
+    //   icon: (a) => <IconBranding active={a} />,
+    // },
   ];
 
   function showToast(msg: string, type: "success" | "error" = "success") {
