@@ -2,10 +2,10 @@ import baseApi from "../baseApi";
 
 export const settingsAip = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    profileUpdate: builder.mutation({
+    profileUpdates: builder.mutation({
       query: (body) => ({
         url: "/user/update-my-profile",
-        method: "POST",
+        method: "PATCH",
         body,
       }),
       invalidatesTags: ["settings"],
@@ -65,7 +65,7 @@ export const settingsAip = baseApi.injectEndpoints({
 export const {
   useAllCategoryQuery,
   useCreateCategoryMutation,
-  useProfileUpdateMutation,
+  useProfileUpdatesMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
   usePointDristributeMutation,

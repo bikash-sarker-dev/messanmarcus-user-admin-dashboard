@@ -1328,12 +1328,15 @@
 
 "use client";
 
+import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 import {
   useAllCategoryQuery,
   useCategoryImageUploadMutation,
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   usePointDristributeMutation,
+  useProfileUpdateMutation,
+  useProfileUpdatesMutation,
   useUpdateCategoryMutation,
 } from "@/redux/api/settings/settingsSliceApi";
 import React, { useState, useRef } from "react";
@@ -1344,7 +1347,7 @@ type Tab = "general" | "points" | "category" | "branding";
 
 interface GeneralForm {
   name: string;
-  companyEmail: string;
+  companyEmail: string; // read-only display only, not submitted
   oldPassword: string;
   newPassword: string;
   confirmPassword: string;
@@ -2326,23 +2329,43 @@ function GeneralTab({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const avatarRef = useRef<HTMLInputElement>(null);
 
+  // ── Fetch profile ──
+  const { data: profileData, isLoading: profileFetching } =
+    useGetMeProfileQuery("");
+  const profile = profileData?.data;
+
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<GeneralForm>({
     defaultValues: {
-      name: "John Doe",
-      companyEmail: "greetely.xyz@gmail.com",
+      name: "",
+      companyEmail: "",
       oldPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
   });
 
+  // Prefill form + avatar once profile loads
+  React.useEffect(() => {
+    if (profile) {
+      reset({
+        name: profile.name ?? "",
+        companyEmail: profile.email ?? "",
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      if (profile.picture) setAvatarPreview(profile.picture);
+    }
+  }, [profile, reset]);
+
   const [profileUpdate, { isLoading: profileLoading }] =
-    useDeleteCategoryMutation();
+    useProfileUpdatesMutation();
 
   const newPassword = watch("newPassword");
 
@@ -2355,7 +2378,7 @@ function GeneralTab({
     try {
       const formData = new FormData();
       formData.append("name", data.name);
-      if (avatarFile) formData.append("picture", avatarFile);
+      if (avatarFile) formData.append("files", avatarFile);
       if (data.oldPassword) formData.append("oldPassword", data.oldPassword);
       if (data.newPassword) formData.append("newPassword", data.newPassword);
       if (data.confirmPassword)
@@ -2366,6 +2389,32 @@ function GeneralTab({
     } catch {
       onSaved("Failed to save settings", "error");
     }
+  }
+
+  if (profileFetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <svg
+          className="h-8 w-8 animate-spin text-orange-400"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+      </div>
+    );
   }
 
   return (
@@ -2435,27 +2484,49 @@ function GeneralTab({
             <FieldLabel>Full Name</FieldLabel>
             <input
               {...register("name", { required: "Name is required" })}
-              placeholder="John Doe"
+              placeholder="Full name"
               className={errors.name ? inputError : inputNormal}
             />
             <FieldError message={errors.name?.message} />
           </div>
 
+          {/* Email — read-only, populated from profile */}
           <div>
             <FieldLabel>Company Email</FieldLabel>
-            <input
-              {...register("companyEmail", {
-                required: "Required",
-                pattern: {
-                  value: /\S+@\S+\.\S+/,
-                  message: "Enter a valid email",
-                },
-              })}
-              type="email"
-              placeholder="greetely.xyz@gmail.com"
-              className={errors.companyEmail ? inputError : inputNormal}
-            />
-            <FieldError message={errors.companyEmail?.message} />
+            <div className="relative">
+              <input
+                {...register("companyEmail")}
+                type="email"
+                readOnly
+                tabIndex={-1}
+                className="w-full cursor-not-allowed select-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-sm text-gray-400 outline-none"
+              />
+              <span
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                title="Email cannot be changed"
+              >
+                <svg
+                  className="h-4 w-4 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-6a4 4 0 100-8 4 4 0 000 8z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 11V7a5 5 0 00-10 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"
+                  />
+                </svg>
+              </span>
+            </div>
+            <FieldHint>Email address cannot be changed</FieldHint>
           </div>
         </div>
 
