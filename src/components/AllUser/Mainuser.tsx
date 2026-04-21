@@ -1359,6 +1359,324 @@ function SelectDetailsScreen({
 // ══════════════════════════════════════════════════════════════════════════════
 // SCREEN 4 — CARD PREVIEW (AI generate + regenerate + send)
 // ══════════════════════════════════════════════════════════════════════════════
+// function CardPreviewScreen({
+//   recipient,
+//   details,
+//   onEditCard,
+//   senderName,
+// }: {
+//   recipient: RecipientState;
+//   details: DetailsState;
+//   onEditCard: () => void;
+//   senderName: string;
+// }) {
+//   const [generatedData, setGeneratedData] = useState<GeneratedMessage | null>(
+//     null,
+//   );
+//   const [sent, setSent] = useState(false);
+//   const [additionalMessage, setAdditionalMessage] = useState("");
+//   const [editableMessage, setEditableMessage] = useState("");
+//   const [apiError, setApiError] = useState("");
+
+//   const [aiGenerateMassage, { isLoading: messLoading }] =
+//     useAiGeneratePostMutation();
+//   const [aiReGenerateMassage, { isLoading: messReLoading }] =
+//     useAiReGeneratePostMutation();
+//   const [sendRecognitionMessage, { isLoading: sendLoading }] =
+//     useSendRecongitionMutation();
+
+//   // ── Generate message on mount ─────────────────────────────────────────────
+//   const generateMessage = useCallback(async () => {
+//     setApiError("");
+//     try {
+//       const payload = {
+//         category: details.category,
+//         department: recipient.dept || "General",
+//         recipient_name: recipient.name,
+//         recognition_values: details.values,
+//         tone: details.tone,
+//       };
+//       const res = await aiGenerateMassage(payload).unwrap();
+//       setGeneratedData(res.data);
+//       setEditableMessage(res.data.message);
+//     } catch (err) {
+//       setApiError("Failed to generate message. Please try again.");
+//     }
+//   }, [details, recipient, aiGenerateMassage]);
+
+//   useEffect(() => {
+//     generateMessage();
+//   }, []);
+
+//   // ── Regenerate ────────────────────────────────────────────────────────────
+//   const handleRegenerate = async () => {
+//     setApiError("");
+//     try {
+//       const payload = {
+//         category: details.category,
+//         department: recipient.dept || "General",
+//         recipient_name: recipient.name,
+//         recognition_values: details.values,
+//         tone: details.tone,
+//       };
+//       const res = await aiReGenerateMassage(payload).unwrap();
+
+//       setGeneratedData(res.data);
+//       setEditableMessage(res.data.message);
+//     } catch (err) {
+//       setApiError("Failed to regenerate message. Please try again.");
+//     }
+//   };
+
+//   // ── Send recognition ──────────────────────────────────────────────────────
+//   const handleSend = async () => {
+//     if (!generatedData) return;
+//     setApiError("");
+//     try {
+//       const payload = {
+//         receiverEmail: recipient.email,
+//         image: details.selectedImageUrl ?? "",
+//         points: details.points,
+//         messageId: generatedData.messageId,
+//         additionalMessage: editableMessage,
+//       };
+//       await sendRecognitionMessage(payload).unwrap();
+//       setSent(true);
+//     } catch (err) {
+//       setApiError("Failed to send recognition. Please try again.");
+//     }
+//   };
+
+//   const isGenerating = messLoading;
+//   const isRegenerating = messReLoading;
+
+//   return (
+//     <div className="bg-gray-50">
+//       <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-8">
+//         {apiError && (
+//           <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+//             ⚠️ {apiError}
+//             <button
+//               onClick={() => setApiError("")}
+//               className="ml-auto text-red-400 hover:text-red-600"
+//             >
+//               <I.Close />
+//             </button>
+//           </div>
+//         )}
+
+//         <div className="flex flex-col items-start gap-5 lg:flex-row">
+//           {/* Recognition Card */}
+//           <div className="flex w-full lg:flex-1">
+//             <div className="w-full max-w-[500px] rounded-2xl bg-orange-500 p-6 shadow-xl">
+//               <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-white sm:mb-8 sm:text-4xl">
+//                 Greetely
+//               </h1>
+//               <p className="mb-1 text-xs text-white/60">To:</p>
+//               <p className="text-xl font-bold text-white sm:text-2xl">
+//                 {recipient.name || "Recipient"}
+//               </p>
+//               <p className="mb-4 mt-0.5 text-xs text-white/60 sm:mb-5">
+//                 {recipient.dept || "Your Organization"}
+//               </p>
+
+//               {/* <div className="mb-5 max-h-[150px] rounded-xl bg-white/20 p-4 sm:mb-6 sm:max-h-[220px] sm:p-5">
+
+//                 {isGenerating ? (
+//                   <div className="flex items-center justify-center gap-2 py-4 text-white/80">
+//                     <I.Spinner />{" "}
+//                     <span className="text-sm">Generating your message…</span>
+//                   </div>
+//                 ) : (
+//                   <div className="relative">
+//                     <textarea
+//                       value={editableMessage}
+//                       onChange={(e) => setEditableMessage(e.target.value)}
+//                       disabled={sent}
+//                       rows={8}
+//                       className="w-full resize-none rounded-lg bg-white/10 p-3 text-sm leading-relaxed text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 disabled:opacity-60"
+//                       placeholder="Your message will appear here..."
+//                     />
+//                     <span className="absolute bottom-2 right-2 text-[10px] text-white/40">
+//                       {editableMessage.length} chars
+//                     </span>
+//                   </div>
+//                 )}
+//               </div> */}
+
+//               <div className="mb-6 rounded-2xl border border-white/20 bg-white/10 p-5 shadow-lg backdrop-blur-md">
+//                 {isGenerating ? (
+//                   <div className="flex flex-col items-center justify-center gap-3 py-6 text-white/80">
+//                     <I.Spinner />
+//                     <span className="text-sm tracking-wide">
+//                       Generating your message...
+//                     </span>
+//                   </div>
+//                 ) : (
+//                   <div className="relative">
+//                     <textarea
+//                       value={editableMessage}
+//                       onChange={(e) => setEditableMessage(e.target.value)}
+//                       disabled={sent}
+//                       rows={6}
+//                       className="w-full resize-none rounded-xl bg-white/5 p-4 text-sm leading-relaxed text-white transition-all duration-200 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-400/50 disabled:opacity-50"
+//                       placeholder="✍️ Your message will appear here..."
+//                     />
+
+//                     {/* Footer */}
+//                     <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+//                       <span>{editableMessage.length} characters</span>
+
+//                       {!sent && (
+//                         <span className="italic text-white/40">
+//                           You can edit before sending
+//                         </span>
+//                       )}
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+
+//               {/* Selected card image preview */}
+//               {details.selectedImageUrl && (
+//                 <div className="mb-4 overflow-hidden rounded-xl border-2 border-white/30">
+//                   <img
+//                     src={details.selectedImageUrl}
+//                     alt="card template"
+//                     className="h-28 w-full object-cover"
+//                   />
+//                 </div>
+//               )}
+
+//               <div className="flex items-center justify-between">
+//                 <span className="rounded-xl bg-white/25 px-3 py-1.5 text-xs font-semibold text-white sm:px-4 sm:py-2">
+//                   {details.values[0] || "Recognition"}
+//                 </span>
+//                 <span className="rounded-xl bg-white/25 px-3 py-1.5 text-xs font-semibold text-white sm:px-4 sm:py-2">
+//                   {details.points} Pts
+//                 </span>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Additional message */}
+//           <div className="w-full lg:flex-1">
+//             <label className="mb-2 block text-lg font-bold text-orange-500">
+//               Write Message{" "}
+//               <span className="text-sm font-normal text-gray-400">
+//                 (optional)
+//               </span>
+//             </label>
+//             <textarea
+//               value={additionalMessage}
+//               onChange={(e) => setAdditionalMessage(e.target.value)}
+//               rows={16}
+//               placeholder="Add a personal message..."
+//               disabled={sent}
+//               className="w-full resize-none rounded-lg border border-orange-300 p-3 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-100 disabled:opacity-60"
+//             />
+//             <p className="mt-2 text-xs text-orange-400">
+//               {additionalMessage.length} characters
+//             </p>
+//           </div>
+
+//           {/* Actions panel */}
+//           <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:w-[300px] lg:shrink-0">
+//             <h2 className="mb-4 text-lg font-bold text-orange-500 sm:mb-5 sm:text-xl">
+//               Actions
+//             </h2>
+//             <div className="mb-5 space-y-3 sm:mb-6">
+//               <button
+//                 onClick={handleRegenerate}
+//                 disabled={isRegenerating || isGenerating || sent}
+//                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-orange-500 px-4 py-2.5 text-sm font-semibold text-orange-500 transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
+//               >
+//                 {isRegenerating ? (
+//                   <>
+//                     <I.Spinner /> Regenerating…
+//                   </>
+//                 ) : (
+//                   <>
+//                     <I.Refresh /> Re-generate Card
+//                   </>
+//                 )}
+//               </button>
+//               <button
+//                 onClick={onEditCard}
+//                 disabled={sent}
+//                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+//               >
+//                 <I.Edit /> Edit Card
+//               </button>
+//             </div>
+
+//             <div className="mb-5 border-b border-gray-100 pb-5">
+//               <p className="mb-3 text-sm font-bold text-gray-800">
+//                 Recognition Summary
+//               </p>
+//               <div className="space-y-2 text-sm">
+//                 {[
+//                   ["Recipient:", recipient.name, "text-orange-500"],
+//                   ["Email:", recipient.email, "text-gray-600"],
+//                   ["Category:", details.category, "text-orange-500"],
+//                   ["Points:", `${details.points} Pts`, "text-orange-500"],
+//                   ["Tone:", details.tone.split(" & ")[0], "text-green-600"],
+//                   [
+//                     "Values:",
+//                     `${details.values.length} selected`,
+//                     "text-green-600",
+//                   ],
+//                   [
+//                     "Card Image:",
+//                     details.selectedImageUrl ? "Selected ✓" : "None",
+//                     "text-orange-500",
+//                   ],
+//                 ].map(([label, val, col]) => (
+//                   <div key={label as string} className="flex justify-between">
+//                     <span className="text-gray-500">{label}</span>
+//                     <span
+//                       className={`ml-2 max-w-[150px] truncate text-right font-semibold ${col}`}
+//                     >
+//                       {val}
+//                     </span>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+
+//             {sent ? (
+//               <div className="flex w-full flex-col items-center gap-2 rounded-xl bg-green-500 py-3 text-sm font-semibold text-white">
+//                 <div className="flex items-center gap-2">
+//                   <I.Check /> Recognition Sent!
+//                 </div>
+//                 <p className="text-xs font-normal text-white/80">
+//                   Email sent to {recipient.email}
+//                 </p>
+//               </div>
+//             ) : (
+//               <button
+//                 onClick={handleSend}
+//                 disabled={sendLoading || isGenerating || !generatedData}
+//                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-3 text-sm font-semibold text-white shadow-md shadow-orange-200 transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+//               >
+//                 {sendLoading ? (
+//                   <>
+//                     <I.Spinner /> Sending…
+//                   </>
+//                 ) : (
+//                   <>
+//                     <I.Plane /> Send Recognition
+//                   </>
+//                 )}
+//               </button>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 function CardPreviewScreen({
   recipient,
   details,
@@ -1377,6 +1695,7 @@ function CardPreviewScreen({
   const [additionalMessage, setAdditionalMessage] = useState("");
   const [editableMessage, setEditableMessage] = useState("");
   const [apiError, setApiError] = useState("");
+  const [isEditing, setIsEditing] = useState(false); // ← NEW
 
   const [aiGenerateMassage, { isLoading: messLoading }] =
     useAiGeneratePostMutation();
@@ -1385,9 +1704,9 @@ function CardPreviewScreen({
   const [sendRecognitionMessage, { isLoading: sendLoading }] =
     useSendRecongitionMutation();
 
-  // ── Generate message on mount ─────────────────────────────────────────────
   const generateMessage = useCallback(async () => {
     setApiError("");
+    setIsEditing(false); // reset edit mode on new generation
     try {
       const payload = {
         category: details.category,
@@ -1408,9 +1727,9 @@ function CardPreviewScreen({
     generateMessage();
   }, []);
 
-  // ── Regenerate ────────────────────────────────────────────────────────────
   const handleRegenerate = async () => {
     setApiError("");
+    setIsEditing(false); // reset edit mode on regenerate
     try {
       const payload = {
         category: details.category,
@@ -1420,7 +1739,6 @@ function CardPreviewScreen({
         tone: details.tone,
       };
       const res = await aiReGenerateMassage(payload).unwrap();
-
       setGeneratedData(res.data);
       setEditableMessage(res.data.message);
     } catch (err) {
@@ -1428,7 +1746,6 @@ function CardPreviewScreen({
     }
   };
 
-  // ── Send recognition ──────────────────────────────────────────────────────
   const handleSend = async () => {
     if (!generatedData) return;
     setApiError("");
@@ -1466,7 +1783,7 @@ function CardPreviewScreen({
         )}
 
         <div className="flex flex-col items-start gap-5 lg:flex-row">
-          {/* Recognition Card */}
+          {/* ── Recognition Card ── */}
           <div className="flex w-full lg:flex-1">
             <div className="w-full max-w-[500px] rounded-2xl bg-orange-500 p-6 shadow-xl">
               <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-white sm:mb-8 sm:text-4xl">
@@ -1480,31 +1797,8 @@ function CardPreviewScreen({
                 {recipient.dept || "Your Organization"}
               </p>
 
-              {/* <div className="mb-5 max-h-[150px] rounded-xl bg-white/20 p-4 sm:mb-6 sm:max-h-[220px] sm:p-5">
-        
-                {isGenerating ? (
-                  <div className="flex items-center justify-center gap-2 py-4 text-white/80">
-                    <I.Spinner />{" "}
-                    <span className="text-sm">Generating your message…</span>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <textarea
-                      value={editableMessage}
-                      onChange={(e) => setEditableMessage(e.target.value)}
-                      disabled={sent}
-                      rows={8}
-                      className="w-full resize-none rounded-lg bg-white/10 p-3 text-sm leading-relaxed text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 disabled:opacity-60"
-                      placeholder="Your message will appear here..."
-                    />
-                    <span className="absolute bottom-2 right-2 text-[10px] text-white/40">
-                      {editableMessage.length} chars
-                    </span>
-                  </div>
-                )}
-              </div> */}
-
-              <div className="mb-6 rounded-2xl border border-white/20 bg-white/10 p-5 shadow-lg backdrop-blur-md">
+              {/* Message area — 3 states: generating / editing / read */}
+              <div className="mb-6 rounded-2xl border border-white/20 bg-white/10 p-5">
                 {isGenerating ? (
                   <div className="flex flex-col items-center justify-center gap-3 py-6 text-white/80">
                     <I.Spinner />
@@ -1512,27 +1806,39 @@ function CardPreviewScreen({
                       Generating your message...
                     </span>
                   </div>
-                ) : (
+                ) : isEditing ? (
                   <div className="relative">
                     <textarea
                       value={editableMessage}
                       onChange={(e) => setEditableMessage(e.target.value)}
                       disabled={sent}
-                      rows={6}
-                      className="w-full resize-none rounded-xl bg-white/5 p-4 text-sm leading-relaxed text-white transition-all duration-200 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-400/50 disabled:opacity-50"
-                      placeholder="✍️ Your message will appear here..."
+                      rows={10}
+                      autoFocus
+                      className="w-full resize-none rounded-xl bg-white/10 p-4 text-sm leading-relaxed text-white outline-none ring-2 ring-white/70 transition-all placeholder:text-white/40 disabled:opacity-60"
+                      placeholder="Edit your message here..."
                     />
-
-                    {/* Footer */}
-                    <div className="mt-2 flex items-center justify-between text-xs text-white/50">
-                      <span>{editableMessage.length} characters</span>
-
-                      {!sent && (
+                    <div className="mt-2 flex items-center justify-between text-xs">
+                      <span className="text-white/50">
+                        {editableMessage.length} characters
+                      </span>
+                      <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-white/80">
+                        Editing mode
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  /* READ MODE — clean display, no textarea */
+                  <div>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/90">
+                      {editableMessage || (
                         <span className="italic text-white/40">
-                          You can edit before sending
+                          No message generated yet.
                         </span>
                       )}
-                    </div>
+                    </p>
+                    <p className="mt-3 text-xs text-white/40">
+                      {editableMessage.length} characters
+                    </p>
                   </div>
                 )}
               </div>
@@ -1559,7 +1865,7 @@ function CardPreviewScreen({
             </div>
           </div>
 
-          {/* Additional message */}
+          {/* ── Additional message ── */}
           <div className="w-full lg:flex-1">
             <label className="mb-2 block text-lg font-bold text-orange-500">
               Write Message{" "}
@@ -1570,7 +1876,7 @@ function CardPreviewScreen({
             <textarea
               value={additionalMessage}
               onChange={(e) => setAdditionalMessage(e.target.value)}
-              rows={16}
+              rows={18}
               placeholder="Add a personal message..."
               disabled={sent}
               className="w-full resize-none rounded-lg border border-orange-300 p-3 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-100 disabled:opacity-60"
@@ -1580,12 +1886,13 @@ function CardPreviewScreen({
             </p>
           </div>
 
-          {/* Actions panel */}
+          {/* ── Actions panel ── */}
           <div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:w-[300px] lg:shrink-0">
             <h2 className="mb-4 text-lg font-bold text-orange-500 sm:mb-5 sm:text-xl">
               Actions
             </h2>
             <div className="mb-5 space-y-3 sm:mb-6">
+              {/* Re-generate */}
               <button
                 onClick={handleRegenerate}
                 disabled={isRegenerating || isGenerating || sent}
@@ -1601,15 +1908,23 @@ function CardPreviewScreen({
                   </>
                 )}
               </button>
+
+              {/* Edit Card — toggles isEditing, does NOT navigate away */}
               <button
-                onClick={onEditCard}
-                disabled={sent}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => setIsEditing((prev) => !prev)}
+                disabled={sent || isGenerating}
+                className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                  isEditing
+                    ? "border-orange-500 bg-orange-50 text-orange-600 hover:bg-orange-100"
+                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
               >
-                <I.Edit /> Edit Card
+                <I.Edit />
+                {isEditing ? "Done Editing" : "Edit Card"}
               </button>
             </div>
 
+            {/* Summary */}
             <div className="mb-5 border-b border-gray-100 pb-5">
               <p className="mb-3 text-sm font-bold text-gray-800">
                 Recognition Summary
@@ -1644,6 +1959,7 @@ function CardPreviewScreen({
               </div>
             </div>
 
+            {/* Send / Sent */}
             {sent ? (
               <div className="flex w-full flex-col items-center gap-2 rounded-xl bg-green-500 py-3 text-sm font-semibold text-white">
                 <div className="flex items-center gap-2">
