@@ -13,6 +13,7 @@ import { useState } from "react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 import { useRouter } from "next/navigation";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
+import Cookies from "js-cookie";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,11 +21,21 @@ export function UserInfo() {
 
   const { data, isLoading } = useGetMeProfileQuery("");
   const user = data?.data || {};
-
+  const domain = window.location.origin;
   const USER = {
     name: user?.name,
     email: user?.email,
     img: "/images/user/user-03.png",
+  };
+
+  const logOutHandle = () => {
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    router.push(
+      domain === "http://localhost:3010"
+        ? "http://localhost:3041"
+        : "https://greetely.com/",
+    );
   };
 
   return (
@@ -114,7 +125,7 @@ export function UserInfo() {
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             onClick={() => {
               setIsOpen(false);
-              router.push("http://72.60.48.92:3041");
+              logOutHandle();
             }}
           >
             <LogOutIcon />

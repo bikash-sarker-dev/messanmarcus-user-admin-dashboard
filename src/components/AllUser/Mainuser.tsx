@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import Logo from "@/assets/logo_messan.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { useGetCategoriseQuery } from "@/redux/api/categorise/categoriseSliceApi";
 import {
   useAiGeneratePostMutation,
@@ -1696,14 +1697,20 @@ export default function GreetelyDashboard() {
     points: 100,
     selectedImageUrl: null,
   });
-
+  const domain = window.location.origin;
   const startRecognition = useCallback(() => {
     setShowModal(false);
     setScreen("recognize");
   }, []);
 
   const logOutHandle = () => {
-    router.push("http://206.162.244.175:3041");
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    router.push(
+      domain === "http://localhost:3010"
+        ? "http://localhost:3041"
+        : "https://greetely.com/",
+    );
   };
 
   const handleStepClick = useCallback(
