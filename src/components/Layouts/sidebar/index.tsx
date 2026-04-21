@@ -12,6 +12,7 @@ import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import type { NavItem } from "./data/types";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
+import Cookies from "js-cookie";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -22,6 +23,8 @@ export function Sidebar() {
 
   const { data, isLoading } = useGetMeProfileQuery("");
   const user = data?.data || {};
+
+  const domain = window.location.origin;
 
   /** ⭐ Correct nested URL detection */
   const isActiveUrl = (url?: string): boolean => {
@@ -48,9 +51,14 @@ export function Sidebar() {
     );
   }, [pathname]);
 
-  const handleLogout = () => {
-    if (isMobile) toggleSidebar();
-    router.push("http://206.162.244.175:3041");
+  const logOutHandle = () => {
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    router.push(
+      domain === "http://localhost:3010"
+        ? "http://localhost:3041"
+        : "https://greetely.com/",
+    );
   };
 
   return (
