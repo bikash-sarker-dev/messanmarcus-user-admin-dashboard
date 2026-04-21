@@ -56,8 +56,8 @@ export function Sidebar() {
     Cookies.remove("refreshToken");
     router.push(
       domain === "http://localhost:3010"
-        ? "http://localhost:3041"
-        : "https://greetely.com/",
+        ? "http://localhost:3041/login"
+        : "https://greetely.com/login",
     );
   };
 
