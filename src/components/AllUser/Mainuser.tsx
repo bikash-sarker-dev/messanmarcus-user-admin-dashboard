@@ -484,6 +484,7 @@ function Navbar({ onLogoClick }: { onLogoClick: () => void }) {
                   width={500}
                   height={500}
                   className="h-8 w-8 rounded-full object-cover"
+                  unoptimized
                 />
               </div>
               <div className="hidden leading-tight sm:block">

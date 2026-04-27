@@ -44,14 +44,24 @@ export function UserInfo() {
         <span className="sr-only">My Account</span>
 
         <figure className="flex items-center gap-3">
-          <Image
-            src={USER.img}
+          {/* <Image
+            src={user.picture || USER.img}
             className="size-10"
             alt={`Avatar of ${USER.name}`}
             role="presentation"
             width={200}
             height={200}
-          />
+          /> */}
+          <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-teal-700">
+            <img
+              src={
+                user.picture ||
+                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
+              }
+              alt="Alex Rahman"
+              className="h-full w-full object-cover"
+            />
+          </div>
           <figcaption className="flex items-center gap-1 font-medium text-white dark:text-dark-6 max-[1024px]:sr-only">
             <span>{USER.name}</span>
 
@@ -74,14 +84,24 @@ export function UserInfo() {
         <h2 className="sr-only">User information</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
+          {/* <Image
             src={USER.img}
             className="size-12"
             alt={`Avatar for ${USER.name}`}
             role="presentation"
             width={200}
             height={200}
-          />
+          /> */}
+          <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-teal-700">
+            <img
+              src={
+                user.picture ||
+                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
+              }
+              alt="Alex Rahman"
+              className="h-full w-full object-cover"
+            />
+          </div>
 
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">

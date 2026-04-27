@@ -187,6 +187,7 @@ export function Sidebar() {
                 <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-teal-700">
                   <img
                     src={
+                      user.picture ||
                       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
                     }
                     alt="Alex Rahman"

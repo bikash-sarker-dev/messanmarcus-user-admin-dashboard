@@ -19,7 +19,7 @@ export const getMe = baseApi.injectEndpoints({
     // need to add types
     getMeProfile: builder.query({
       query: () => "/user/me",
-      providesTags: ["User"],
+      providesTags: ["User", "settings"],
     }),
 
     profileUpdate: builder.mutation({
