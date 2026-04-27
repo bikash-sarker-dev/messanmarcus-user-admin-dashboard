@@ -1379,16 +1379,22 @@ interface PointEntry {
 const MAX_IMAGES = 5;
 
 const DEPARTMENTS = [
-  { label: "Sales", value: "SALES" },
-  { label: "Marketing", value: "MARKETING" },
-  { label: "Finance & Accounting", value: "FINANCE_ACCOUNTING" },
-  { label: "Operations", value: "OPERATIONS" },
-  { label: "Human Resources (HR)", value: "HUMAN_RESOURCES" },
-  { label: "Information Technology (IT)", value: "INFORMATION_TECHNOLOGY" },
-  { label: "Customer Service", value: "CUSTOMER_SERVICE" },
-  { label: "Research & Development (R&D)", value: "RESEARCH_DEVELOPMENT" },
-  { label: "Legal, Risk & Compliance", value: "LEGAL_RISK_COMPLIANCE" },
-  { label: "Administration", value: "ADMINISTRATION" },
+  { label: "Sales", value: "Sales" },
+  { label: "Marketing", value: "Marketing" },
+  { label: "Finance & Accounting", value: "Finance & Accounting" },
+  { label: "Operations", value: "Operations" },
+  { label: "Human Resources (HR)", value: "Human Resources (HR)" },
+  {
+    label: "Information Technology (IT)",
+    value: "Information Technology (IT)",
+  },
+  { label: "Customer Service", value: "Customer Service" },
+  {
+    label: "Research & Development (R&D)",
+    value: "Research & Development (R&D)",
+  },
+  { label: "Legal, Risk & Compliance", value: "Legal, Risk & Compliance" },
+  { label: "Administration", value: "Administration" },
 ];
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
