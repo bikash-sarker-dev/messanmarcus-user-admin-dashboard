@@ -465,6 +465,7 @@ function StepBar({
 function Navbar({ onLogoClick }: { onLogoClick: () => void }) {
   const { data, isLoading } = useGetMeProfileQuery("");
   const user = data?.data || {};
+  console.log(user);
   return (
     <nav className="sticky top-0 z-40 border-b border-gray-100 bg-white px-4 shadow-sm sm:px-6">
       <div className="mx-auto max-w-7xl px-4">
