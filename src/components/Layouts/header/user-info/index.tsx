@@ -96,7 +96,7 @@ export function UserInfo() {
             <img
               src={
                 user.picture ||
-                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
+                "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png"
               }
               alt="Alex Rahman"
               className="h-full w-full object-cover"
