@@ -39,9 +39,6 @@ export function UserInfo() {
     );
   };
 
-  if (isLoading) {
-    return <LoadingPage />;
-  }
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
       <DropdownTrigger className="rounded align-middle outline-none ring-primary ring-offset-2 focus-visible:ring-1 dark:ring-offset-gray-dark">
