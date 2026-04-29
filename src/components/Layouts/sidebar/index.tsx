@@ -180,17 +180,6 @@ export function Sidebar() {
             ))}
           </div>
 
-          {/* Logout */}
-          {/* <div className="mt-auto border-t pt-5">
-            <button
-              onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 hover:bg-red-50"
-            >
-              <LogOutIcon className="size-6" />
-              <span className="font-medium">Logout</span>
-            </button>
-          </div> */}
-
           <div className="-ml-5 px-2">
             <div className="w-full max-w-md rounded-3xl border border-t-2 border-[#E5E7EB] bg-white px-3 py-3 shadow-lg">
               {/* Profile Section */}
@@ -199,7 +188,7 @@ export function Sidebar() {
                   <img
                     src={
                       user.picture ||
-                      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
+                      "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png"
                     }
                     alt="Alex Rahman"
                     className="h-full w-full object-cover"
