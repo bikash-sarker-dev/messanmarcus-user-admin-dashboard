@@ -13,6 +13,7 @@ import { useSidebarContext } from "./sidebar-context";
 import type { NavItem } from "./data/types";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 import Cookies from "js-cookie";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -60,6 +61,10 @@ export function Sidebar() {
         : "https://greetely.com/login",
     );
   };
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
     <>
