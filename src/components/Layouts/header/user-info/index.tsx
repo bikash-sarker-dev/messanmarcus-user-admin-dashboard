@@ -14,6 +14,7 @@ import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 import { useRouter } from "next/navigation";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 import Cookies from "js-cookie";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +39,9 @@ export function UserInfo() {
     );
   };
 
+  if (isLoading) {
+    return <LoadingPage />;
+  }
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
       <DropdownTrigger className="rounded align-middle outline-none ring-primary ring-offset-2 focus-visible:ring-1 dark:ring-offset-gray-dark">
