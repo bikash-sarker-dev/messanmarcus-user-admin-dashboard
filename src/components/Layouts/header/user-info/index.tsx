@@ -29,13 +29,24 @@ export function UserInfo() {
     img: "/images/user/user-03.png",
   };
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   const logOutHandle = () => {
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
+    Cookies.remove("accessToken", {
+      domain: isProduction ? ".greetely.com" : undefined,
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
+    });
+    Cookies.remove("refreshToken", {
+      domain: isProduction ? ".greetely.com" : undefined,
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
+    });
+
     router.push(
       domain === "http://localhost:3010"
-        ? "http://localhost:3041"
-        : "https://greetely.com",
+        ? "http://localhost:3041/"
+        : "https://greetely.com/",
     );
   };
 
