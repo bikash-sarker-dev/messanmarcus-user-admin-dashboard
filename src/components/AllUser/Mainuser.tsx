@@ -14,6 +14,7 @@ import {
 } from "@/redux/api/users/usersSliceApi";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 import { useMyPointBalanceQuery } from "@/redux/api/dashboardHome/homeSliceApi";
+import { logOutHandle } from "@/lib/Logout";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -2024,12 +2025,12 @@ export default function GreetelyDashboard() {
     points: 100,
     selectedImageUrl: null,
   });
-  const domain = window.location.origin;
+
   const startRecognition = useCallback(() => {
     setShowModal(false);
     setScreen("recognize");
   }, []);
-
+  const domain = window.location.origin;
   // const logOutHandle = () => {
   //   Cookies.remove("accessToken");
   //   Cookies.remove("refreshToken");
@@ -2039,27 +2040,6 @@ export default function GreetelyDashboard() {
   //       : "https://greetely.com/",
   //   );
   // };
-
-  const isProduction = process.env.NODE_ENV === "production";
-
-  const logOutHandle = () => {
-    Cookies.remove("accessToken", {
-      domain: isProduction ? ".greetely.com" : undefined,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-    });
-    Cookies.remove("refreshToken", {
-      domain: isProduction ? ".greetely.com" : undefined,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-    });
-
-    router.push(
-      domain === "http://localhost:3010"
-        ? "http://localhost:3041/"
-        : "https://greetely.com/",
-    );
-  };
 
   const handleStepClick = useCallback(
     (s: Screen) => {
@@ -2073,7 +2053,7 @@ export default function GreetelyDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar onLogoClick={logOutHandle} />
+      <Navbar onLogoClick={() => logOutHandle(router)} />
 
       {screen !== "dashboard" && (
         <StepBar screen={screen} onStepClick={handleStepClick} />

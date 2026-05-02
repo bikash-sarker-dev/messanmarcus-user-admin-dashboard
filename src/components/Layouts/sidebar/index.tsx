@@ -14,7 +14,15 @@ import type { NavItem } from "./data/types";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 import Cookies from "js-cookie";
 import LoadingPage from "@/components/Loading/LoadingPage";
+import { logOutHandle } from "@/lib/Logout";
 
+type CookieOptions = {
+  domain: string | undefined;
+  path: string;
+  secure: boolean;
+  sameSite: string;
+};
+const isProduction = process.env.NODE_ENV === "production";
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -51,27 +59,6 @@ export function Sidebar() {
       }),
     );
   }, [pathname]);
-
-  const isProduction = process.env.NODE_ENV === "production";
-
-  const logOutHandle = () => {
-    Cookies.remove("accessToken", {
-      domain: isProduction ? ".greetely.com" : undefined,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-    });
-    Cookies.remove("refreshToken", {
-      domain: isProduction ? ".greetely.com" : undefined,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-    });
-
-    router.push(
-      domain === "http://localhost:3010"
-        ? "http://localhost:3041/"
-        : "https://greetely.com/",
-    );
-  };
 
   if (isLoading) {
     return <LoadingPage />;
@@ -219,7 +206,7 @@ export function Sidebar() {
               </div>
 
               <button
-                onClick={logOutHandle}
+                onClick={() => logOutHandle(router)}
                 className="flex w-full items-center gap-3 rounded-xl bg-red-50 px-4 py-3 text-red-600 hover:bg-red-100"
               >
                 <LogOutIcon className="size-6" />

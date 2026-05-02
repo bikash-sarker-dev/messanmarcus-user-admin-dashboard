@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
 import Cookies from "js-cookie";
 import LoadingPage from "@/components/Loading/LoadingPage";
+import { logOutHandle } from "@/lib/Logout";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,27 +28,6 @@ export function UserInfo() {
     name: user?.name,
     email: user?.email,
     img: "/images/user/user-03.png",
-  };
-
-  const isProduction = process.env.NODE_ENV === "production";
-
-  const logOutHandle = () => {
-    Cookies.remove("accessToken", {
-      domain: isProduction ? ".greetely.com" : undefined,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-    });
-    Cookies.remove("refreshToken", {
-      domain: isProduction ? ".greetely.com" : undefined,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-    });
-
-    router.push(
-      domain === "http://localhost:3010"
-        ? "http://localhost:3041/"
-        : "https://greetely.com/",
-    );
   };
 
   return (
@@ -157,7 +137,7 @@ export function UserInfo() {
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             onClick={() => {
               setIsOpen(false);
-              logOutHandle();
+              logOutHandle(router);
             }}
           >
             <LogOutIcon />
