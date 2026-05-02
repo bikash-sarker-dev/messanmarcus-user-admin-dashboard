@@ -392,7 +392,7 @@ function RecognitionModal({
       onClick={onClose}
     >
       <div
-        className="relative w-[340px] max-w-[95vw] overflow-hidden rounded-2xl"
+        className="relative max-w-md overflow-hidden rounded-2xl"
         style={{ background: "#f07011" }}
         onClick={(e) => e.stopPropagation()}
       >
