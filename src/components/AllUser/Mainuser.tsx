@@ -2035,8 +2035,8 @@ export default function GreetelyDashboard() {
     Cookies.remove("refreshToken");
     router.push(
       domain === "http://localhost:3010"
-        ? "http://localhost:3041/login"
-        : "https://greetely.com/login",
+        ? "http://localhost:3041/"
+        : "https://greetely.com/",
     );
   };
 
