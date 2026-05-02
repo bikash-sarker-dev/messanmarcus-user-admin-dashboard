@@ -13,6 +13,7 @@ import {
   useSendRecongitionMutation,
 } from "@/redux/api/users/usersSliceApi";
 import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
+import { useMyPointBalanceQuery } from "@/redux/api/dashboardHome/homeSliceApi";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -697,6 +698,8 @@ function DashboardScreen({
     { page, limit: PER_PAGE },
     { refetchOnMountOrArgChange: true },
   );
+  const { data, isLoading } = useGetMeProfileQuery("");
+  const user = data?.data || {};
 
   const users: ApiUser[] = usersResponse?.data ?? [];
   const meta: ApiMeta = usersResponse?.meta ?? {
@@ -736,8 +739,8 @@ function DashboardScreen({
                 Points Balance
               </span>
             </div>
-            <p className="text-4xl font-extrabold tracking-tight text-white">
-              {userLoading ? "—" : pointsBalance.toLocaleString()}
+            <p className="ml-2 text-4xl font-extrabold tracking-tight text-white">
+              {userLoading ? "—" : user?.wallet?.pointsBalance}
             </p>
             <div className="mt-2 flex justify-between text-xs text-white/70">
               <span>Available</span>
@@ -754,7 +757,7 @@ function DashboardScreen({
               </span>
             </div>
             <p className="text-4xl font-extrabold tracking-tight text-gray-900">
-              {userLoading ? "—" : pointsUsed}
+              {userLoading ? "—" : user?.wallet?.pointsUsed}
             </p>
             <p className="mt-2 text-xs font-medium text-teal-500">
               This quarter

@@ -24,8 +24,14 @@ export const dashboardHomeAip = baseApi.injectEndpoints({
       query: ({ page = 1, limit = 10 }) =>
         `/recognition/history?page=${page}&limit=${limit}`,
     }),
+    myPointBalance: builder.query({
+      query: (email) => `/points/balance/${email}`,
+    }),
   }),
 });
 
-export const { useGetDashboardHomeQuery, useGetRecognitionHistoryQuery } =
-  dashboardHomeAip;
+export const {
+  useGetDashboardHomeQuery,
+  useGetRecognitionHistoryQuery,
+  useMyPointBalanceQuery,
+} = dashboardHomeAip;
