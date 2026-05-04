@@ -47,9 +47,9 @@ export const logOutHandle = (router: any) => {
     const currentHost = window.location.hostname;
 
     if (currentHost === "dashboard.greetely.com") {
-      router.push("https://dashboard.greetely.com/login");
+      router.push("https://greetely.com");
     } else {
-      router.push("https://greetely.com/login");
+      router.push("https://greetely.com");
     }
   }
 };
