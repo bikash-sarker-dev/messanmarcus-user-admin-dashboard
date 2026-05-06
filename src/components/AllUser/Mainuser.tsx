@@ -5960,7 +5960,7 @@ export default function GreetelyDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar onLogoClick={() => logOutHandle(router)} />
+      <Navbar onLogoClick={() => logOutHandle} />
 
       {screen !== "dashboard" && (
         <StepBar screen={screen} onStepClick={handleStepClick} />
