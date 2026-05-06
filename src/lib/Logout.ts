@@ -134,6 +134,6 @@ export const logOutHandle = () => {
   sessionStorage.removeItem("redirectAfterLogin");
 
   window.location.href = isProduction
-    ? "https://greetely.com"
-    : "http://localhost:3041";
+    ? "https://greetely.com?logout=true"
+    : "http://localhost:3041?logout=true";
 };
