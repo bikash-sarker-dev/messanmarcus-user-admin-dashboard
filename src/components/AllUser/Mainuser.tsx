@@ -5330,7 +5330,7 @@ function SelectDetailsScreen({
             <section>
               <div className="mb-1 flex items-baseline gap-2">
                 <h2 className="text-base font-bold text-orange-500 sm:text-lg">
-                  Personal Message
+                  Additional Personalized Message
                 </h2>
                 <span className="text-xs font-medium text-gray-400">
                   (Optional)
