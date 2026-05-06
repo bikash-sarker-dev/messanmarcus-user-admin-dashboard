@@ -54,13 +54,54 @@
 //   }
 // };
 
+// import Cookies from "js-cookie";
+
+// const isProduction = process.env.NODE_ENV === "production";
+
+// export const logOutHandle = (router?: any) => {
+//   const domain = window.location.origin;
+//   // Remove cookies from shared domain (covers both greetely.com & dashboard.greetely.com)
+//   Cookies.remove("accessToken", {
+//     domain: isProduction ? ".greetely.com" : undefined,
+//     secure: isProduction,
+//     sameSite: isProduction ? "None" : "Lax",
+//   });
+
+//   Cookies.remove("refreshToken", {
+//     domain: isProduction ? ".greetely.com" : undefined,
+//     secure: isProduction,
+//     sameSite: isProduction ? "None" : "Lax",
+//   });
+
+//   // Also remove without domain (covers the rememberMe path where no domain was set)
+//   Cookies.remove("accessToken");
+//   Cookies.remove("refreshToken");
+
+//   // Clear localStorage
+//   localStorage.removeItem("user");
+//   localStorage.removeItem("rememberMe");
+
+//   // Clear sessionStorage
+//   sessionStorage.removeItem("redirectAfterLogin");
+
+//   // Clear Redux state (optional, call dispatch if available)
+//   // dispatch(clearUser());
+
+//   // Redirect to login
+//   if (router) {
+//     router.push(
+//       domain === "http://localhost:3010"
+//         ? "http://localhost:3041"
+//         : "https://greetely.com",
+//     );
+//     router.refresh();
+//   }
+// };
+
 import Cookies from "js-cookie";
-
 const isProduction = process.env.NODE_ENV === "production";
-
 export const logOutHandle = (router?: any) => {
-  const domain = window.location.origin;
-  // Remove cookies from shared domain (covers both greetely.com & dashboard.greetely.com)
+  // Remove cookies from shared domain
   Cookies.remove("accessToken", {
     domain: isProduction ? ".greetely.com" : undefined,
     secure: isProduction,
@@ -73,7 +114,7 @@ export const logOutHandle = (router?: any) => {
     sameSite: isProduction ? "None" : "Lax",
   });
 
-  // Also remove without domain (covers the rememberMe path where no domain was set)
+  // Also remove without domain
   Cookies.remove("accessToken");
   Cookies.remove("refreshToken");
 
@@ -84,16 +125,8 @@ export const logOutHandle = (router?: any) => {
   // Clear sessionStorage
   sessionStorage.removeItem("redirectAfterLogin");
 
-  // Clear Redux state (optional, call dispatch if available)
-  // dispatch(clearUser());
-
-  // Redirect to login
-  if (router) {
-    router.push(
-      domain === "http://localhost:3010"
-        ? "http://localhost:3041"
-        : "https://greetely.com",
-    );
-    router.refresh();
-  }
+  // Cross-domain redirect (router.push won't work for external domains)
+  window.location.href = isProduction
+    ? "https://greetely.com"
+    : "http://localhost:3041";
 };
