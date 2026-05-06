@@ -46,6 +46,15 @@ export const settingsAip = baseApi.injectEndpoints({
       invalidatesTags: ["settings"],
     }),
 
+    deleteCategoryImage: builder.mutation({
+      query: (body) => ({
+        url: `/category/image/`,
+        method: "DELETE",
+        body,
+      }),
+      invalidatesTags: ["settings"],
+    }),
+
     allCategory: builder.query({
       query: () => "/category",
       providesTags: ["settings"],
@@ -70,4 +79,5 @@ export const {
   useDeleteCategoryMutation,
   usePointDristributeMutation,
   useCategoryImageUploadMutation,
+  useDeleteCategoryImageMutation,
 } = settingsAip;
