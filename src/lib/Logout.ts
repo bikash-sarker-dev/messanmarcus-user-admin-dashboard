@@ -99,33 +99,40 @@
 // };
 
 import Cookies from "js-cookie";
+
 const isProduction = process.env.NODE_ENV === "production";
-export const logOutHandle = (router?: any) => {
-  // Remove cookies from shared domain
-  Cookies.remove("accessToken", {
-    domain: isProduction ? ".greetely.com" : undefined,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
+
+// ✅ Master cookie cleaner
+export const clearAllCookies = () => {
+  const cookieNames = ["accessToken", "refreshToken"];
+  const domains = [
+    ".greetely.com",
+    "greetely.com",
+    "dashboard.greetely.com",
+    ".dashboard.greetely.com",
+    window.location.hostname,
+  ];
+
+  cookieNames.forEach((name) => {
+    domains.forEach((domain) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${domain}; path=/; secure; samesite=None`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${domain}; path=/`;
+    });
+    // js-cookie fallback
+    Cookies.remove(name, { path: "/" });
+    Cookies.remove(name, { domain: ".greetely.com", path: "/" });
+    Cookies.remove(name, { domain: "greetely.com", path: "/" });
   });
+};
 
-  Cookies.remove("refreshToken", {
-    domain: isProduction ? ".greetely.com" : undefined,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
-  });
+// ✅ Logout
+export const logOutHandle = () => {
+  clearAllCookies();
 
-  // Also remove without domain
-  Cookies.remove("accessToken");
-  Cookies.remove("refreshToken");
-
-  // Clear localStorage
   localStorage.removeItem("user");
   localStorage.removeItem("rememberMe");
-
-  // Clear sessionStorage
   sessionStorage.removeItem("redirectAfterLogin");
 
-  // Cross-domain redirect (router.push won't work for external domains)
   window.location.href = isProduction
     ? "https://greetely.com"
     : "http://localhost:3041";
