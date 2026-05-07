@@ -5960,7 +5960,7 @@ export default function GreetelyDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar onLogoClick={() => logOutHandle()} />
+      <Navbar onLogoClick={() => router.push("https://greetely.com")} />
 
       {screen !== "dashboard" && (
         <StepBar screen={screen} onStepClick={handleStepClick} />
