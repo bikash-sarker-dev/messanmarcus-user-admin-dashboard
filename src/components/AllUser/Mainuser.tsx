@@ -4496,13 +4496,14 @@ function StepBar({
 // ══════════════════════════════════════════════════════════════════════════════
 function Navbar({ onLogoClick }: { onLogoClick: () => void }) {
   const { data, isLoading } = useGetMeProfileQuery("");
+  const router = useRouter();
   const user = data?.data || {};
   return (
     <nav className="sticky top-0 z-40 border-b border-gray-100 bg-white px-4 shadow-sm sm:px-6">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-[70px] items-center justify-between">
           <button
-            onClick={onLogoClick}
+            onClick={() => router.push("https://greetely.com/")}
             className="group flex shrink-0 items-center gap-2"
           >
             <Image src={Logo} width={110} height={110} alt="logo" />
@@ -5960,7 +5961,7 @@ export default function GreetelyDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar onLogoClick={() => router.push("https://greetely.com")} />
+      <Navbar onLogoClick={() => logOutHandle()} />
 
       {screen !== "dashboard" && (
         <StepBar screen={screen} onStepClick={handleStepClick} />
