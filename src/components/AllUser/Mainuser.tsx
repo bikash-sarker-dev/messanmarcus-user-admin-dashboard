@@ -5121,12 +5121,14 @@ function SelectDetailsScreen({
   const [categoryImages, setCategoryImages] = useState<Record<string, string>>(
     {},
   );
+  const { data, isLoading } = useGetMeProfileQuery("");
+  const user = data?.data || {};
 
   const { data: categoriesResponse, isLoading: catsLoading } =
     useGetCategoriseQuery("");
   const categories: ApiCategory[] = categoriesResponse?.data ?? [];
 
-  const MAX_BALANCE = 2500;
+  const MAX_BALANCE = user?.wallet?.pointsBalance;
   const after = MAX_BALANCE - points;
   const canGenerate =
     selectedCategory !== null && tone !== "" && values.length > 0;
@@ -5388,9 +5390,9 @@ function SelectDetailsScreen({
             </h2>
             <input
               type="range"
-              min={50}
+              min={10}
               max={500}
-              step={50}
+              step={10}
               value={points}
               onChange={(e) => setPoints(Number(e.target.value))}
               className="mb-1 h-2 w-full cursor-pointer appearance-none rounded-full"
