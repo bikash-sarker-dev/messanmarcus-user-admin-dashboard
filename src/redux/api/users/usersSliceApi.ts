@@ -59,6 +59,22 @@ export const allUsersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["mainUser"],
     }),
+
+    userApproved: builder.mutation({
+      query: (id) => ({
+        url: `/user/approve/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["mainUser"],
+    }),
+
+    userRejected: builder.mutation({
+      query: (id) => ({
+        url: `/user/reject/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["mainUser"],
+    }),
   }),
 });
 
@@ -69,4 +85,6 @@ export const {
   useSendRecongitionMutation,
   useDeleteUserMutation,
   useUpdateUserMutation,
+  useUserApprovedMutation,
+  useUserRejectedMutation,
 } = allUsersApi;
