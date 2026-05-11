@@ -1240,9 +1240,11 @@ function RoleBadge({ role }: { role: Role }) {
 function StatusBadge({
   status,
   accountType,
+  name, // ← add this
 }: {
   status: Status;
   accountType: string;
+  name: string; // ← add this
 }) {
   // INDIVIDUAL → always show "Individual" type badge
   if (accountType === "INDIVIDUAL") {
@@ -1261,32 +1263,31 @@ function StatusBadge({
             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
           />
         </svg>
-        Individual
+        INDIVIDUAL
       </span>
     );
   }
 
-  // ORGANIZATION → show Pending / Approved / Rejected
-  const styles: Record<Status, string> = {
-    Approved: "bg-green-50 text-green-600 border border-green-200",
-    Pending: "bg-yellow-50 text-yellow-600 border border-yellow-200",
-    Rejected: "bg-red-50 text-red-500 border border-red-200",
-  };
-  const dots: Record<Status, string> = {
-    Approved: "bg-green-500",
-    Pending: "bg-yellow-500",
-    Rejected: "bg-red-500",
-  };
+  // ORGANIZATION → show org name badge instead of status
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}
-    >
-      <span className={`h-1.5 w-1.5 rounded-full ${dots[status]}`} />
-      {status}
+    <span className="inline-flex max-w-[140px] items-center gap-1.5 truncate rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-600">
+      <svg
+        className="h-3 w-3 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
+      </svg>
+      ORGANIZATION
     </span>
   );
 }
-
 // ─── Approval Column — N/A for INDIVIDUAL, action buttons for ORGANIZATION ────
 function ApproveRejectButtons({
   employee,
@@ -1306,8 +1307,21 @@ function ApproveRejectButtons({
   // INDIVIDUAL → show N/A badge
   if (employee.accountType === "INDIVIDUAL") {
     return (
-      <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-400">
-        N/A
+      <span className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-600">
+        <svg
+          className="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+        Approved
       </span>
     );
   }
@@ -2293,6 +2307,7 @@ export default function EmployeeDirectory() {
                         <StatusBadge
                           status={emp.status}
                           accountType={emp.accountType}
+                          name={emp.name} // ← add this
                         />
                       </td>
 
