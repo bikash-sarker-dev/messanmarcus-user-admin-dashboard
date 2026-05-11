@@ -12,6 +12,7 @@ import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./dashboard/providers";
 import ReduxProvider from "@/redux/Provider";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           </div>
         </Providers> */}
         <ReduxProvider>
+          <Toaster position="top-right" richColors closeButton />
           <main className="">{children}</main>
         </ReduxProvider>
       </body>

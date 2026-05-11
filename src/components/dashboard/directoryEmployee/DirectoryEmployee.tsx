@@ -2506,6 +2506,7 @@ import {
   useUserRejectedMutation,
 } from "@/redux/api/users/usersSliceApi";
 import React, { useState, useMemo } from "react";
+import { toast } from "sonner";
 
 // ─── Department Enum ──────────────────────────────────────────────────────────
 export enum Department {
@@ -3253,7 +3254,7 @@ function EmployeeModal({
             </Field>
           )}
 
-          <Field
+          {/* <Field
             label={isEdit ? "Points Balance" : "Starting Points Balance"}
             error={errors.pointsBalance}
             hint={
@@ -3269,7 +3270,7 @@ function EmployeeModal({
               onChange={(e) => set("pointsBalance", Number(e.target.value))}
               className={inputCls(errors.pointsBalance)}
             />
-          </Field>
+          </Field> */}
         </div>
 
         {/* Footer */}
@@ -3458,11 +3459,40 @@ export default function EmployeeDirectory() {
     setPage(1);
   }
 
+  // async function handleEdit(formData: FormState) {
+  //   if (modal.type !== "edit") return;
+  //   const emp = modal.employee;
+  //   try {
+  //   const res=  await updateUser({
+  //       id: emp.id,
+  //       body: {
+  //         name: formData.name,
+  //         email: formData.email,
+  //         department: formData.department,
+  //         accountType: emp.accountType,
+  //         role: ROLE_TO_API[formData.role],
+  //         // isActive: STATUS_TO_API[formData.status],
+  //         isDeleted: emp.isDeleted,
+  //         isVerified: emp.isVerified,
+  //       },
+  //     }).unwrap();
+
+  //     if(res.success){
+  //       toast
+  //     }
+  //     setModal({ type: "none" });
+  //   } catch (err) {
+  //     console.error("Update failed:", err);
+  //   }
+  // }
+
   async function handleEdit(formData: FormState) {
     if (modal.type !== "edit") return;
+
     const emp = modal.employee;
+
     try {
-      await updateUser({
+      const res = await updateUser({
         id: emp.id,
         body: {
           name: formData.name,
@@ -3475,9 +3505,16 @@ export default function EmployeeDirectory() {
           isVerified: emp.isVerified,
         },
       }).unwrap();
+
+      if (res?.success) {
+        toast.success("Employee updated successfully");
+      }
+
       setModal({ type: "none" });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Update failed:", err);
+
+      toast.error(err?.data?.message || "Failed to update employee");
     }
   }
 
