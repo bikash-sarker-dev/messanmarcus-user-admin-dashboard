@@ -5,7 +5,6 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const token = request.cookies.get("accessToken")?.value;
-  console.log("re-token", token);
 
   // ✅ Always allow static files & Next.js internals
   if (
