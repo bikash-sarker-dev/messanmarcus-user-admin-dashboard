@@ -4512,7 +4512,7 @@ function Navbar({ onLogoClick }: { onLogoClick: () => void }) {
             <div className="flex items-center gap-2 rounded-full bg-gray-900 py-1 pl-1 pr-2 text-white shadow-sm sm:pr-4">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-orange-600 text-[10px] font-bold">
                 <Image
-                  src={user.picture || "/default-avatar.png"}
+                  src={user?.picture || ""}
                   alt="User Avatar"
                   width={500}
                   height={500}
