@@ -40,11 +40,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const userData = user || defaultUser;
 
   const handleSuspend = () => {
-    console.log("Suspend user clicked");
+    // console.log("Suspend user clicked");
   };
 
   const handleBan = () => {
-    console.log("Ban account clicked");
+    // console.log("Ban account clicked");
   };
 
   return (

@@ -28,7 +28,6 @@ const paymentSlice = createSlice({
 
     // NEW: store client secret
     setClientSecret: (state, action: PayloadAction<string>) => {
-      console.log(action.payload);
       state.clientSecret = action.payload;
     },
     resetPlan: () => initialState,
