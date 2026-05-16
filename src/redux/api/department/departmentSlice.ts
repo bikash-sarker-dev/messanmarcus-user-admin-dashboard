@@ -33,7 +33,7 @@ export const departmentApi = baseApi.injectEndpoints({
     updateDepartment: builder.mutation({
       query: ({ payload, id }) => ({
         url: `/department/update-department/${id}`,
-        method: "PUT",
+        method: "PATCH",
         body: payload,
       }),
       invalidatesTags: ["Department"],
