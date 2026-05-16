@@ -2962,12 +2962,12 @@ function DashboardScreen({
             <h2 className="whitespace-nowrap text-base font-bold text-gray-900 sm:text-lg">
               Team Members
             </h2>
-            <button
+            {/* <button
               onClick={onSendRecognition}
               className="flex items-center gap-1.5 whitespace-nowrap rounded-md bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 sm:px-4 sm:py-2.5 sm:text-sm"
             >
               <I.Plus /> Send Recognition
-            </button>
+            </button> */}
           </div>
 
           <div className="flex gap-4 border-b border-gray-100 px-4 sm:gap-5 sm:px-6">
@@ -3084,10 +3084,9 @@ function DashboardScreen({
                         <td className="px-4 py-3 sm:px-6 sm:py-3.5">
                           <button
                             onClick={() => onRecognizeUser(u)}
-                            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-orange-600 active:scale-95"
+                            className="inline-flex items-center gap-1 whitespace-nowrap rounded-md bg-orange-500 px-1.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-orange-600 active:scale-95"
                           >
-                            <I.Award />
-                            Recognize
+                            <I.Plus /> Send Recognition
                           </button>
                         </td>
                       </tr>
