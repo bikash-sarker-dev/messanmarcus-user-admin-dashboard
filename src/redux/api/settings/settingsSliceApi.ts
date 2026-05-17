@@ -68,6 +68,24 @@ export const settingsAip = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["settings"],
     }),
+
+    pointReset: builder.mutation({
+      query: (body) => ({
+        url: "/wallet/reset",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["settings"],
+    }),
+
+    giveTheUserPoint: builder.mutation({
+      query: (body) => ({
+        url: "/wallet/set-user-points",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["settings"],
+    }),
   }),
 });
 
@@ -80,4 +98,6 @@ export const {
   usePointDristributeMutation,
   useCategoryImageUploadMutation,
   useDeleteCategoryImageMutation,
+  useGiveTheUserPointMutation,
+  usePointResetMutation,
 } = settingsAip;
