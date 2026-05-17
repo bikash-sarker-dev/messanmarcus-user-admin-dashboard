@@ -1,2647 +1,298 @@
-// "use client";
-
-// import {
-//   useCreateDepartmentMutation,
-//   useDeteteDepartmentMutation,
-//   useGetDepartmentQuery,
-//   useUpdateDepartmentMutation,
-// } from "@/redux/api/department/departmentSlice";
-// import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
-// import {
-//   useAllCategoryQuery,
-//   useCategoryImageUploadMutation,
-//   useCreateCategoryMutation,
-//   useDeleteCategoryImageMutation,
-//   useDeleteCategoryMutation,
-//   usePointDristributeMutation,
-//   useProfileUpdatesMutation,
-//   useUpdateCategoryMutation,
-// } from "@/redux/api/settings/settingsSliceApi";
-// import React, { useState, useRef } from "react";
-// import { useForm } from "react-hook-form";
-
-// // ─── Types ────────────────────────────────────────────────────────────────────
-// type Tab = "general" | "points" | "category" | "department" | "branding";
-
-// interface GeneralForm {
-//   name: string;
-//   companyEmail: string;
-//   oldPassword: string;
-//   newPassword: string;
-//   confirmPassword: string;
-// }
-
-// interface BrandingForm {
-//   primaryColor: string;
-//   highlightColor: string;
-// }
-
-// interface CategoryImage {
-//   id: string;
-//   url: string;
-//   name: string;
-// }
-
-// interface Category {
-//   id: string;
-//   name: string;
-//   images: CategoryImage[];
-// }
-
-// interface PointEntry {
-//   id: string;
-//   department: string;
-//   points: number;
-// }
-
-// interface Department {
-//   id: string;
-//   name: string;
-//   createdAt: string;
-// }
-
-// // ─── Constants ────────────────────────────────────────────────────────────────
-// const DEPARTMENTS = [
-//   { label: "Sales", value: "Sales" },
-//   { label: "Marketing", value: "Marketing" },
-//   { label: "Finance & Accounting", value: "Finance & Accounting" },
-//   { label: "Operations", value: "Operations" },
-//   { label: "Human Resources (HR)", value: "Human Resources (HR)" },
-//   {
-//     label: "Information Technology (IT)",
-//     value: "Information Technology (IT)",
-//   },
-//   { label: "Customer Service", value: "Customer Service" },
-//   {
-//     label: "Research & Development (R&D)",
-//     value: "Research & Development (R&D)",
-//   },
-//   { label: "Legal, Risk & Compliance", value: "Legal, Risk & Compliance" },
-//   { label: "Administration", value: "Administration" },
-// ];
-
-// // ─── Icons ────────────────────────────────────────────────────────────────────
-// function IconUser({ active }: { active: boolean }) {
-//   return (
-//     <svg
-//       className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-//       />
-//     </svg>
-//   );
-// }
-// function IconPoints({ active }: { active: boolean }) {
-//   return (
-//     <svg
-//       className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-//       />
-//     </svg>
-//   );
-// }
-// function IconCategory({ active }: { active: boolean }) {
-//   return (
-//     <svg
-//       className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-//       />
-//     </svg>
-//   );
-// }
-// function IconDepartment({ active }: { active: boolean }) {
-//   return (
-//     <svg
-//       className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-//       />
-//     </svg>
-//   );
-// }
-// function IconBranding({ active }: { active: boolean }) {
-//   return (
-//     <svg
-//       className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-//       />
-//     </svg>
-//   );
-// }
-// function IconSave() {
-//   return (
-//     <svg
-//       className="h-4 w-4"
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-//       />
-//     </svg>
-//   );
-// }
-// function IconEye({ show }: { show: boolean }) {
-//   return show ? (
-//     <svg
-//       className="h-4 w-4 text-gray-400"
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-//       />
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-//       />
-//     </svg>
-//   ) : (
-//     <svg
-//       className="h-4 w-4 text-gray-400"
-//       fill="none"
-//       stroke="currentColor"
-//       viewBox="0 0 24 24"
-//     >
-//       <path
-//         strokeLinecap="round"
-//         strokeLinejoin="round"
-//         strokeWidth={2}
-//         d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-//       />
-//     </svg>
-//   );
-// }
-
-// // ─── Shared Field Components ──────────────────────────────────────────────────
-// function FieldLabel({ children }: { children: React.ReactNode }) {
-//   return (
-//     <label className="mb-2 block text-sm font-bold text-gray-800">
-//       {children}
-//     </label>
-//   );
-// }
-// function FieldHint({ children }: { children: React.ReactNode }) {
-//   return <p className="mt-1.5 text-xs text-gray-400">{children}</p>;
-// }
-// function FieldError({ message }: { message?: string }) {
-//   return message ? (
-//     <p className="mt-1.5 text-xs text-red-500">{message}</p>
-//   ) : null;
-// }
-
-// const inputBase =
-//   "w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all placeholder:text-gray-300 focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400";
-// const inputNormal = `${inputBase} border-gray-200 bg-white text-gray-800`;
-// const inputError = `${inputBase} border-red-300 bg-red-50/30 text-gray-800`;
-
-// // ─── Spinner ──────────────────────────────────────────────────────────────────
-// function Spinner({ className = "h-8 w-8" }: { className?: string }) {
-//   return (
-//     <svg
-//       className={`animate-spin text-orange-400 ${className}`}
-//       fill="none"
-//       viewBox="0 0 24 24"
-//     >
-//       <circle
-//         className="opacity-25"
-//         cx="12"
-//         cy="12"
-//         r="10"
-//         stroke="currentColor"
-//         strokeWidth="4"
-//       />
-//       <path
-//         className="opacity-75"
-//         fill="currentColor"
-//         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-//       />
-//     </svg>
-//   );
-// }
-
-// // ─── Global Toast ─────────────────────────────────────────────────────────────
-// function Toast({
-//   message,
-//   type = "success",
-//   onDone,
-// }: {
-//   message: string;
-//   type?: "success" | "error";
-//   onDone: () => void;
-// }) {
-//   React.useEffect(() => {
-//     const t = setTimeout(onDone, 2600);
-//     return () => clearTimeout(t);
-//   }, [onDone]);
-//   return (
-//     <div
-//       className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-gray-900 px-5 py-3 text-white shadow-2xl"
-//       style={{ animation: "slideUp 0.3s ease" }}
-//     >
-//       <span
-//         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${type === "success" ? "bg-emerald-500" : "bg-red-500"}`}
-//       >
-//         {type === "success" ? (
-//           <svg
-//             className="h-3.5 w-3.5 text-white"
-//             fill="none"
-//             stroke="currentColor"
-//             viewBox="0 0 24 24"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={3}
-//               d="M5 13l4 4L19 7"
-//             />
-//           </svg>
-//         ) : (
-//           <svg
-//             className="h-3.5 w-3.5 text-white"
-//             fill="none"
-//             stroke="currentColor"
-//             viewBox="0 0 24 24"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2.5}
-//               d="M6 18L18 6M6 6l12 12"
-//             />
-//           </svg>
-//         )}
-//       </span>
-//       <span className="text-sm font-medium">{message}</span>
-//     </div>
-//   );
-// }
-
-// // ─── Confirm Dialog ───────────────────────────────────────────────────────────
-// function ConfirmDialog({
-//   message,
-//   onConfirm,
-//   onCancel,
-//   loading,
-// }: {
-//   message: string;
-//   onConfirm: () => void;
-//   onCancel: () => void;
-//   loading?: boolean;
-// }) {
-//   return (
-//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-//       <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
-//         <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-red-50">
-//           <svg
-//             className="h-5 w-5 text-red-500"
-//             fill="none"
-//             stroke="currentColor"
-//             viewBox="0 0 24 24"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2}
-//               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-//             />
-//           </svg>
-//         </div>
-//         <h3 className="mb-1.5 text-base font-bold text-gray-900">
-//           Confirm Delete
-//         </h3>
-//         <p className="mb-6 text-sm text-gray-500">{message}</p>
-//         <div className="flex gap-3">
-//           <button
-//             onClick={onCancel}
-//             disabled={loading}
-//             className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-60"
-//           >
-//             Cancel
-//           </button>
-//           <button
-//             onClick={onConfirm}
-//             disabled={loading}
-//             className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-2.5 text-sm font-bold text-white transition-colors hover:bg-red-600 disabled:opacity-60"
-//           >
-//             {loading ? <Spinner className="h-4 w-4" /> : null}
-//             {loading ? "Deleting…" : "Delete"}
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// // ─── Image Lightbox ───────────────────────────────────────────────────────────
-// function Lightbox({
-//   img,
-//   onClose,
-//   onDelete,
-// }: {
-//   img: CategoryImage;
-//   onClose: () => void;
-//   onDelete: () => void;
-// }) {
-//   return (
-//     <div
-//       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-//       onClick={onClose}
-//     >
-//       <div
-//         className="relative mx-4 w-full max-w-lg"
-//         onClick={(e) => e.stopPropagation()}
-//       >
-//         <img
-//           src={img.url}
-//           alt={img.name}
-//           className="max-h-[70vh] w-full rounded-2xl object-contain"
-//         />
-//         <div className="mt-3 flex items-center justify-between px-1">
-//           <span className="truncate text-sm text-white/70">{img.name}</span>
-//           <div className="flex gap-2">
-//             <button
-//               onClick={onDelete}
-//               className="flex items-center gap-1.5 rounded-xl bg-red-500/90 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-500"
-//             >
-//               <svg
-//                 className="h-4 w-4"
-//                 fill="none"
-//                 stroke="currentColor"
-//                 viewBox="0 0 24 24"
-//               >
-//                 <path
-//                   strokeLinecap="round"
-//                   strokeLinejoin="round"
-//                   strokeWidth={2}
-//                   d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-//                 />
-//               </svg>
-//               Delete Image
-//             </button>
-//             <button
-//               onClick={onClose}
-//               className="rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
-//             >
-//               Close
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// // ─── Image Thumbnail ──────────────────────────────────────────────────────────
-// function ImageThumb({
-//   img,
-//   onDelete,
-//   onClick,
-// }: {
-//   img: CategoryImage;
-//   onDelete: (e: React.MouseEvent) => void;
-//   onClick: () => void;
-// }) {
-//   return (
-//     <div
-//       className="group relative h-[52px] w-[52px] shrink-0 cursor-pointer overflow-visible rounded-xl border border-gray-100 shadow-sm transition-all hover:scale-105 hover:shadow-md"
-//       style={{ transition: "transform 0.15s ease, box-shadow 0.15s ease" }}
-//       onClick={onClick}
-//     >
-//       <img
-//         src={img.url}
-//         alt={img.name}
-//         className="h-full w-full rounded-xl object-cover"
-//       />
-//       <div className="absolute inset-0 rounded-xl bg-black/0 transition-all duration-150 group-hover:bg-black/20" />
-//       <button
-//         onClick={onDelete}
-//         className="absolute -right-1.5 -top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white opacity-0 shadow-md transition-opacity duration-150 hover:bg-red-600 group-hover:opacity-100"
-//         title="Delete image"
-//       >
-//         <svg
-//           className="h-2.5 w-2.5"
-//           fill="none"
-//           stroke="currentColor"
-//           viewBox="0 0 24 24"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             strokeWidth={3}
-//             d="M6 18L18 6M6 6l12 12"
-//           />
-//         </svg>
-//       </button>
-//     </div>
-//   );
-// }
-
-// // ─── Upload Slot ──────────────────────────────────────────────────────────────
-// function UploadSlot({
-//   onUpload,
-//   loading,
-// }: {
-//   onUpload: (file: File) => void;
-//   loading?: boolean;
-// }) {
-//   const ref = useRef<HTMLInputElement>(null);
-//   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-//     const file = e.target.files?.[0];
-//     if (file) onUpload(file);
-//     e.target.value = "";
-//   }
-//   return (
-//     <button
-//       type="button"
-//       onClick={() => ref.current?.click()}
-//       disabled={loading}
-//       className="group flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 transition-all hover:border-orange-400 hover:bg-orange-50 disabled:opacity-50"
-//       title="Upload image"
-//     >
-//       {loading ? (
-//         <Spinner className="h-4 w-4" />
-//       ) : (
-//         <svg
-//           className="h-5 w-5 text-gray-300 transition-colors group-hover:text-orange-400"
-//           fill="none"
-//           stroke="currentColor"
-//           viewBox="0 0 24 24"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             strokeWidth={1.5}
-//             d="M12 4v16m8-8H4"
-//           />
-//         </svg>
-//       )}
-//       <input
-//         ref={ref}
-//         type="file"
-//         accept="image/*"
-//         className="hidden"
-//         onChange={handleChange}
-//       />
-//     </button>
-//   );
-// }
-
-// // ─── Category Row ─────────────────────────────────────────────────────────────
-// function CategoryRow({
-//   category,
-//   onDeleteCategory,
-//   onAddImage,
-//   onDeleteImage,
-//   onImageClick,
-//   onRename,
-//   uploadingImg,
-// }: {
-//   category: Category;
-//   onDeleteCategory: () => void;
-//   onAddImage: (file: File) => void;
-//   onDeleteImage: (imgId: string) => void;
-//   onImageClick: (img: CategoryImage) => void;
-//   onRename: (newName: string) => Promise<void>;
-//   uploadingImg?: boolean;
-// }) {
-//   const [editing, setEditing] = useState(false);
-//   const [editName, setEditName] = useState(category.name);
-//   const [saving, setSaving] = useState(false);
-//   const inputRef = useRef<HTMLInputElement>(null);
-
-//   function startEdit() {
-//     setEditName(category.name);
-//     setEditing(true);
-//     setTimeout(() => inputRef.current?.focus(), 40);
-//   }
-
-//   async function commitEdit() {
-//     const trimmed = editName.trim();
-//     if (!trimmed || trimmed === category.name) {
-//       setEditing(false);
-//       return;
-//     }
-//     setSaving(true);
-//     await onRename(trimmed);
-//     setSaving(false);
-//     setEditing(false);
-//   }
-
-//   function cancelEdit() {
-//     setEditName(category.name);
-//     setEditing(false);
-//   }
-
-//   return (
-//     <div
-//       className={`flex items-center gap-4 rounded-2xl border bg-white px-5 py-3.5 shadow-sm transition-all hover:shadow-md ${
-//         editing
-//           ? "border-orange-400 ring-2 ring-orange-400/20"
-//           : "border-gray-100"
-//       }`}
-//     >
-//       <button
-//         onClick={onDeleteCategory}
-//         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-//         title="Delete category"
-//       >
-//         <svg
-//           className="h-4 w-4"
-//           fill="none"
-//           stroke="currentColor"
-//           viewBox="0 0 24 24"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             strokeWidth={2.5}
-//             d="M6 18L18 6M6 6l12 12"
-//           />
-//         </svg>
-//       </button>
-
-//       {editing ? (
-//         <input
-//           ref={inputRef}
-//           value={editName}
-//           onChange={(e) => setEditName(e.target.value)}
-//           onKeyDown={(e) => {
-//             if (e.key === "Enter") commitEdit();
-//             if (e.key === "Escape") cancelEdit();
-//           }}
-//           className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm font-semibold text-gray-800 outline-none ring-0 placeholder:text-gray-300"
-//           placeholder="Category name…"
-//           disabled={saving}
-//         />
-//       ) : (
-//         <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-800">
-//           {category.name}
-//         </span>
-//       )}
-
-//       {editing ? (
-//         <div className="flex shrink-0 items-center gap-1.5">
-//           <button
-//             onClick={commitEdit}
-//             disabled={saving}
-//             className="flex h-7 items-center gap-1 rounded-lg bg-orange-500 px-3 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
-//           >
-//             {saving ? (
-//               <Spinner className="h-3.5 w-3.5" />
-//             ) : (
-//               <svg
-//                 className="h-3.5 w-3.5"
-//                 fill="none"
-//                 stroke="currentColor"
-//                 viewBox="0 0 24 24"
-//               >
-//                 <path
-//                   strokeLinecap="round"
-//                   strokeLinejoin="round"
-//                   strokeWidth={2.5}
-//                   d="M5 13l4 4L19 7"
-//                 />
-//               </svg>
-//             )}
-//             Save
-//           </button>
-//           <button
-//             onClick={cancelEdit}
-//             className="flex h-7 items-center rounded-lg border border-gray-200 px-2.5 text-xs font-semibold text-gray-500 transition-colors hover:bg-gray-50"
-//           >
-//             Cancel
-//           </button>
-//         </div>
-//       ) : (
-//         <button
-//           onClick={startEdit}
-//           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
-//           title="Rename category"
-//         >
-//           <svg
-//             className="h-3.5 w-3.5"
-//             fill="none"
-//             stroke="currentColor"
-//             viewBox="0 0 24 24"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2}
-//               d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z"
-//             />
-//           </svg>
-//         </button>
-//       )}
-
-//       <div className="flex shrink-0 flex-wrap items-center gap-2">
-//         {category.images.map((img) => (
-//           <ImageThumb
-//             key={img.id}
-//             img={img}
-//             onDelete={(e) => {
-//               e.stopPropagation();
-//               onDeleteImage(img.id);
-//             }}
-//             onClick={() => onImageClick(img)}
-//           />
-//         ))}
-//         <UploadSlot onUpload={onAddImage} loading={uploadingImg} />
-//       </div>
-//     </div>
-//   );
-// }
-
-// // ─── Department Row ───────────────────────────────────────────────────────────
-// function DepartmentRow({
-//   department,
-//   onDelete,
-//   onRename,
-//   index,
-// }: {
-//   department: Department;
-//   onDelete: () => void;
-//   onRename: (newName: string) => Promise<void>;
-//   index: number;
-// }) {
-//   const [editing, setEditing] = useState(false);
-//   const [editName, setEditName] = useState(department.name);
-//   const [saving, setSaving] = useState(false);
-//   const inputRef = useRef<HTMLInputElement>(null);
-
-//   function startEdit() {
-//     setEditName(department.name);
-//     setEditing(true);
-//     setTimeout(() => inputRef.current?.focus(), 40);
-//   }
-
-//   async function commitEdit() {
-//     const trimmed = editName.trim();
-//     if (!trimmed || trimmed === department.name) {
-//       setEditing(false);
-//       return;
-//     }
-//     setSaving(true);
-//     await onRename(trimmed);
-//     setSaving(false);
-//     setEditing(false);
-//   }
-
-//   function cancelEdit() {
-//     setEditName(department.name);
-//     setEditing(false);
-//   }
-
-//   // Deterministic color based on name
-//   const colors = [
-//     { bg: "bg-orange-50", text: "text-orange-600", dot: "bg-orange-400" },
-//     { bg: "bg-blue-50", text: "text-blue-600", dot: "bg-blue-400" },
-//     { bg: "bg-emerald-50", text: "text-emerald-600", dot: "bg-emerald-400" },
-//     { bg: "bg-violet-50", text: "text-violet-600", dot: "bg-violet-400" },
-//     { bg: "bg-amber-50", text: "text-amber-600", dot: "bg-amber-400" },
-//     { bg: "bg-rose-50", text: "text-rose-600", dot: "bg-rose-400" },
-//     { bg: "bg-cyan-50", text: "text-cyan-600", dot: "bg-cyan-400" },
-//     { bg: "bg-indigo-50", text: "text-indigo-600", dot: "bg-indigo-400" },
-//   ];
-//   const color = colors[index % colors.length];
-
-//   // Format createdAt nicely
-//   const formattedDate = new Date(department.createdAt).toLocaleDateString(
-//     "en-US",
-//     { month: "short", day: "numeric", year: "numeric" },
-//   );
-
-//   return (
-//     <div
-//       className={`group flex items-center gap-4 rounded-2xl border bg-white px-5 py-4 shadow-sm transition-all hover:shadow-md ${
-//         editing
-//           ? "border-orange-400 ring-2 ring-orange-400/20"
-//           : "border-gray-100 hover:border-gray-200"
-//       }`}
-//       style={{ animation: `slideUp 0.2s ease ${index * 0.04}s both` }}
-//     >
-//       {/* Color avatar */}
-//       <div
-//         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${color.bg}`}
-//       >
-//         <span className={`text-base font-black ${color.text}`}>
-//           {department.name.charAt(0).toUpperCase()}
-//         </span>
-//       </div>
-
-//       {/* Name */}
-//       <div className="min-w-0 flex-1">
-//         {editing ? (
-//           <input
-//             ref={inputRef}
-//             value={editName}
-//             onChange={(e) => setEditName(e.target.value)}
-//             onKeyDown={(e) => {
-//               if (e.key === "Enter") commitEdit();
-//               if (e.key === "Escape") cancelEdit();
-//             }}
-//             className="w-full bg-transparent text-sm font-bold text-gray-800 outline-none placeholder:text-gray-300"
-//             placeholder="Department name…"
-//             disabled={saving}
-//           />
-//         ) : (
-//           <p className="truncate text-sm font-bold text-gray-800">
-//             {department.name}
-//           </p>
-//         )}
-//         <p className="mt-0.5 text-xs text-gray-400">Added {formattedDate}</p>
-//       </div>
-
-//       {/* Index badge */}
-//       <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-400">
-//         #{index + 1}
-//       </span>
-
-//       {/* Edit / confirm / cancel */}
-//       {editing ? (
-//         <div className="flex shrink-0 items-center gap-1.5">
-//           <button
-//             onClick={commitEdit}
-//             disabled={saving}
-//             className="flex h-8 items-center gap-1.5 rounded-xl bg-orange-500 px-3 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
-//           >
-//             {saving ? (
-//               <Spinner className="h-3.5 w-3.5" />
-//             ) : (
-//               <svg
-//                 className="h-3.5 w-3.5"
-//                 fill="none"
-//                 stroke="currentColor"
-//                 viewBox="0 0 24 24"
-//               >
-//                 <path
-//                   strokeLinecap="round"
-//                   strokeLinejoin="round"
-//                   strokeWidth={2.5}
-//                   d="M5 13l4 4L19 7"
-//                 />
-//               </svg>
-//             )}
-//             Save
-//           </button>
-//           <button
-//             onClick={cancelEdit}
-//             className="flex h-8 items-center rounded-xl border border-gray-200 px-3 text-xs font-semibold text-gray-500 transition-colors hover:bg-gray-50"
-//           >
-//             Cancel
-//           </button>
-//         </div>
-//       ) : (
-//         <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-//           <button
-//             onClick={startEdit}
-//             className="flex h-8 w-8 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
-//             title="Rename department"
-//           >
-//             <svg
-//               className="h-3.5 w-3.5"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2}
-//                 d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z"
-//               />
-//             </svg>
-//           </button>
-//           <button
-//             onClick={onDelete}
-//             className="flex h-8 w-8 items-center justify-center rounded-xl text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-//             title="Delete department"
-//           >
-//             <svg
-//               className="h-3.5 w-3.5"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2}
-//                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-//               />
-//             </svg>
-//           </button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// // ─── Department Tab ───────────────────────────────────────────────────────────
-// function DepartmentTab({
-//   onSaved,
-// }: {
-//   onSaved: (msg: string, type?: "success" | "error") => void;
-// }) {
-//   const [adding, setAdding] = useState(false);
-//   const [newName, setNewName] = useState("");
-//   const [search, setSearch] = useState("");
-//   const [confirmId, setConfirmId] = useState<string | null>(null);
-//   const [confirmLabel, setConfirmLabel] = useState("");
-//   const [confirmLoading, setConfirmLoading] = useState(false);
-//   const newNameRef = useRef<HTMLInputElement>(null);
-
-//   const { data, isLoading, refetch } = useGetDepartmentQuery("");
-//   const [createDepartment, { isLoading: createLoading }] =
-//     useCreateDepartmentMutation();
-//   const [updateDepartment] = useUpdateDepartmentMutation();
-//   const [deleteDepartment] = useDeteteDepartmentMutation();
-
-//   const departments: Department[] = React.useMemo(() => {
-//     if (!data?.data) return [];
-//     return data.data.map((d: any) => ({
-//       id: d._id,
-//       name: d.name,
-//       createdAt: d.createdAt,
-//     }));
-//   }, [data]);
-
-//   const filtered = React.useMemo(() => {
-//     if (!search.trim()) return departments;
-//     return departments.filter((d) =>
-//       d.name.toLowerCase().includes(search.toLowerCase()),
-//     );
-//   }, [departments, search]);
-
-//   async function commitAdd() {
-//     const name = newName.trim();
-//     if (!name) return;
-//     try {
-//       await createDepartment({ name }).unwrap();
-//       refetch();
-//       setNewName("");
-//       setAdding(false);
-//       onSaved("Department added successfully!");
-//     } catch {
-//       onSaved("Failed to add department", "error");
-//     }
-//   }
-
-//   async function renameDepartment(id: string, newName: string) {
-//     try {
-//       await updateDepartment({ payload: { name: newName }, id }).unwrap();
-//       refetch();
-//       onSaved("Department renamed successfully!");
-//     } catch {
-//       onSaved("Failed to rename department", "error");
-//     }
-//   }
-
-//   function requestDelete(dept: Department) {
-//     setConfirmId(dept.id);
-//     setConfirmLabel(`Delete "${dept.name}"? This action cannot be undone.`);
-//   }
-
-//   async function handleConfirmDelete() {
-//     if (!confirmId) return;
-//     setConfirmLoading(true);
-//     try {
-//       await deleteDepartment(confirmId).unwrap();
-//       refetch();
-//       onSaved("Department deleted");
-//     } catch {
-//       onSaved("Failed to delete department", "error");
-//     } finally {
-//       setConfirmLoading(false);
-//       setConfirmId(null);
-//     }
-//   }
-
-//   if (isLoading) {
-//     return (
-//       <div className="flex items-center justify-center py-20">
-//         <Spinner />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <>
-//       {confirmId && (
-//         <ConfirmDialog
-//           message={confirmLabel}
-//           onConfirm={handleConfirmDelete}
-//           onCancel={() => !confirmLoading && setConfirmId(null)}
-//           loading={confirmLoading}
-//         />
-//       )}
-
-//       <div className="space-y-5">
-//         {/* Header */}
-//         <div className="flex items-center justify-between">
-//           <div>
-//             <h2 className="text-lg font-bold text-gray-900">Departments</h2>
-//             <p className="mt-0.5 text-xs text-gray-400">
-//               {departments.length}{" "}
-//               {departments.length === 1 ? "department" : "departments"} total
-//             </p>
-//           </div>
-//           <button
-//             onClick={() => {
-//               setAdding(true);
-//               setTimeout(() => newNameRef.current?.focus(), 50);
-//             }}
-//             disabled={createLoading}
-//             className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-95 disabled:opacity-60"
-//           >
-//             <svg
-//               className="h-4 w-4"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2.5}
-//                 d="M12 4v16m8-8H4"
-//               />
-//             </svg>
-//             Add Department
-//           </button>
-//         </div>
-
-//         {/* Search bar — only shown when there are departments */}
-//         {departments.length > 0 && (
-//           <div className="relative">
-//             <svg
-//               className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-300"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2}
-//                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-//               />
-//             </svg>
-//             <input
-//               type="text"
-//               value={search}
-//               onChange={(e) => setSearch(e.target.value)}
-//               placeholder="Search departments…"
-//               className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-700 outline-none transition-all placeholder:text-gray-300 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-400/20"
-//             />
-//             {search && (
-//               <button
-//                 onClick={() => setSearch("")}
-//                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500"
-//               >
-//                 <svg
-//                   className="h-4 w-4"
-//                   fill="none"
-//                   stroke="currentColor"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={2.5}
-//                     d="M6 18L18 6M6 6l12 12"
-//                   />
-//                 </svg>
-//               </button>
-//             )}
-//           </div>
-//         )}
-
-//         {/* New department inline input */}
-//         {adding && (
-//           <div
-//             className="flex items-center gap-3 rounded-2xl border-2 border-orange-400 bg-orange-50/40 px-5 py-4"
-//             style={{ animation: "slideUp 0.2s ease" }}
-//           >
-//             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100">
-//               <svg
-//                 className="h-5 w-5 text-orange-500"
-//                 fill="none"
-//                 stroke="currentColor"
-//                 viewBox="0 0 24 24"
-//               >
-//                 <path
-//                   strokeLinecap="round"
-//                   strokeLinejoin="round"
-//                   strokeWidth={2}
-//                   d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-//                 />
-//               </svg>
-//             </div>
-//             <input
-//               ref={newNameRef}
-//               value={newName}
-//               onChange={(e) => setNewName(e.target.value)}
-//               onKeyDown={(e) => {
-//                 if (e.key === "Enter") commitAdd();
-//                 if (e.key === "Escape") {
-//                   setAdding(false);
-//                   setNewName("");
-//                 }
-//               }}
-//               placeholder="Enter department name…"
-//               className="flex-1 bg-transparent text-sm font-bold text-gray-800 outline-none placeholder:text-gray-300"
-//             />
-//             <div className="flex shrink-0 gap-2">
-//               <button
-//                 onClick={commitAdd}
-//                 disabled={createLoading || !newName.trim()}
-//                 className="rounded-xl bg-orange-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
-//               >
-//                 {createLoading ? "Adding…" : "Add"}
-//               </button>
-//               <button
-//                 onClick={() => {
-//                   setAdding(false);
-//                   setNewName("");
-//                 }}
-//                 className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-700"
-//               >
-//                 Cancel
-//               </button>
-//             </div>
-//           </div>
-//         )}
-
-//         {/* Stats row */}
-//         {departments.length > 0 && (
-//           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-//             <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-orange-50 to-amber-50 p-4">
-//               <p className="text-xs font-semibold text-orange-600/70">Total</p>
-//               <p className="mt-1 text-2xl font-black text-orange-600">
-//                 {departments.length}
-//               </p>
-//               <p className="text-xs text-orange-500/60">Departments</p>
-//             </div>
-//             <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-emerald-50 to-teal-50 p-4">
-//               <p className="text-xs font-semibold text-emerald-600/70">
-//                 Latest
-//               </p>
-//               <p className="mt-1 truncate text-sm font-black text-emerald-600">
-//                 {departments[departments.length - 1]?.name ?? "—"}
-//               </p>
-//               <p className="text-xs text-emerald-500/60">Most recent</p>
-//             </div>
-//             <div className="col-span-2 rounded-2xl border border-gray-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 sm:col-span-1">
-//               <p className="text-xs font-semibold text-blue-600/70">Showing</p>
-//               <p className="mt-1 text-2xl font-black text-blue-600">
-//                 {filtered.length}
-//               </p>
-//               <p className="text-xs text-blue-500/60">
-//                 {search ? "Matching results" : "All departments"}
-//               </p>
-//             </div>
-//           </div>
-//         )}
-
-//         {/* Department list */}
-//         <div className="space-y-2.5">
-//           {departments.length === 0 && !adding && (
-//             <div className="flex flex-col items-center justify-center py-16 text-center">
-//               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
-//                 <svg
-//                   className="h-6 w-6 text-gray-300"
-//                   fill="none"
-//                   stroke="currentColor"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={1.5}
-//                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-//                   />
-//                 </svg>
-//               </div>
-//               <p className="text-sm font-semibold text-gray-400">
-//                 No departments yet
-//               </p>
-//               <p className="mt-1 text-xs text-gray-300">
-//                 Click "+ Add Department" to create your first one
-//               </p>
-//             </div>
-//           )}
-
-//           {filtered.length === 0 && search && (
-//             <div className="flex flex-col items-center justify-center py-10 text-center">
-//               <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100">
-//                 <svg
-//                   className="h-5 w-5 text-gray-300"
-//                   fill="none"
-//                   stroke="currentColor"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={2}
-//                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-//                   />
-//                 </svg>
-//               </div>
-//               <p className="text-sm font-semibold text-gray-400">
-//                 No results for "{search}"
-//               </p>
-//               <button
-//                 onClick={() => setSearch("")}
-//                 className="mt-2 text-xs font-semibold text-orange-500 hover:text-orange-600"
-//               >
-//                 Clear search
-//               </button>
-//             </div>
-//           )}
-
-//           {filtered.map((dept, idx) => (
-//             <DepartmentRow
-//               key={dept.id}
-//               department={dept}
-//               index={idx}
-//               onDelete={() => requestDelete(dept)}
-//               onRename={(newName) => renameDepartment(dept.id, newName)}
-//             />
-//           ))}
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
-// // ─── Category Tab ─────────────────────────────────────────────────────────────
-// function CategoryTab({
-//   onSaved,
-// }: {
-//   onSaved: (msg: string, type?: "success" | "error") => void;
-// }) {
-//   const [adding, setAdding] = useState(false);
-//   const [newName, setNewName] = useState("");
-//   const [uploadingCatId, setUploadingCatId] = useState<string | null>(null);
-//   const [confirmLoading, setConfirmLoading] = useState(false);
-//   const [confirm, setConfirm] = useState<{
-//     type: "category" | "image";
-//     catId: string;
-//     imgId?: string;
-//     label: string;
-//   } | null>(null);
-//   const [lightbox, setLightbox] = useState<{
-//     img: CategoryImage;
-//     catId: string;
-//   } | null>(null);
-//   const newNameRef = useRef<HTMLInputElement>(null);
-
-//   const { data, isLoading, refetch } = useAllCategoryQuery("");
-//   const [createCategory, { isLoading: createLoading }] =
-//     useCreateCategoryMutation();
-//   const [updateCategory] = useUpdateCategoryMutation();
-//   const [deleteCategory] = useDeleteCategoryMutation();
-//   const [categoryImgUpload] = useCategoryImageUploadMutation();
-//   const [deleteCategoryImage] = useDeleteCategoryImageMutation();
-
-//   const categories: Category[] = React.useMemo(() => {
-//     if (!data?.data) return [];
-//     return data.data.map((cat: any) => ({
-//       id: cat._id,
-//       name: cat.name,
-//       images: (cat.images || []).map((url: string) => ({
-//         id: url,
-//         url,
-//         name: url.split("/").pop() || url,
-//       })),
-//     }));
-//   }, [data]);
-
-//   async function renameCategory(catId: string, newName: string) {
-//     try {
-//       await updateCategory({ id: catId, body: { name: newName } }).unwrap();
-//       refetch();
-//       onSaved("Category renamed successfully!");
-//     } catch {
-//       onSaved("Failed to rename category", "error");
-//     }
-//   }
-
-//   async function commitAdd() {
-//     const name = newName.trim();
-//     if (!name) return;
-//     try {
-//       await createCategory({ name }).unwrap();
-//       refetch();
-//       setNewName("");
-//       setAdding(false);
-//       onSaved("Category added successfully!");
-//     } catch {
-//       onSaved("Failed to add category", "error");
-//     }
-//   }
-
-//   function requestDeleteCategory(cat: Category) {
-//     setConfirm({
-//       type: "category",
-//       catId: cat.id,
-//       label: `Delete "${cat.name}"? All images will be removed.`,
-//     });
-//   }
-
-//   function requestDeleteImage(catId: string, imgId: string, imgName: string) {
-//     setConfirm({
-//       type: "image",
-//       catId,
-//       imgId,
-//       label: `Delete image "${imgName}"?`,
-//     });
-//   }
-
-//   async function handleConfirm() {
-//     if (!confirm) return;
-//     setConfirmLoading(true);
-//     try {
-//       if (confirm.type === "category") {
-//         await deleteCategory(confirm.catId).unwrap();
-//         refetch();
-//         onSaved("Category deleted");
-//       } else if (confirm.type === "image" && confirm.imgId) {
-//         await deleteCategoryImage({
-//           categoryId: confirm.catId,
-//           imageUrl: confirm.imgId,
-//         }).unwrap();
-//         refetch();
-//         if (lightbox && lightbox.img.id === confirm.imgId) setLightbox(null);
-//         onSaved("Image deleted successfully!");
-//       }
-//     } catch {
-//       onSaved(
-//         confirm.type === "category"
-//           ? "Failed to delete category"
-//           : "Failed to delete image",
-//         "error",
-//       );
-//     } finally {
-//       setConfirmLoading(false);
-//       setConfirm(null);
-//     }
-//   }
-
-//   async function addImage(catId: string, file: File) {
-//     setUploadingCatId(catId);
-//     try {
-//       const formData = new FormData();
-//       formData.append("files", file);
-//       await categoryImgUpload({ id: catId, body: formData }).unwrap();
-//       refetch();
-//       onSaved("Image uploaded successfully!");
-//     } catch {
-//       onSaved("Failed to upload image", "error");
-//     } finally {
-//       setUploadingCatId(null);
-//     }
-//   }
-
-//   if (isLoading) {
-//     return (
-//       <div className="flex items-center justify-center py-20">
-//         <Spinner />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <>
-//       {confirm && (
-//         <ConfirmDialog
-//           message={confirm.label}
-//           onConfirm={handleConfirm}
-//           onCancel={() => !confirmLoading && setConfirm(null)}
-//           loading={confirmLoading}
-//         />
-//       )}
-//       {lightbox && (
-//         <Lightbox
-//           img={lightbox.img}
-//           onClose={() => setLightbox(null)}
-//           onDelete={() => {
-//             const { img, catId } = lightbox;
-//             setLightbox(null);
-//             requestDeleteImage(catId, img.id, img.name);
-//           }}
-//         />
-//       )}
-
-//       <div className="space-y-5">
-//         <div className="flex items-center justify-between">
-//           <div>
-//             <h2 className="text-lg font-bold text-gray-900">Category Values</h2>
-//             <p className="mt-0.5 text-xs text-gray-400">
-//               {categories.length} categories · unlimited images per category
-//             </p>
-//           </div>
-//           <button
-//             onClick={() => {
-//               setAdding(true);
-//               setTimeout(() => newNameRef.current?.focus(), 50);
-//             }}
-//             disabled={createLoading}
-//             className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-95 disabled:opacity-60"
-//           >
-//             <svg
-//               className="h-4 w-4"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2.5}
-//                 d="M12 4v16m8-8H4"
-//               />
-//             </svg>
-//             Add Category
-//           </button>
-//         </div>
-
-//         <div className="flex items-center gap-4 px-5 pb-1">
-//           <div className="w-7 shrink-0" />
-//           <span className="min-w-0 flex-1 text-xs font-bold uppercase tracking-wider text-gray-400">
-//             Category Name
-//           </span>
-//           <div className="w-7 shrink-0" />
-//           <span className="shrink-0 pr-1 text-xs font-bold uppercase tracking-wider text-gray-400">
-//             Images
-//           </span>
-//         </div>
-
-//         {adding && (
-//           <div
-//             className="flex items-center gap-3 rounded-2xl border-2 border-orange-400 bg-orange-50/40 px-5 py-3.5"
-//             style={{ animation: "slideUp 0.2s ease" }}
-//           >
-//             <span className="h-7 w-7 shrink-0" />
-//             <input
-//               ref={newNameRef}
-//               value={newName}
-//               onChange={(e) => setNewName(e.target.value)}
-//               onKeyDown={(e) => {
-//                 if (e.key === "Enter") commitAdd();
-//                 if (e.key === "Escape") {
-//                   setAdding(false);
-//                   setNewName("");
-//                 }
-//               }}
-//               placeholder="Enter category name…"
-//               className="flex-1 bg-transparent text-sm font-semibold text-gray-800 outline-none placeholder:text-gray-300"
-//             />
-//             <div className="flex shrink-0 gap-2">
-//               <button
-//                 onClick={commitAdd}
-//                 disabled={createLoading}
-//                 className="rounded-xl bg-orange-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
-//               >
-//                 {createLoading ? "Adding…" : "Add"}
-//               </button>
-//               <button
-//                 onClick={() => {
-//                   setAdding(false);
-//                   setNewName("");
-//                 }}
-//                 className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-700"
-//               >
-//                 Cancel
-//               </button>
-//             </div>
-//           </div>
-//         )}
-
-//         <div className="space-y-2.5">
-//           {categories.length === 0 && (
-//             <div className="flex flex-col items-center justify-center py-16 text-center">
-//               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
-//                 <svg
-//                   className="h-6 w-6 text-gray-300"
-//                   fill="none"
-//                   stroke="currentColor"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={1.5}
-//                     d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-//                   />
-//                 </svg>
-//               </div>
-//               <p className="text-sm font-semibold text-gray-400">
-//                 No categories yet
-//               </p>
-//               <p className="mt-1 text-xs text-gray-300">
-//                 Click "+ Add Category" to get started
-//               </p>
-//             </div>
-//           )}
-//           {categories.map((cat, idx) => (
-//             <div
-//               key={cat.id}
-//               style={{ animation: `slideUp 0.2s ease ${idx * 0.03}s both` }}
-//             >
-//               <CategoryRow
-//                 category={cat}
-//                 onDeleteCategory={() => requestDeleteCategory(cat)}
-//                 onAddImage={(file) => addImage(cat.id, file)}
-//                 onDeleteImage={(imgId) => {
-//                   const img = cat.images.find((i) => i.id === imgId);
-//                   if (img) requestDeleteImage(cat.id, imgId, img.name);
-//                 }}
-//                 onImageClick={(img) => setLightbox({ img, catId: cat.id })}
-//                 onRename={(newName) => renameCategory(cat.id, newName)}
-//                 uploadingImg={uploadingCatId === cat.id}
-//               />
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
-// // ─── General Tab ──────────────────────────────────────────────────────────────
-// function GeneralTab({
-//   onSaved,
-// }: {
-//   onSaved: (msg: string, type?: "success" | "error") => void;
-// }) {
-//   const [showOld, setShowOld] = useState(false);
-//   const [showNew, setShowNew] = useState(false);
-//   const [showConf, setShowConf] = useState(false);
-//   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-//   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-//   const avatarRef = useRef<HTMLInputElement>(null);
-
-//   const { data: profileData, isLoading: profileFetching } =
-//     useGetMeProfileQuery("");
-//   const profile = profileData?.data;
-
-//   const {
-//     register,
-//     handleSubmit,
-//     watch,
-//     reset,
-//     formState: { errors, isSubmitting },
-//   } = useForm<GeneralForm>({
-//     defaultValues: {
-//       name: "",
-//       companyEmail: "",
-//       oldPassword: "",
-//       newPassword: "",
-//       confirmPassword: "",
-//     },
-//   });
-
-//   React.useEffect(() => {
-//     if (profile) {
-//       reset({
-//         name: profile.name ?? "",
-//         companyEmail: profile.email ?? "",
-//         oldPassword: "",
-//         newPassword: "",
-//         confirmPassword: "",
-//       });
-//       if (profile.picture) setAvatarPreview(profile.picture);
-//     }
-//   }, [profile, reset]);
-
-//   const [profileUpdate, { isLoading: profileLoading }] =
-//     useProfileUpdatesMutation();
-//   const newPassword = watch("newPassword");
-
-//   function handleAvatarFile(file: File) {
-//     setAvatarFile(file);
-//     setAvatarPreview(URL.createObjectURL(file));
-//   }
-
-//   async function onSubmit(data: GeneralForm) {
-//     try {
-//       const formData = new FormData();
-//       formData.append("name", data.name);
-//       if (avatarFile) formData.append("files", avatarFile);
-//       if (data.oldPassword) formData.append("oldPassword", data.oldPassword);
-//       if (data.newPassword) formData.append("newPassword", data.newPassword);
-//       if (data.confirmPassword)
-//         formData.append("confirmPassword", data.confirmPassword);
-//       await profileUpdate(formData).unwrap();
-//       onSaved("General settings saved successfully!");
-//     } catch {
-//       onSaved("Failed to save settings", "error");
-//     }
-//   }
-
-//   if (profileFetching) {
-//     return (
-//       <div className="flex items-center justify-center py-20">
-//         <Spinner />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <form onSubmit={handleSubmit(onSubmit)} noValidate>
-//       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-//         <div className="space-y-6">
-//           <h2 className="text-lg font-bold text-gray-900">General Settings</h2>
-
-//           <div>
-//             <FieldLabel>Profile Picture</FieldLabel>
-//             <div className="flex items-center gap-4">
-//               <div
-//                 className="relative h-20 w-20 cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 transition-colors hover:border-orange-400"
-//                 onClick={() => avatarRef.current?.click()}
-//               >
-//                 {avatarPreview ? (
-//                   <img
-//                     src={avatarPreview}
-//                     alt="Avatar"
-//                     className="h-full w-full object-cover"
-//                   />
-//                 ) : (
-//                   <div className="flex h-full w-full flex-col items-center justify-center gap-1">
-//                     <svg
-//                       className="h-7 w-7 text-gray-300"
-//                       fill="none"
-//                       stroke="currentColor"
-//                       viewBox="0 0 24 24"
-//                     >
-//                       <path
-//                         strokeLinecap="round"
-//                         strokeLinejoin="round"
-//                         strokeWidth={1.5}
-//                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-//                       />
-//                     </svg>
-//                   </div>
-//                 )}
-//                 <input
-//                   ref={avatarRef}
-//                   type="file"
-//                   accept="image/jpeg,image/png,image/webp"
-//                   className="hidden"
-//                   onChange={(e) => {
-//                     const f = e.target.files?.[0];
-//                     if (f) handleAvatarFile(f);
-//                   }}
-//                 />
-//               </div>
-//               <div>
-//                 <button
-//                   type="button"
-//                   onClick={() => avatarRef.current?.click()}
-//                   className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:border-orange-400 hover:text-orange-500"
-//                 >
-//                   {avatarPreview ? "Change Photo" : "Upload Photo"}
-//                 </button>
-//                 <p className="mt-1.5 text-xs text-gray-400">
-//                   JPEG, PNG, WEBP · max 2MB
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div>
-//             <FieldLabel>Full Name</FieldLabel>
-//             <input
-//               {...register("name", { required: "Name is required" })}
-//               placeholder="Full name"
-//               className={errors.name ? inputError : inputNormal}
-//             />
-//             <FieldError message={errors.name?.message} />
-//           </div>
-
-//           <div>
-//             <FieldLabel>Company Email</FieldLabel>
-//             <div className="relative">
-//               <input
-//                 {...register("companyEmail")}
-//                 type="email"
-//                 readOnly
-//                 tabIndex={-1}
-//                 className="w-full cursor-not-allowed select-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-sm text-gray-400 outline-none"
-//               />
-//               <span
-//                 className="absolute right-3 top-1/2 -translate-y-1/2"
-//                 title="Email cannot be changed"
-//               >
-//                 <svg
-//                   className="h-4 w-4 text-gray-300"
-//                   fill="none"
-//                   stroke="currentColor"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={2}
-//                     d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-6a4 4 0 100-8 4 4 0 000 8z"
-//                   />
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={2}
-//                     d="M17 11V7a5 5 0 00-10 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"
-//                   />
-//                 </svg>
-//               </span>
-//             </div>
-//             <FieldHint>Email address cannot be changed</FieldHint>
-//           </div>
-//         </div>
-
-//         <div className="space-y-6">
-//           <h2 className="text-lg font-bold text-gray-900">Change Password</h2>
-//           <div>
-//             <FieldLabel>Old Password</FieldLabel>
-//             <div className="relative">
-//               <input
-//                 {...register("oldPassword")}
-//                 type={showOld ? "text" : "password"}
-//                 placeholder="••••••••••"
-//                 className={`${inputNormal} pr-10`}
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => setShowOld(!showOld)}
-//                 className="absolute right-3 top-1/2 -translate-y-1/2"
-//               >
-//                 <IconEye show={showOld} />
-//               </button>
-//             </div>
-//           </div>
-//           <div>
-//             <FieldLabel>Enter New Password</FieldLabel>
-//             <div className="relative">
-//               <input
-//                 {...register("newPassword", {
-//                   minLength: { value: 8, message: "Min 8 characters" },
-//                 })}
-//                 type={showNew ? "text" : "password"}
-//                 placeholder="••••••••••"
-//                 className={`${errors.newPassword ? inputError : inputNormal} pr-10`}
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => setShowNew(!showNew)}
-//                 className="absolute right-3 top-1/2 -translate-y-1/2"
-//               >
-//                 <IconEye show={showNew} />
-//               </button>
-//             </div>
-//             <FieldError message={errors.newPassword?.message} />
-//           </div>
-//           <div>
-//             <FieldLabel>Confirm New Password</FieldLabel>
-//             <div className="relative">
-//               <input
-//                 {...register("confirmPassword", {
-//                   validate: (v) =>
-//                     !newPassword ||
-//                     v === newPassword ||
-//                     "Passwords do not match",
-//                 })}
-//                 type={showConf ? "text" : "password"}
-//                 placeholder="••••••••••"
-//                 className={`${errors.confirmPassword ? inputError : inputNormal} pr-10`}
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => setShowConf(!showConf)}
-//                 className="absolute right-3 top-1/2 -translate-y-1/2"
-//               >
-//                 <IconEye show={showConf} />
-//               </button>
-//             </div>
-//             <FieldError message={errors.confirmPassword?.message} />
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="mt-10 flex justify-end">
-//         <button
-//           type="submit"
-//           disabled={isSubmitting || profileLoading}
-//           className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-60"
-//         >
-//           <IconSave />
-//           {isSubmitting || profileLoading ? "Saving…" : "Update Changes"}
-//         </button>
-//       </div>
-//     </form>
-//   );
-// }
-
-// // ─── Points Tab ───────────────────────────────────────────────────────────────
-// function PointsTab({
-//   onSaved,
-// }: {
-//   onSaved: (msg: string, type?: "success" | "error") => void;
-// }) {
-//   const [selectedDept, setSelectedDept] = useState("");
-//   const [points, setPoints] = useState<string>("");
-//   const [pointEntries, setPointEntries] = useState<PointEntry[]>([]);
-//   const [submitting, setSubmitting] = useState(false);
-
-//   const [pointDistribute, { isLoading: pointLoading }] =
-//     usePointDristributeMutation();
-
-//   async function handleAddEntry() {
-//     if (!selectedDept || !points || Number(points) <= 0) return;
-//     const deptLabel =
-//       DEPARTMENTS.find((d) => d.value === selectedDept)?.label || selectedDept;
-//     if (pointEntries.some((e) => e.department === selectedDept)) {
-//       onSaved(`Points already set for ${deptLabel}`, "error");
-//       return;
-//     }
-//     setPointEntries((prev) => [
-//       ...prev,
-//       {
-//         id: Date.now().toString(),
-//         department: selectedDept,
-//         points: Number(points),
-//       },
-//     ]);
-//     setSelectedDept("");
-//     setPoints("");
-//   }
-
-//   function removeEntry(id: string) {
-//     setPointEntries((prev) => prev.filter((e) => e.id !== id));
-//   }
-
-//   async function handleSubmitAll() {
-//     if (pointEntries.length === 0) return;
-//     setSubmitting(true);
-//     let failed = 0;
-//     for (const entry of pointEntries) {
-//       try {
-//         await pointDistribute({
-//           department: entry.department,
-//           points: entry.points,
-//         }).unwrap();
-//       } catch {
-//         failed++;
-//       }
-//     }
-//     setSubmitting(false);
-//     if (failed === 0) {
-//       setPointEntries([]);
-//       onSaved("Points distributed successfully!");
-//     } else {
-//       onSaved(`${failed} department(s) failed to update`, "error");
-//     }
-//   }
-
-//   const availableDepts = DEPARTMENTS.filter(
-//     (d) => !pointEntries.some((e) => e.department === d.value),
-//   );
-
-//   return (
-//     <div className="max-w-2xl space-y-8">
-//       <h2 className="text-lg font-bold text-gray-900">Points Distribution</h2>
-//       <p className="text-sm text-gray-500">
-//         Assign points to departments. Select a department and enter points, then
-//         add more entries before submitting.
-//       </p>
-
-//       <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-5">
-//         <h3 className="mb-4 text-sm font-bold text-gray-700">
-//           Add Department Points
-//         </h3>
-//         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-//           <div className="flex-1">
-//             <FieldLabel>Department</FieldLabel>
-//             <select
-//               value={selectedDept}
-//               onChange={(e) => setSelectedDept(e.target.value)}
-//               className={`${inputNormal} cursor-pointer`}
-//             >
-//               <option value="">Select department…</option>
-//               {availableDepts.map((d) => (
-//                 <option key={d.value} value={d.value}>
-//                   {d.label}
-//                 </option>
-//               ))}
-//             </select>
-//           </div>
-//           <div className="w-full sm:w-40">
-//             <FieldLabel>Points</FieldLabel>
-//             <div className="relative">
-//               <input
-//                 type="number"
-//                 value={points}
-//                 onChange={(e) => setPoints(e.target.value)}
-//                 placeholder="100"
-//                 min={1}
-//                 className={`${inputNormal} pr-14`}
-//               />
-//               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-amber-500">
-//                 pts
-//               </span>
-//             </div>
-//           </div>
-//           <button
-//             type="button"
-//             onClick={handleAddEntry}
-//             disabled={!selectedDept || !points || Number(points) <= 0}
-//             className="flex h-[46px] items-center gap-2 rounded-xl bg-orange-500 px-5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-95 disabled:opacity-40"
-//           >
-//             <svg
-//               className="h-4 w-4"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2.5}
-//                 d="M12 4v16m8-8H4"
-//               />
-//             </svg>
-//             Add
-//           </button>
-//         </div>
-//       </div>
-
-//       {pointEntries.length > 0 && (
-//         <div className="space-y-3">
-//           <h3 className="text-sm font-bold text-gray-700">
-//             Pending Distribution ({pointEntries.length})
-//           </h3>
-//           <div className="space-y-2">
-//             {pointEntries.map((entry, idx) => {
-//               const deptLabel =
-//                 DEPARTMENTS.find((d) => d.value === entry.department)?.label ||
-//                 entry.department;
-//               return (
-//                 <div
-//                   key={entry.id}
-//                   className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white px-5 py-3.5 shadow-sm"
-//                   style={{ animation: `slideUp 0.2s ease ${idx * 0.04}s both` }}
-//                 >
-//                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50">
-//                     <svg
-//                       className="h-4 w-4 text-orange-500"
-//                       fill="none"
-//                       stroke="currentColor"
-//                       viewBox="0 0 24 24"
-//                     >
-//                       <path
-//                         strokeLinecap="round"
-//                         strokeLinejoin="round"
-//                         strokeWidth={2}
-//                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-//                       />
-//                     </svg>
-//                   </div>
-//                   <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-800">
-//                     {deptLabel}
-//                   </span>
-//                   <span className="shrink-0 rounded-full bg-amber-50 px-3 py-1 text-sm font-bold text-amber-600">
-//                     {entry.points.toLocaleString()} pts
-//                   </span>
-//                   <button
-//                     onClick={() => removeEntry(entry.id)}
-//                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-//                   >
-//                     <svg
-//                       className="h-4 w-4"
-//                       fill="none"
-//                       stroke="currentColor"
-//                       viewBox="0 0 24 24"
-//                     >
-//                       <path
-//                         strokeLinecap="round"
-//                         strokeLinejoin="round"
-//                         strokeWidth={2.5}
-//                         d="M6 18L18 6M6 6l12 12"
-//                       />
-//                     </svg>
-//                   </button>
-//                 </div>
-//               );
-//             })}
-//           </div>
-
-//           <div className="flex items-center justify-between rounded-xl bg-orange-50 px-5 py-3">
-//             <span className="text-sm font-semibold text-orange-700">
-//               Total Points
-//             </span>
-//             <span className="text-base font-black text-orange-600">
-//               {pointEntries.reduce((s, e) => s + e.points, 0).toLocaleString()}{" "}
-//               pts
-//             </span>
-//           </div>
-
-//           <div className="flex justify-end pt-1">
-//             <button
-//               onClick={handleSubmitAll}
-//               disabled={submitting || pointLoading}
-//               className="flex items-center gap-2 rounded-xl bg-orange-500 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-60"
-//             >
-//               <IconSave />
-//               {submitting || pointLoading
-//                 ? "Distributing…"
-//                 : "Distribute Points"}
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {pointEntries.length === 0 && (
-//         <div className="flex flex-col items-center justify-center py-10 text-center">
-//           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100">
-//             <svg
-//               className="h-6 w-6 text-gray-300"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={1.5}
-//                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-//               />
-//             </svg>
-//           </div>
-//           <p className="text-sm font-semibold text-gray-400">
-//             No departments added yet
-//           </p>
-//           <p className="mt-1 text-xs text-gray-300">
-//             Select a department and enter points above
-//           </p>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// // ─── Branding Tab ─────────────────────────────────────────────────────────────
-// function BrandingTab({
-//   onSaved,
-// }: {
-//   onSaved: (msg: string, type?: "success" | "error") => void;
-// }) {
-//   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-//   const [isDragging, setIsDragging] = useState(false);
-//   const logoInputRef = useRef<HTMLInputElement>(null);
-//   const {
-//     register,
-//     handleSubmit,
-//     watch,
-//     formState: { isSubmitting },
-//   } = useForm<BrandingForm>({
-//     defaultValues: { primaryColor: "#f97316", highlightColor: "#f1a455" },
-//   });
-//   const primaryColor = watch("primaryColor");
-//   const highlightColor = watch("highlightColor");
-
-//   function handleLogoFile(file: File) {
-//     setLogoPreview(URL.createObjectURL(file));
-//   }
-//   function handleDrop(e: React.DragEvent) {
-//     e.preventDefault();
-//     setIsDragging(false);
-//     const file = e.dataTransfer.files?.[0];
-//     if (file && file.type.startsWith("image/")) handleLogoFile(file);
-//   }
-//   async function onSubmit(_data: BrandingForm) {
-//     await new Promise((r) => setTimeout(r, 600));
-//     onSaved("Branding preferences saved!");
-//   }
-
-//   return (
-//     <form onSubmit={handleSubmit(onSubmit)} noValidate>
-//       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-//         <div className="space-y-8">
-//           <h2 className="text-lg font-bold text-gray-900">Branding</h2>
-
-//           <div>
-//             <FieldLabel>Company Logo</FieldLabel>
-//             <div
-//               onDragOver={(e) => {
-//                 e.preventDefault();
-//                 setIsDragging(true);
-//               }}
-//               onDragLeave={() => setIsDragging(false)}
-//               onDrop={handleDrop}
-//               onClick={() => logoInputRef.current?.click()}
-//               className={`cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${
-//                 isDragging
-//                   ? "border-orange-400 bg-orange-50"
-//                   : "border-gray-200 bg-gray-50 hover:border-orange-300 hover:bg-orange-50/50"
-//               }`}
-//             >
-//               {logoPreview ? (
-//                 <div className="flex flex-col items-center gap-3">
-//                   <img
-//                     src={logoPreview}
-//                     alt="Logo preview"
-//                     className="h-20 max-w-full object-contain"
-//                   />
-//                   <p className="text-xs text-gray-400">Click to replace</p>
-//                 </div>
-//               ) : (
-//                 <div className="flex flex-col items-center gap-3">
-//                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
-//                     <svg
-//                       className="h-6 w-6 text-orange-400"
-//                       fill="none"
-//                       stroke="currentColor"
-//                       viewBox="0 0 24 24"
-//                     >
-//                       <path
-//                         strokeLinecap="round"
-//                         strokeLinejoin="round"
-//                         strokeWidth={1.5}
-//                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-//                       />
-//                     </svg>
-//                   </div>
-//                   <div>
-//                     <p className="text-sm font-semibold text-gray-700">
-//                       Drag and drop your files
-//                     </p>
-//                     <p className="mt-1 text-xs text-gray-400">
-//                       JPEG, PNG formats, up to 1MB
-//                     </p>
-//                   </div>
-//                   <button
-//                     type="button"
-//                     onClick={(e) => {
-//                       e.stopPropagation();
-//                       logoInputRef.current?.click();
-//                     }}
-//                     className="rounded-lg border border-gray-200 bg-white px-4 py-1.5 text-sm text-gray-600 transition-colors hover:border-orange-400 hover:text-orange-500"
-//                   >
-//                     Select file
-//                   </button>
-//                 </div>
-//               )}
-//               <input
-//                 ref={logoInputRef}
-//                 type="file"
-//                 accept="image/jpeg,image/png"
-//                 className="hidden"
-//                 onChange={(e) => {
-//                   const f = e.target.files?.[0];
-//                   if (f) handleLogoFile(f);
-//                 }}
-//               />
-//             </div>
-//           </div>
-
-//           <div>
-//             <FieldLabel>Primary Color</FieldLabel>
-//             <div className="flex items-center gap-3">
-//               <input
-//                 {...register("primaryColor")}
-//                 type="color"
-//                 className="h-12 w-24 cursor-pointer rounded-xl border border-gray-200 p-1 outline-none"
-//               />
-//               <input
-//                 {...register("primaryColor")}
-//                 type="text"
-//                 className={inputNormal}
-//               />
-//             </div>
-//           </div>
-
-//           <div>
-//             <FieldLabel>Highlight Point Color</FieldLabel>
-//             <div className="flex items-center gap-3">
-//               <input
-//                 {...register("highlightColor")}
-//                 type="color"
-//                 className="h-12 w-24 cursor-pointer rounded-xl border border-gray-200 p-1 outline-none"
-//               />
-//               <input
-//                 {...register("highlightColor")}
-//                 type="text"
-//                 className={inputNormal}
-//               />
-//             </div>
-//           </div>
-
-//           <div className="flex justify-end">
-//             <button
-//               type="submit"
-//               disabled={isSubmitting}
-//               className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-60"
-//             >
-//               <IconSave />
-//               {isSubmitting ? "Saving…" : "Update Changes"}
-//             </button>
-//           </div>
-//         </div>
-
-//         <div>
-//           <h2 className="mb-6 text-lg font-bold text-gray-900">Live Preview</h2>
-//           <div
-//             className="overflow-hidden rounded-2xl shadow-lg"
-//             style={{ background: primaryColor }}
-//           >
-//             <div className="px-6 pb-4 pt-6">
-//               {logoPreview ? (
-//                 <img
-//                   src={logoPreview}
-//                   alt="Logo"
-//                   className="h-8 max-w-[120px] object-contain brightness-0 invert"
-//                 />
-//               ) : (
-//                 <span className="text-2xl font-black tracking-tight text-white">
-//                   Greetely
-//                 </span>
-//               )}
-//             </div>
-//             <div className="mx-4 mb-4 rounded-xl bg-white/10 p-5">
-//               <p className="mb-1 text-xs text-white/70">To:</p>
-//               <h3 className="text-xl font-bold text-white">Sarah Ahmed</h3>
-//               <p className="mb-4 text-xs text-white/60">
-//                 Engineering Department
-//               </p>
-//               <div className="rounded-lg bg-white/15 p-4">
-//                 <p className="text-sm leading-relaxed text-white">
-//                   Sarah, your exceptional work on the Q4 project truly
-//                   exemplifies our core value of Excellence. Your dedication and
-//                   attention to detail made a significant impact on the team's
-//                   success. Thank you!
-//                 </p>
-//               </div>
-//               <div className="mt-4 flex items-center justify-between">
-//                 <span
-//                   className="rounded-full px-3 py-1 text-xs font-bold text-white"
-//                   style={{ background: highlightColor + "55" }}
-//                 >
-//                   Teamwork
-//                 </span>
-//                 <span className="text-sm font-bold text-white">100 Pts</span>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </form>
-//   );
-// }
-
-// // ─── Main Settings Component ──────────────────────────────────────────────────
-// export default function Settings() {
-//   const [activeTab, setActiveTab] = useState<Tab>("general");
-//   const [toast, setToast] = useState<{
-//     msg: string;
-//     type: "success" | "error";
-//   } | null>(null);
-
-//   const tabs: {
-//     id: Tab;
-//     label: string;
-//     short: string;
-//     icon: (a: boolean) => React.ReactNode;
-//   }[] = [
-//     {
-//       id: "general",
-//       label: "General",
-//       short: "General",
-//       icon: (a) => <IconUser active={a} />,
-//     },
-//     {
-//       id: "points",
-//       label: "Points Allocation",
-//       short: "Points",
-//       icon: (a) => <IconPoints active={a} />,
-//     },
-//     {
-//       id: "category",
-//       label: "Category",
-//       short: "Category",
-//       icon: (a) => <IconCategory active={a} />,
-//     },
-//     {
-//       id: "department",
-//       label: "Department",
-//       short: "Dept",
-//       icon: (a) => <IconDepartment active={a} />,
-//     },
-//   ];
-
-//   function showToast(msg: string, type: "success" | "error" = "success") {
-//     setToast({ msg, type });
-//   }
-
-//   return (
-//     <>
-//       <style>{`
-//         @keyframes slideUp {
-//           from { opacity: 0; transform: translateY(12px); }
-//           to   { opacity: 1; transform: translateY(0); }
-//         }
-//       `}</style>
-
-//       <div>
-//         {toast && (
-//           <Toast
-//             message={toast.msg}
-//             type={toast.type}
-//             onDone={() => setToast(null)}
-//           />
-//         )}
-
-//         <div>
-//           <h1 className="mb-6 text-2xl font-bold text-gray-900 lg:text-3xl">
-//             Settings
-//           </h1>
-
-//           {/* Tab Bar */}
-//           <div className="mb-8 flex items-center gap-1 border-b border-gray-200">
-//             {tabs.map((tab) => {
-//               const isActive = activeTab === tab.id;
-//               return (
-//                 <button
-//                   key={tab.id}
-//                   onClick={() => setActiveTab(tab.id)}
-//                   className={`relative flex items-center gap-2 rounded-t-xl px-4 py-2.5 text-sm font-semibold transition-all duration-150 sm:px-5 ${
-//                     isActive
-//                       ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-//                       : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-//                   }`}
-//                 >
-//                   {tab.icon(isActive)}
-//                   <span className="hidden sm:inline">{tab.label}</span>
-//                   <span className="sm:hidden">{tab.short}</span>
-//                 </button>
-//               );
-//             })}
-//           </div>
-
-//           {/* Tab Content */}
-//           <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
-//             {activeTab === "general" && <GeneralTab onSaved={showToast} />}
-//             {activeTab === "points" && <PointsTab onSaved={showToast} />}
-//             {activeTab === "category" && <CategoryTab onSaved={showToast} />}
-//             {activeTab === "department" && (
-//               <DepartmentTab onSaved={showToast} />
-//             )}
-//             {activeTab === "branding" && <BrandingTab onSaved={showToast} />}
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
 "use client";
 
-import { useGetDepartmentQuery } from "@/redux/api/department/departmentSlice";
 import {
-  useGetAllUsersQuery,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-  useUserApprovedMutation,
-  useUserRejectedMutation,
-} from "@/redux/api/users/usersSliceApi";
-import { useEffect, useMemo, useState } from "react";
-
-import { toast } from "sonner";
+  useCreateDepartmentMutation,
+  useDeteteDepartmentMutation,
+  useGetDepartmentQuery,
+  useUpdateDepartmentMutation,
+} from "@/redux/api/department/departmentSlice";
+import { useGetMeProfileQuery } from "@/redux/api/getMe/getMeApi";
+import {
+  useAllCategoryQuery,
+  useCategoryImageUploadMutation,
+  useCreateCategoryMutation,
+  useDeleteCategoryImageMutation,
+  useDeleteCategoryMutation,
+  usePointDristributeMutation,
+  useProfileUpdatesMutation,
+  useUpdateCategoryMutation,
+} from "@/redux/api/settings/settingsSliceApi";
+import React, { useState, useRef } from "react";
+import { useForm } from "react-hook-form";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Role = "Employee" | "Manager" | "Admin";
-type Status = "Pending" | "Approved" | "Rejected";
+type Tab = "general" | "points" | "category" | "department" | "branding";
 
-interface Employee {
+interface GeneralForm {
+  name: string;
+  companyEmail: string;
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+interface BrandingForm {
+  primaryColor: string;
+  highlightColor: string;
+}
+
+interface CategoryImage {
+  id: string;
+  url: string;
+  name: string;
+}
+
+interface Category {
   id: string;
   name: string;
-  email: string;
-  department: string;
-  pointsBalance: number;
-  role: Role;
-  status: Status;
-  rawRole: string;
-  rawIsActive: string;
-  accountType: string;
-  isDeleted: boolean;
-  isVerified: boolean;
+  images: CategoryImage[];
 }
 
-// ─── API Department type ──────────────────────────────────────────────────────
-interface ApiDepartment {
-  _id: string;
+interface PointEntry {
+  id: string;
+  department: string;
+  points: number;
+}
+
+interface Department {
+  id: string;
   name: string;
   createdAt: string;
-  updatedAt: string;
-  __v: number;
 }
 
-// ─── API mappers ──────────────────────────────────────────────────────────────
-const ROLE_TO_DISPLAY: Record<string, Role> = {
-  SUPER_ADMIN: "Admin",
-  ADMIN: "Admin",
-  MANAGER: "Manager",
-  USER: "Employee",
-};
-const ROLE_TO_API: Record<Role, string> = {
-  Admin: "ADMIN",
-  Manager: "MANAGER",
-  Employee: "USER",
-};
-
-const STATUS_TO_DISPLAY = (apiStatus: string): Status => {
-  if (apiStatus === "APPROVED") return "Approved";
-  if (apiStatus === "REJECTED") return "Rejected";
-  return "Pending";
-};
-
-function mapApiUser(u: any): Employee {
-  const rawStatus = u.status ?? "PENDING";
-  return {
-    id: u._id,
-    name: u.name,
-    email: u.email,
-    department: u.department ?? "—",
-    pointsBalance: u.wallet?.pointsBalance ?? 0,
-    role: ROLE_TO_DISPLAY[u.role] ?? "Employee",
-    status: STATUS_TO_DISPLAY(rawStatus),
-    rawRole: u.role,
-    rawIsActive: u.isActive,
-    accountType: u.accountType ?? "INDIVIDUAL",
-    isDeleted: u.isDeleted ?? false,
-    isVerified: u.isVerified ?? true,
-  };
-}
-
-const ROLES: Role[] = ["Employee", "Admin"];
-const STATUSES: Status[] = ["Pending", "Approved", "Rejected"];
-const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-const AVATAR_COLORS = [
-  "bg-orange-100 text-orange-600",
-  "bg-blue-100 text-blue-600",
-  "bg-green-100 text-green-600",
-  "bg-purple-100 text-purple-600",
-  "bg-pink-100 text-pink-600",
-  "bg-teal-100 text-teal-600",
+// ─── Constants ────────────────────────────────────────────────────────────────
+const DEPARTMENTS = [
+  { label: "Sales", value: "Sales" },
+  { label: "Marketing", value: "Marketing" },
+  { label: "Finance & Accounting", value: "Finance & Accounting" },
+  { label: "Operations", value: "Operations" },
+  { label: "Human Resources (HR)", value: "Human Resources (HR)" },
+  {
+    label: "Information Technology (IT)",
+    value: "Information Technology (IT)",
+  },
+  { label: "Customer Service", value: "Customer Service" },
+  {
+    label: "Research & Development (R&D)",
+    value: "Research & Development (R&D)",
+  },
+  { label: "Legal, Risk & Compliance", value: "Legal, Risk & Compliance" },
+  { label: "Administration", value: "Administration" },
 ];
 
-function avatarColor(id: string) {
-  const hash = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
-
-// ─── Badges ───────────────────────────────────────────────────────────────────
-function RoleBadge({ role }: { role: Role }) {
-  const styles: Record<Role, string> = {
-    Employee: "bg-gray-100 text-gray-600",
-    Manager: "bg-purple-100 text-purple-600",
-    Admin: "bg-orange-100 text-orange-600",
-  };
+// ─── Icons ────────────────────────────────────────────────────────────────────
+function IconUser({ active }: { active: boolean }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[role]}`}
+    <svg
+      className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
     >
-      {role}
-    </span>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
+    </svg>
+  );
+}
+function IconPoints({ active }: { active: boolean }) {
+  return (
+    <svg
+      className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  );
+}
+function IconCategory({ active }: { active: boolean }) {
+  return (
+    <svg
+      className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+      />
+    </svg>
+  );
+}
+function IconDepartment({ active }: { active: boolean }) {
+  return (
+    <svg
+      className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+      />
+    </svg>
+  );
+}
+function IconBranding({ active }: { active: boolean }) {
+  return (
+    <svg
+      className={`h-4 w-4 ${active ? "text-white" : "text-gray-500"}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+      />
+    </svg>
+  );
+}
+function IconSave() {
+  return (
+    <svg
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+      />
+    </svg>
+  );
+}
+function IconEye({ show }: { show: boolean }) {
+  return show ? (
+    <svg
+      className="h-4 w-4 text-gray-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+      />
+    </svg>
+  ) : (
+    <svg
+      className="h-4 w-4 text-gray-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+      />
+    </svg>
   );
 }
 
-// ─── Status Badge ─────────────────────────────────────────────────────────────
-function StatusBadge({
-  status,
-  accountType,
-  name,
-}: {
-  status: Status;
-  accountType: string;
-  name: string;
-}) {
-  if (accountType === "INDIVIDUAL") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
-        <svg
-          className="h-3 w-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-          />
-        </svg>
-        INDIVIDUAL
-      </span>
-    );
-  }
-
+// ─── Shared Field Components ──────────────────────────────────────────────────
+function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="inline-flex max-w-[150px] items-center gap-1.5 truncate rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-600">
-        <svg
-          className="h-3 w-3 shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-          />
-        </svg>
-        ORGANIZATION
-      </span>
-    </div>
+    <label className="mb-2 block text-sm font-bold text-gray-800">
+      {children}
+    </label>
+  );
+}
+function FieldHint({ children }: { children: React.ReactNode }) {
+  return <p className="mt-1.5 text-xs text-gray-400">{children}</p>;
+}
+function FieldError({ message }: { message?: string }) {
+  return message ? (
+    <p className="mt-1.5 text-xs text-red-500">{message}</p>
+  ) : null;
+}
+
+const inputBase =
+  "w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all placeholder:text-gray-300 focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400";
+const inputNormal = `${inputBase} border-gray-200 bg-white text-gray-800`;
+const inputError = `${inputBase} border-red-300 bg-red-50/30 text-gray-800`;
+
+// ─── Spinner ──────────────────────────────────────────────────────────────────
+function Spinner({ className = "h-8 w-8" }: { className?: string }) {
+  return (
+    <svg
+      className={`animate-spin text-orange-400 ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
+    </svg>
   );
 }
 
-// ─── Approve / Reject Buttons ─────────────────────────────────────────────────
-function ApproveRejectButtons({
-  employee,
-  onApprove,
-  onReject,
-  isApprovLoading,
-  isRejectedLoading,
-  activeId,
+// ─── Global Toast ─────────────────────────────────────────────────────────────
+function Toast({
+  message,
+  type = "success",
+  onDone,
 }: {
-  employee: Employee;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
-  isApprovLoading: boolean;
-  isRejectedLoading: boolean;
-  activeId: string | null;
+  message: string;
+  type?: "success" | "error";
+  onDone: () => void;
 }) {
-  if (employee.accountType === "INDIVIDUAL") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-600">
-        <svg
-          className="h-3.5 w-3.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-        Approved
-      </span>
-    );
-  }
-
-  const isThisLoading =
-    activeId === employee.id && (isApprovLoading || isRejectedLoading);
-
-  if (employee.status === "Approved") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-600">
-        <svg
-          className="h-3.5 w-3.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-        Approved
-      </span>
-    );
-  }
-
-  if (employee.status === "Rejected") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-500">
-        <svg
-          className="h-3.5 w-3.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-        Rejected
-      </span>
-    );
-  }
-
+  React.useEffect(() => {
+    const t = setTimeout(onDone, 2600);
+    return () => clearTimeout(t);
+  }, [onDone]);
   return (
-    <div className="flex items-center gap-1.5">
-      <button
-        onClick={() => onApprove(employee.id)}
-        disabled={isThisLoading}
-        title="Approve organisation"
-        className="flex items-center gap-1 rounded-lg bg-green-500 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-green-500/20 transition-all hover:bg-green-600 disabled:opacity-50"
+    <div
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-gray-900 px-5 py-3 text-white shadow-2xl"
+      style={{ animation: "slideUp 0.3s ease" }}
+    >
+      <span
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${type === "success" ? "bg-emerald-500" : "bg-red-500"}`}
       >
-        {isThisLoading && isApprovLoading ? (
+        {type === "success" ? (
           <svg
-            className="h-3.5 w-3.5 animate-spin"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8z"
-            />
-          </svg>
-        ) : (
-          <svg
-            className="h-3.5 w-3.5"
+            className="h-3.5 w-3.5 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -2649,43 +300,13 @@ function ApproveRejectButtons({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2.5}
+              strokeWidth={3}
               d="M5 13l4 4L19 7"
-            />
-          </svg>
-        )}
-        Approve
-      </button>
-
-      <button
-        onClick={() => onReject(employee.id)}
-        disabled={isThisLoading}
-        title="Reject organisation"
-        className="flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-500 transition-all hover:bg-red-500 hover:text-white disabled:opacity-50"
-      >
-        {isThisLoading && isRejectedLoading ? (
-          <svg
-            className="h-3.5 w-3.5 animate-spin"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8z"
             />
           </svg>
         ) : (
           <svg
-            className="h-3.5 w-3.5"
+            className="h-3.5 w-3.5 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -2698,178 +319,61 @@ function ApproveRejectButtons({
             />
           </svg>
         )}
-        Reject
-      </button>
+      </span>
+      <span className="text-sm font-medium">{message}</span>
     </div>
   );
 }
 
-// ─── Field wrapper ────────────────────────────────────────────────────────────
-function Field({
-  label,
-  error,
-  hint,
-  children,
-}: {
-  label: string;
-  error?: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-        {label}
-      </label>
-      {children}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-      {!error && hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
-    </div>
-  );
-}
-
-const inputCls = (err?: string) =>
-  `w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 ${err ? "border-red-400 bg-red-50/30" : "border-gray-200"}`;
-
-const selectCls =
-  "w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-orange-500 font-medium outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 appearance-none bg-white";
-
-function SelectWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative">
-      {children}
-      <svg
-        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </div>
-  );
-}
-
-// ─── Delete Confirm Modal ─────────────────────────────────────────────────────
-function DeleteModal({
-  employee,
-  onClose,
+// ─── Confirm Dialog ───────────────────────────────────────────────────────────
+function ConfirmDialog({
+  message,
   onConfirm,
-  isLoading,
+  onCancel,
+  loading,
 }: {
-  employee: Employee;
-  onClose: () => void;
+  message: string;
   onConfirm: () => void;
-  isLoading: boolean;
+  onCancel: () => void;
+  loading?: boolean;
 }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <div
-        className="relative mx-auto w-full max-w-md rounded-2xl bg-white shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex flex-col items-center px-6 pb-2 pt-8 text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
-            <svg
-              className="h-7 w-7 text-red-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-gray-900">Remove Employee</h2>
-          <p className="mt-2 text-sm leading-relaxed text-gray-500">
-            Are you sure you want to remove{" "}
-            <span className="font-semibold text-gray-800">{employee.name}</span>
-            ?
-            <br />
-            This action cannot be undone.
-          </p>
-          <div className="mt-4 flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-left">
-            <div
-              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(employee.id)}`}
-            >
-              {getInitials(employee.name)}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-gray-800">
-                {employee.name}
-              </p>
-              <p className="truncate text-xs text-gray-400">{employee.email}</p>
-            </div>
-            <RoleBadge role={employee.role} />
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-red-50">
+          <svg
+            className="h-5 w-5 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
         </div>
-        <div className="mt-6 flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-100 bg-gray-50/60 px-6 py-4">
+        <h3 className="mb-1.5 text-base font-bold text-gray-900">
+          Confirm Delete
+        </h3>
+        <p className="mb-6 text-sm text-gray-500">{message}</p>
+        <div className="flex gap-3">
           <button
-            onClick={onClose}
-            disabled={isLoading}
-            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-50"
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-xl bg-red-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-500/25 transition-colors hover:bg-red-600 disabled:opacity-50"
+            disabled={loading}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-2.5 text-sm font-bold text-white transition-colors hover:bg-red-600 disabled:opacity-60"
           >
-            {isLoading ? (
-              <>
-                <svg
-                  className="h-4 w-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8z"
-                  />
-                </svg>
-                Removing...
-              </>
-            ) : (
-              <>
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                Yes, Remove
-              </>
-            )}
+            {loading ? <Spinner className="h-4 w-4" /> : null}
+            {loading ? "Deleting…" : "Delete"}
           </button>
         </div>
       </div>
@@ -2877,127 +381,474 @@ function DeleteModal({
   );
 }
 
-// ─── Employee Modal ───────────────────────────────────────────────────────────
-type FormState = {
-  name: string;
-  email: string;
-  department: string;
-  role: Role;
-  status: Status;
-  pointsBalance: number;
-};
-
-interface EmployeeModalProps {
-  mode: "add" | "edit";
-  initial?: Employee;
+// ─── Image Lightbox ───────────────────────────────────────────────────────────
+function Lightbox({
+  img,
+  onClose,
+  onDelete,
+}: {
+  img: CategoryImage;
   onClose: () => void;
-  onSave: (data: FormState) => void;
-  isSaving?: boolean;
-  // ↓ API-driven department list passed from parent
-  departments: string[];
-  isDepartmentsLoading?: boolean;
+  onDelete: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative mx-4 w-full max-w-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <img
+          src={img.url}
+          alt={img.name}
+          className="max-h-[70vh] w-full rounded-2xl object-contain"
+        />
+        <div className="mt-3 flex items-center justify-between px-1">
+          <span className="truncate text-sm text-white/70">{img.name}</span>
+          <div className="flex gap-2">
+            <button
+              onClick={onDelete}
+              className="flex items-center gap-1.5 rounded-xl bg-red-500/90 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-500"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+              Delete Image
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function EmployeeModal({
-  mode,
-  initial,
-  onClose,
-  onSave,
-  isSaving,
-  departments,
-  isDepartmentsLoading,
-}: EmployeeModalProps) {
-  // Pick a valid default department:
-  // 1. If editing and the employee's dept exists in the API list → use it
-  // 2. Otherwise fall back to the first dept in the list (or "" while loading)
-  const defaultDept = useMemo(() => {
-    if (initial?.department && departments.includes(initial.department)) {
-      return initial.department;
-    }
-    return departments[0] ?? "";
-  }, [initial?.department, departments]);
+// ─── Image Thumbnail ──────────────────────────────────────────────────────────
+function ImageThumb({
+  img,
+  onDelete,
+  onClick,
+}: {
+  img: CategoryImage;
+  onDelete: (e: React.MouseEvent) => void;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      className="group relative h-[52px] w-[52px] shrink-0 cursor-pointer overflow-visible rounded-xl border border-gray-100 shadow-sm transition-all hover:scale-105 hover:shadow-md"
+      style={{ transition: "transform 0.15s ease, box-shadow 0.15s ease" }}
+      onClick={onClick}
+    >
+      <img
+        src={img.url}
+        alt={img.name}
+        className="h-full w-full rounded-xl object-cover"
+      />
+      <div className="absolute inset-0 rounded-xl bg-black/0 transition-all duration-150 group-hover:bg-black/20" />
+      <button
+        onClick={onDelete}
+        className="absolute -right-1.5 -top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white opacity-0 shadow-md transition-opacity duration-150 hover:bg-red-600 group-hover:opacity-100"
+        title="Delete image"
+      >
+        <svg
+          className="h-2.5 w-2.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={3}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
-  const [form, setForm] = useState<FormState>({
-    name: initial?.name ?? "",
-    email: initial?.email ?? "",
-    department: defaultDept,
-    role: initial?.role ?? "Employee",
-    status: initial?.status ?? "Pending",
-    pointsBalance: initial?.pointsBalance ?? 1000,
-  });
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof FormState, string>>
-  >({});
+// ─── Upload Slot ──────────────────────────────────────────────────────────────
+function UploadSlot({
+  onUpload,
+  loading,
+}: {
+  onUpload: (file: File) => void;
+  loading?: boolean;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) onUpload(file);
+    e.target.value = "";
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => ref.current?.click()}
+      disabled={loading}
+      className="group flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 transition-all hover:border-orange-400 hover:bg-orange-50 disabled:opacity-50"
+      title="Upload image"
+    >
+      {loading ? (
+        <Spinner className="h-4 w-4" />
+      ) : (
+        <svg
+          className="h-5 w-5 text-gray-300 transition-colors group-hover:text-orange-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      )}
+      <input
+        ref={ref}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleChange}
+      />
+    </button>
+  );
+}
 
-  // Keep department in sync once the API list arrives (handles async load)
-  useEffect(() => {
-    if (!form.department && departments.length > 0) {
-      setForm((f) => ({ ...f, department: departments[0] }));
-    }
-  }, [departments]);
+// ─── Category Row ─────────────────────────────────────────────────────────────
+function CategoryRow({
+  category,
+  onDeleteCategory,
+  onAddImage,
+  onDeleteImage,
+  onImageClick,
+  onRename,
+  uploadingImg,
+}: {
+  category: Category;
+  onDeleteCategory: () => void;
+  onAddImage: (file: File) => void;
+  onDeleteImage: (imgId: string) => void;
+  onImageClick: (img: CategoryImage) => void;
+  onRename: (newName: string) => Promise<void>;
+  uploadingImg?: boolean;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(category.name);
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  function set<K extends keyof FormState>(key: K, val: FormState[K]) {
-    setForm((f) => ({ ...f, [key]: val }));
-    setErrors((e) => ({ ...e, [key]: undefined }));
+  function startEdit() {
+    setEditName(category.name);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 40);
   }
 
-  function validate() {
-    const e: Partial<Record<keyof FormState, string>> = {};
-    if (!form.name.trim()) e.name = "Full name is required";
-    if (!form.email.trim()) e.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
-    if (form.pointsBalance < 0) e.pointsBalance = "Points must be ≥ 0";
-    return e;
-  }
-
-  function handleSubmit() {
-    const e = validate();
-    if (Object.keys(e).length) {
-      setErrors(e);
+  async function commitEdit() {
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === category.name) {
+      setEditing(false);
       return;
     }
-    onSave(form);
+    setSaving(true);
+    await onRename(trimmed);
+    setSaving(false);
+    setEditing(false);
   }
 
-  const isEdit = mode === "edit";
+  function cancelEdit() {
+    setEditName(category.name);
+    setEditing(false);
+  }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
+      className={`flex items-center gap-4 rounded-2xl border bg-white px-5 py-3.5 shadow-sm transition-all hover:shadow-md ${
+        editing
+          ? "border-orange-400 ring-2 ring-orange-400/20"
+          : "border-gray-100"
+      }`}
     >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <div
-        className="relative mx-auto w-full max-w-lg rounded-2xl bg-white shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+      <button
+        onClick={onDeleteCategory}
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+        title="Delete category"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4 pt-6">
-          <div className="flex items-center gap-3">
-            {isEdit && initial && (
-              <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${avatarColor(initial.id)}`}
-              >
-                {getInitials(initial.name)}
-              </div>
-            )}
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">
-                {isEdit ? "Edit Employee" : "Add New Employee"}
-              </h2>
-              {isEdit && initial && (
-                <p className="mt-0.5 text-xs text-gray-400">
-                  ID #{initial.id.slice(-6)}
-                </p>
-              )}
-            </div>
-          </div>
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+
+      {editing ? (
+        <input
+          ref={inputRef}
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commitEdit();
+            if (e.key === "Escape") cancelEdit();
+          }}
+          className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm font-semibold text-gray-800 outline-none ring-0 placeholder:text-gray-300"
+          placeholder="Category name…"
+          disabled={saving}
+        />
+      ) : (
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-800">
+          {category.name}
+        </span>
+      )}
+
+      {editing ? (
+        <div className="flex shrink-0 items-center gap-1.5">
           <button
-            onClick={onClose}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            onClick={commitEdit}
+            disabled={saving}
+            className="flex h-7 items-center gap-1 rounded-lg bg-orange-500 px-3 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
+          >
+            {saving ? (
+              <Spinner className="h-3.5 w-3.5" />
+            ) : (
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            )}
+            Save
+          </button>
+          <button
+            onClick={cancelEdit}
+            className="flex h-7 items-center rounded-lg border border-gray-200 px-2.5 text-xs font-semibold text-gray-500 transition-colors hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={startEdit}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
+          title="Rename category"
+        >
+          <svg
+            className="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z"
+            />
+          </svg>
+        </button>
+      )}
+
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
+        {category.images.map((img) => (
+          <ImageThumb
+            key={img.id}
+            img={img}
+            onDelete={(e) => {
+              e.stopPropagation();
+              onDeleteImage(img.id);
+            }}
+            onClick={() => onImageClick(img)}
+          />
+        ))}
+        <UploadSlot onUpload={onAddImage} loading={uploadingImg} />
+      </div>
+    </div>
+  );
+}
+
+// ─── Department Row ───────────────────────────────────────────────────────────
+function DepartmentRow({
+  department,
+  onDelete,
+  onRename,
+  index,
+}: {
+  department: Department;
+  onDelete: () => void;
+  onRename: (newName: string) => Promise<void>;
+  index: number;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(department.name);
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function startEdit() {
+    setEditName(department.name);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 40);
+  }
+
+  async function commitEdit() {
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === department.name) {
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    await onRename(trimmed);
+    setSaving(false);
+    setEditing(false);
+  }
+
+  function cancelEdit() {
+    setEditName(department.name);
+    setEditing(false);
+  }
+
+  // Deterministic color based on name
+  const colors = [
+    { bg: "bg-orange-50", text: "text-orange-600", dot: "bg-orange-400" },
+    { bg: "bg-blue-50", text: "text-blue-600", dot: "bg-blue-400" },
+    { bg: "bg-emerald-50", text: "text-emerald-600", dot: "bg-emerald-400" },
+    { bg: "bg-violet-50", text: "text-violet-600", dot: "bg-violet-400" },
+    { bg: "bg-amber-50", text: "text-amber-600", dot: "bg-amber-400" },
+    { bg: "bg-rose-50", text: "text-rose-600", dot: "bg-rose-400" },
+    { bg: "bg-cyan-50", text: "text-cyan-600", dot: "bg-cyan-400" },
+    { bg: "bg-indigo-50", text: "text-indigo-600", dot: "bg-indigo-400" },
+  ];
+  const color = colors[index % colors.length];
+
+  // Format createdAt nicely
+  const formattedDate = new Date(department.createdAt).toLocaleDateString(
+    "en-US",
+    { month: "short", day: "numeric", year: "numeric" },
+  );
+
+  return (
+    <div
+      className={`group flex items-center gap-4 rounded-2xl border bg-white px-5 py-4 shadow-sm transition-all hover:shadow-md ${
+        editing
+          ? "border-orange-400 ring-2 ring-orange-400/20"
+          : "border-gray-100 hover:border-gray-200"
+      }`}
+      style={{ animation: `slideUp 0.2s ease ${index * 0.04}s both` }}
+    >
+      {/* Color avatar */}
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${color.bg}`}
+      >
+        <span className={`text-base font-black ${color.text}`}>
+          {department.name.charAt(0).toUpperCase()}
+        </span>
+      </div>
+
+      {/* Name */}
+      <div className="min-w-0 flex-1">
+        {editing ? (
+          <input
+            ref={inputRef}
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit();
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full bg-transparent text-sm font-bold text-gray-800 outline-none placeholder:text-gray-300"
+            placeholder="Department name…"
+            disabled={saving}
+          />
+        ) : (
+          <p className="truncate text-sm font-bold text-gray-800">
+            {department.name}
+          </p>
+        )}
+        <p className="mt-0.5 text-xs text-gray-400">Added {formattedDate}</p>
+      </div>
+
+      {/* Index badge */}
+      <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-400">
+        #{index + 1}
+      </span>
+
+      {/* Edit / confirm / cancel */}
+      {editing ? (
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            onClick={commitEdit}
+            disabled={saving}
+            className="flex h-8 items-center gap-1.5 rounded-xl bg-orange-500 px-3 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
+          >
+            {saving ? (
+              <Spinner className="h-3.5 w-3.5" />
+            ) : (
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            )}
+            Save
+          </button>
+          <button
+            onClick={cancelEdit}
+            className="flex h-8 items-center rounded-xl border border-gray-200 px-3 text-xs font-semibold text-gray-500 transition-colors hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            onClick={startEdit}
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
+            title="Rename department"
           >
             <svg
-              className="h-5 w-5"
+              className="h-3.5 w-3.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -3006,414 +857,199 @@ function EmployeeModal({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
+                d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={onDelete}
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+            title="Delete department"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
           </button>
         </div>
-
-        {/* Body */}
-        <div className="max-h-[65vh] space-y-4 overflow-y-auto px-6 py-5">
-          <Field label="Full Name" error={errors.name}>
-            <input
-              type="text"
-              placeholder="John Doe"
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-              className={inputCls(errors.name)}
-            />
-          </Field>
-
-          <Field
-            label="Email"
-            error={errors.email}
-            hint={
-              isEdit
-                ? "Changing email will trigger a verification."
-                : "Employee will receive a welcome email with login instructions"
-            }
-          >
-            <input
-              type="email"
-              placeholder="xyz@gmail.com"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-              className={inputCls(errors.email)}
-            />
-          </Field>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* ── Department — from API ── */}
-            <Field label="Department">
-              <SelectWrapper>
-                <select
-                  value={form.department}
-                  onChange={(e) => set("department", e.target.value)}
-                  disabled={isDepartmentsLoading || departments.length === 0}
-                  className={`${selectCls} disabled:cursor-not-allowed disabled:opacity-50`}
-                >
-                  {isDepartmentsLoading ? (
-                    <option value="">Loading departments…</option>
-                  ) : departments.length === 0 ? (
-                    <option value="">No departments available</option>
-                  ) : (
-                    departments.map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </SelectWrapper>
-            </Field>
-
-            <Field label="Role">
-              <SelectWrapper>
-                <select
-                  value={form.role}
-                  onChange={(e) => set("role", e.target.value as Role)}
-                  className={selectCls}
-                >
-                  {ROLES.map((r) => (
-                    <option key={r}>{r}</option>
-                  ))}
-                </select>
-              </SelectWrapper>
-            </Field>
-          </div>
-
-          {/* Status selector only for ORGANIZATION accounts in edit mode */}
-          {isEdit && initial?.accountType === "ORGANIZATION" && (
-            <Field label="Status">
-              <SelectWrapper>
-                <select
-                  value={form.status}
-                  onChange={(e) => set("status", e.target.value as Status)}
-                  className={selectCls}
-                >
-                  {STATUSES.map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
-              </SelectWrapper>
-            </Field>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-100 bg-gray-50/60 px-6 py-4">
-          <button
-            onClick={onClose}
-            disabled={isSaving}
-            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={isSaving}
-            className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-50"
-          >
-            {isSaving ? (
-              <>
-                <svg
-                  className="h-4 w-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8z"
-                  />
-                </svg>
-                Saving...
-              </>
-            ) : isEdit ? (
-              <>
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Save Changes
-              </>
-            ) : (
-              <>
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                Add Employee
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-// ─── Sort Icon ────────────────────────────────────────────────────────────────
-function SortIcon({
-  field,
-  sortField,
-  sortDir,
+// ─── Department Tab ───────────────────────────────────────────────────────────
+function DepartmentTab({
+  onSaved,
 }: {
-  field: string;
-  sortField: string;
-  sortDir: "asc" | "desc";
+  onSaved: (msg: string, type?: "success" | "error") => void;
 }) {
-  const active = sortField === field;
-  return (
-    <span className="ml-1 inline-flex flex-col opacity-50">
-      <svg
-        className={`-mb-0.5 h-2.5 w-2.5 ${active && sortDir === "asc" ? "text-orange-500 opacity-100" : ""}`}
-        viewBox="0 0 10 6"
-        fill="currentColor"
-      >
-        <path d="M5 0L10 6H0z" />
-      </svg>
-      <svg
-        className={`h-2.5 w-2.5 ${active && sortDir === "desc" ? "text-orange-500 opacity-100" : ""}`}
-        viewBox="0 0 10 6"
-        fill="currentColor"
-      >
-        <path d="M5 6L0 0H10z" />
-      </svg>
-    </span>
-  );
-}
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [search, setSearch] = useState("");
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [confirmLabel, setConfirmLabel] = useState("");
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const newNameRef = useRef<HTMLInputElement>(null);
 
-function SkeletonRow({ cols = 8 }: { cols?: number }) {
-  return (
-    <tr className="animate-pulse">
-      {Array.from({ length: cols }).map((_, i) => (
-        <td key={i} className="px-4 py-3.5">
-          <div className="h-4 rounded bg-gray-100" />
-        </td>
-      ))}
-    </tr>
-  );
-}
+  const { data, isLoading, refetch } = useGetDepartmentQuery("");
+  const [createDepartment, { isLoading: createLoading }] =
+    useCreateDepartmentMutation();
+  const [updateDepartment] = useUpdateDepartmentMutation();
+  const [deleteDepartment] = useDeteteDepartmentMutation();
 
-// ─── Modal state union ────────────────────────────────────────────────────────
-type ModalState =
-  | { type: "none" }
-  | { type: "add" }
-  | { type: "edit"; employee: Employee }
-  | { type: "delete"; employee: Employee };
+  const departments: Department[] = React.useMemo(() => {
+    if (!data?.data) return [];
+    return data.data.map((d: any) => ({
+      id: d._id,
+      name: d.name,
+      createdAt: d.createdAt,
+    }));
+  }, [data]);
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-export default function EmployeeDirectory() {
-  const [modal, setModal] = useState<ModalState>({ type: "none" });
-  const [selectedDept, setSelectedDept] = useState<string>("All");
-  const [showDeptDrop, setShowDeptDrop] = useState(false);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState<keyof Employee>("name");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-  const [activeActionId, setActiveActionId] = useState<string | null>(null);
+  const filtered = React.useMemo(() => {
+    if (!search.trim()) return departments;
+    return departments.filter((d) =>
+      d.name.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [departments, search]);
 
-  // ── Departments from API ──────────────────────────────────────────────────
-  const { data: deptApiResponse, isLoading: isDepartmentsLoading } =
-    useGetDepartmentQuery("");
-
-  // Derive a plain string[] of department names from the API response
-  const departmentNames: string[] = useMemo(() => {
-    if (!deptApiResponse?.data) return [];
-    return (deptApiResponse.data as ApiDepartment[]).map((d) => d.name);
-  }, [deptApiResponse]);
-
-  // ── Users from API ────────────────────────────────────────────────────────
-  const {
-    data: apiResponse,
-    isLoading,
-    isFetching,
-  } = useGetAllUsersQuery({ page, limit: pageSize });
-  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
-  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
-  const [approvedUser, { isLoading: isApprovLoading }] =
-    useUserApprovedMutation();
-  const [rejectedUser, { isLoading: isRejectedLoading }] =
-    useUserRejectedMutation();
-
-  const employees: Employee[] = useMemo(() => {
-    if (!apiResponse?.data) return [];
-    return (apiResponse.data as any[]).map(mapApiUser);
-  }, [apiResponse]);
-
-  // ── Department filter (client-side, using API names) ──────────────────────
-  const filtered = useMemo(() => {
-    if (selectedDept === "All") return employees;
-    return employees.filter((e) => e.department === selectedDept);
-  }, [employees, selectedDept]);
-
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      const va = String(a[sortField]).toLowerCase();
-      const vb = String(b[sortField]).toLowerCase();
-      return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
-  }, [filtered, sortField, sortDir]);
-
-  const meta = apiResponse?.meta;
-  const serverTotal: number = meta?.total ?? employees.length;
-  const totalPages = Math.max(1, Math.ceil(serverTotal / pageSize));
-
-  function handleSort(field: keyof Employee) {
-    if (sortField === field) setSortDir(sortDir === "asc" ? "desc" : "asc");
-    else {
-      setSortField(field);
-      setSortDir("asc");
-    }
-    setPage(1);
-  }
-
-  async function handleEdit(formData: FormState) {
-    if (modal.type !== "edit") return;
-    const emp = modal.employee;
+  async function commitAdd() {
+    const name = newName.trim();
+    if (!name) return;
     try {
-      const res = await updateUser({
-        id: emp.id,
-        body: {
-          name: formData.name,
-          email: formData.email,
-          department: formData.department,
-          accountType: emp.accountType,
-          role: ROLE_TO_API[formData.role],
-          isDeleted: emp.isDeleted,
-          isVerified: emp.isVerified,
-        },
-      }).unwrap();
-      if (res?.success) toast.success("Employee updated successfully");
-      setModal({ type: "none" });
-    } catch (err: any) {
-      console.error("Update failed:", err);
-      toast.error(err?.data?.message || "Failed to update employee");
+      await createDepartment({ name }).unwrap();
+      refetch();
+      setNewName("");
+      setAdding(false);
+      onSaved("Department added successfully!");
+    } catch {
+      onSaved("Failed to add department", "error");
     }
   }
 
-  async function handleDeleteConfirm() {
-    if (modal.type !== "delete") return;
+  async function renameDepartment(id: string, newName: string) {
     try {
-      await deleteUser(modal.employee.id).unwrap();
-      setModal({ type: "none" });
-    } catch (err) {
-      console.error("Delete failed:", err);
+      await updateDepartment({ payload: { name: newName }, id }).unwrap();
+      refetch();
+      onSaved("Department renamed successfully!");
+    } catch {
+      onSaved("Failed to rename department", "error");
     }
   }
 
-  async function handleApprove(id: string) {
-    setActiveActionId(id);
+  function requestDelete(dept: Department) {
+    setConfirmId(dept.id);
+    setConfirmLabel(`Delete "${dept.name}"? This action cannot be undone.`);
+  }
+
+  async function handleConfirmDelete() {
+    if (!confirmId) return;
+    setConfirmLoading(true);
     try {
-      await approvedUser(id).unwrap();
-    } catch (err) {
-      console.error("Approve failed:", err);
+      await deleteDepartment(confirmId).unwrap();
+      refetch();
+      onSaved("Department deleted");
+    } catch {
+      onSaved("Failed to delete department", "error");
     } finally {
-      setActiveActionId(null);
+      setConfirmLoading(false);
+      setConfirmId(null);
     }
   }
 
-  async function handleReject(id: string) {
-    setActiveActionId(id);
-    try {
-      await rejectedUser(id).unwrap();
-    } catch (err) {
-      console.error("Reject failed:", err);
-    } finally {
-      setActiveActionId(null);
-    }
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner />
+      </div>
+    );
   }
-
-  function getPageNumbers() {
-    if (totalPages <= 5)
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    if (page <= 3) return [1, 2, 3, "...", totalPages];
-    if (page >= totalPages - 2)
-      return [1, "...", totalPages - 2, totalPages - 1, totalPages];
-    return [1, "...", page - 1, page, page + 1, "...", totalPages];
-  }
-
-  const loading = isLoading || isFetching;
 
   return (
-    <div
-      className="min-h-screen font-sans"
-      onClick={() => showDeptDrop && setShowDeptDrop(false)}
-    >
-      {/* ── Modals ── */}
-      {modal.type === "add" && (
-        <EmployeeModal
-          mode="add"
-          onClose={() => setModal({ type: "none" })}
-          onSave={() => setModal({ type: "none" })}
-          departments={departmentNames}
-          isDepartmentsLoading={isDepartmentsLoading}
-        />
-      )}
-      {modal.type === "edit" && (
-        <EmployeeModal
-          mode="edit"
-          initial={modal.employee}
-          onClose={() => setModal({ type: "none" })}
-          onSave={handleEdit}
-          isSaving={isUpdating}
-          departments={departmentNames}
-          isDepartmentsLoading={isDepartmentsLoading}
-        />
-      )}
-      {modal.type === "delete" && (
-        <DeleteModal
-          employee={modal.employee}
-          onClose={() => setModal({ type: "none" })}
-          onConfirm={handleDeleteConfirm}
-          isLoading={isDeleting}
+    <>
+      {confirmId && (
+        <ConfirmDialog
+          message={confirmLabel}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => !confirmLoading && setConfirmId(null)}
+          loading={confirmLoading}
         />
       )}
 
-      <div>
-        {/* ── Header ── */}
-        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
-              Employee Directory
-            </h1>
+      <div className="space-y-5">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Departments</h2>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {departments.length}{" "}
+              {departments.length === 1 ? "department" : "departments"} total
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setAdding(true);
+              setTimeout(() => newNameRef.current?.focus(), 50);
+            }}
+            disabled={createLoading}
+            className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-95 disabled:opacity-60"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Department
+          </button>
+        </div>
 
-            {/* ── Department filter — driven by API ── */}
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
+        {/* Search bar — only shown when there are departments */}
+        {departments.length > 0 && (
+          <div className="relative">
+            <svg
+              className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search departments…"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-700 outline-none transition-all placeholder:text-gray-300 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-400/20"
+            />
+            {search && (
               <button
-                onClick={() => setShowDeptDrop(!showDeptDrop)}
-                disabled={isDepartmentsLoading}
-                className="flex items-center gap-2 rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500"
               >
                 <svg
-                  className="h-4 w-4 text-gray-400"
+                  className="h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -3421,353 +1057,109 @@ export default function EmployeeDirectory() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
-                  />
-                </svg>
-                {isDepartmentsLoading
-                  ? "Loading…"
-                  : selectedDept === "All"
-                    ? "All Departments"
-                    : selectedDept}
-                <svg
-                  className={`h-4 w-4 text-gray-400 transition-transform ${showDeptDrop ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
+                    strokeWidth={2.5}
+                    d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
               </button>
-
-              {showDeptDrop && (
-                <div className="absolute left-0 top-full z-20 mt-1 w-64 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
-                  <div className="max-h-72 overflow-y-auto">
-                    {/* All option */}
-                    <button
-                      onClick={() => {
-                        setSelectedDept("All");
-                        setShowDeptDrop(false);
-                        setPage(1);
-                      }}
-                      className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm transition-colors ${
-                        selectedDept === "All"
-                          ? "bg-orange-50 font-semibold text-orange-600"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {selectedDept === "All" && (
-                        <svg
-                          className="h-3.5 w-3.5 text-orange-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                      <span className={selectedDept === "All" ? "" : "pl-5"}>
-                        All Departments
-                      </span>
-                    </button>
-
-                    <div className="mx-4 border-t border-gray-100" />
-
-                    {/* ── API department options ── */}
-                    {isDepartmentsLoading ? (
-                      // Skeleton rows while loading
-                      Array.from({ length: 5 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="mx-4 my-2 h-4 animate-pulse rounded bg-gray-100"
-                        />
-                      ))
-                    ) : departmentNames.length === 0 ? (
-                      <p className="px-4 py-3 text-sm text-gray-400">
-                        No departments found
-                      </p>
-                    ) : (
-                      departmentNames.map((dept) => (
-                        <button
-                          key={dept}
-                          onClick={() => {
-                            setSelectedDept(dept);
-                            setShowDeptDrop(false);
-                            setPage(1);
-                          }}
-                          className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm transition-colors ${
-                            selectedDept === dept
-                              ? "bg-orange-50 font-semibold text-orange-600"
-                              : "text-gray-700 hover:bg-gray-50"
-                          }`}
-                        >
-                          {selectedDept === dept ? (
-                            <svg
-                              className="h-3.5 w-3.5 shrink-0 text-orange-500"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          ) : (
-                            <span className="h-3.5 w-3.5 shrink-0" />
-                          )}
-                          {dept}
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Active filter chip */}
-            {selectedDept !== "All" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                {selectedDept}
-                <button
-                  onClick={() => {
-                    setSelectedDept("All");
-                    setPage(1);
-                  }}
-                  className="ml-0.5 rounded-full hover:text-orange-900"
-                >
-                  <svg
-                    className="h-3 w-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </span>
             )}
           </div>
-        </div>
+        )}
 
-        {/* ── Table ── */}
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  {(
-                    [
-                      { label: "Name", field: "name" },
-                      { label: "Email", field: "email" },
-                      { label: "Department", field: "department" },
-                      { label: "Points Balance", field: "pointsBalance" },
-                      { label: "Role", field: "role" },
-                      { label: "Account Type", field: "status" },
-                    ] as { label: string; field: keyof Employee }[]
-                  ).map(({ label, field }) => (
-                    <th
-                      key={field}
-                      onClick={() => handleSort(field)}
-                      className="cursor-pointer select-none whitespace-nowrap px-4 py-4 text-left text-xs font-bold uppercase tracking-wide text-orange-500 transition-colors hover:bg-orange-50/50"
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {label}
-                        <SortIcon
-                          field={field}
-                          sortField={sortField}
-                          sortDir={sortDir}
-                        />
-                      </span>
-                    </th>
-                  ))}
-                  <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wide text-orange-500">
-                    Approval
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wide text-orange-500">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-gray-50">
-                {loading ? (
-                  Array.from({ length: pageSize }).map((_, i) => (
-                    <SkeletonRow key={i} />
-                  ))
-                ) : sorted.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="py-16 text-center text-sm text-gray-400"
-                    >
-                      {selectedDept !== "All" ? (
-                        <div className="flex flex-col items-center gap-2">
-                          <svg
-                            className="h-8 w-8 text-gray-300"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          <span>
-                            No employees in{" "}
-                            <strong className="text-gray-600">
-                              {selectedDept}
-                            </strong>
-                          </span>
-                          <button
-                            onClick={() => setSelectedDept("All")}
-                            className="text-xs text-orange-500 hover:underline"
-                          >
-                            Clear filter
-                          </button>
-                        </div>
-                      ) : (
-                        "No employees found."
-                      )}
-                    </td>
-                  </tr>
-                ) : (
-                  sorted.map((emp) => (
-                    <tr
-                      key={emp.id}
-                      className="transition-colors hover:bg-gray-50/70"
-                    >
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(emp.id)}`}
-                          >
-                            {getInitials(emp.name)}
-                          </div>
-                          <span className="whitespace-nowrap text-sm font-medium text-gray-800">
-                            {emp.name}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-sm text-gray-500">
-                        {emp.email}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-sm text-gray-700">
-                        {emp.department}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-sm font-semibold text-orange-500">
-                        {emp.pointsBalance.toLocaleString()} pts
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <RoleBadge role={emp.role} />
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <StatusBadge
-                          status={emp.status}
-                          accountType={emp.accountType}
-                          name={emp.name}
-                        />
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <ApproveRejectButtons
-                          employee={emp}
-                          onApprove={handleApprove}
-                          onReject={handleReject}
-                          isApprovLoading={isApprovLoading}
-                          isRejectedLoading={isRejectedLoading}
-                          activeId={activeActionId}
-                        />
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() =>
-                              setModal({ type: "edit", employee: emp })
-                            }
-                            title="Edit employee"
-                            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
-                          >
-                            <svg
-                              className="h-4 w-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() =>
-                              setModal({ type: "delete", employee: emp })
-                            }
-                            title="Remove employee"
-                            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                          >
-                            <svg
-                              className="h-4 w-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle cx="12" cy="12" r="9" strokeWidth={2} />
-                              <path
-                                strokeLinecap="round"
-                                strokeWidth={2}
-                                d="M9 9l6 6M15 9l-6 6"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+        {/* New department inline input */}
+        {adding && (
+          <div
+            className="flex items-center gap-3 rounded-2xl border-2 border-orange-400 bg-orange-50/40 px-5 py-4"
+            style={{ animation: "slideUp 0.2s ease" }}
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100">
+              <svg
+                className="h-5 w-5 text-orange-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+            </div>
+            <input
+              ref={newNameRef}
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitAdd();
+                if (e.key === "Escape") {
+                  setAdding(false);
+                  setNewName("");
+                }
+              }}
+              placeholder="Enter department name…"
+              className="flex-1 bg-transparent text-sm font-bold text-gray-800 outline-none placeholder:text-gray-300"
+            />
+            <div className="flex shrink-0 gap-2">
+              <button
+                onClick={commitAdd}
+                disabled={createLoading || !newName.trim()}
+                className="rounded-xl bg-orange-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
+              >
+                {createLoading ? "Adding…" : "Add"}
+              </button>
+              <button
+                onClick={() => {
+                  setAdding(false);
+                  setNewName("");
+                }}
+                className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-700"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
+        )}
 
-          {/* ── Pagination ── */}
-          <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/50 px-4 py-4 sm:flex-row sm:px-6">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>Showing</span>
-              <div className="relative">
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setPage(1);
-                  }}
-                  className="appearance-none rounded-lg border border-gray-200 bg-white px-3 py-1 pr-7 text-sm font-medium text-gray-700 outline-none focus:border-orange-400"
-                >
-                  {PAGE_SIZE_OPTIONS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+        {/* Stats row */}
+        {departments.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-orange-50 to-amber-50 p-4">
+              <p className="text-xs font-semibold text-orange-600/70">Total</p>
+              <p className="mt-1 text-2xl font-black text-orange-600">
+                {departments.length}
+              </p>
+              <p className="text-xs text-orange-500/60">Departments</p>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-emerald-50 to-teal-50 p-4">
+              <p className="text-xs font-semibold text-emerald-600/70">
+                Latest
+              </p>
+              <p className="mt-1 truncate text-sm font-black text-emerald-600">
+                {departments[departments.length - 1]?.name ?? "—"}
+              </p>
+              <p className="text-xs text-emerald-500/60">Most recent</p>
+            </div>
+            <div className="col-span-2 rounded-2xl border border-gray-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 sm:col-span-1">
+              <p className="text-xs font-semibold text-blue-600/70">Showing</p>
+              <p className="mt-1 text-2xl font-black text-blue-600">
+                {filtered.length}
+              </p>
+              <p className="text-xs text-blue-500/60">
+                {search ? "Matching results" : "All departments"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Department list */}
+        <div className="space-y-2.5">
+          {departments.length === 0 && !adding && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
                 <svg
-                  className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400"
+                  className="h-6 w-6 text-gray-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -3775,89 +1167,1188 @@ export default function EmployeeDirectory() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
+                    strokeWidth={1.5}
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                   />
                 </svg>
               </div>
-              <span>
-                out of{" "}
-                <strong className="text-gray-700">
-                  {serverTotal.toLocaleString()}
-                </strong>
+              <p className="text-sm font-semibold text-gray-400">
+                No departments yet
+              </p>
+              <p className="mt-1 text-xs text-gray-300">
+                Click "+ Add Department" to create your first one
+              </p>
+            </div>
+          )}
+
+          {filtered.length === 0 && search && (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100">
+                <svg
+                  className="h-5 w-5 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-gray-400">
+                No results for "{search}"
+              </p>
+              <button
+                onClick={() => setSearch("")}
+                className="mt-2 text-xs font-semibold text-orange-500 hover:text-orange-600"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
+
+          {filtered.map((dept, idx) => (
+            <DepartmentRow
+              key={dept.id}
+              department={dept}
+              index={idx}
+              onDelete={() => requestDelete(dept)}
+              onRename={(newName) => renameDepartment(dept.id, newName)}
+            />
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Category Tab ─────────────────────────────────────────────────────────────
+function CategoryTab({
+  onSaved,
+}: {
+  onSaved: (msg: string, type?: "success" | "error") => void;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [uploadingCatId, setUploadingCatId] = useState<string | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [confirm, setConfirm] = useState<{
+    type: "category" | "image";
+    catId: string;
+    imgId?: string;
+    label: string;
+  } | null>(null);
+  const [lightbox, setLightbox] = useState<{
+    img: CategoryImage;
+    catId: string;
+  } | null>(null);
+  const newNameRef = useRef<HTMLInputElement>(null);
+
+  const { data, isLoading, refetch } = useAllCategoryQuery("");
+  const [createCategory, { isLoading: createLoading }] =
+    useCreateCategoryMutation();
+  const [updateCategory] = useUpdateCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
+  const [categoryImgUpload] = useCategoryImageUploadMutation();
+  const [deleteCategoryImage] = useDeleteCategoryImageMutation();
+
+  const categories: Category[] = React.useMemo(() => {
+    if (!data?.data) return [];
+    return data.data.map((cat: any) => ({
+      id: cat._id,
+      name: cat.name,
+      images: (cat.images || []).map((url: string) => ({
+        id: url,
+        url,
+        name: url.split("/").pop() || url,
+      })),
+    }));
+  }, [data]);
+
+  async function renameCategory(catId: string, newName: string) {
+    try {
+      await updateCategory({ id: catId, body: { name: newName } }).unwrap();
+      refetch();
+      onSaved("Category renamed successfully!");
+    } catch {
+      onSaved("Failed to rename category", "error");
+    }
+  }
+
+  async function commitAdd() {
+    const name = newName.trim();
+    if (!name) return;
+    try {
+      await createCategory({ name }).unwrap();
+      refetch();
+      setNewName("");
+      setAdding(false);
+      onSaved("Category added successfully!");
+    } catch {
+      onSaved("Failed to add category", "error");
+    }
+  }
+
+  function requestDeleteCategory(cat: Category) {
+    setConfirm({
+      type: "category",
+      catId: cat.id,
+      label: `Delete "${cat.name}"? All images will be removed.`,
+    });
+  }
+
+  function requestDeleteImage(catId: string, imgId: string, imgName: string) {
+    setConfirm({
+      type: "image",
+      catId,
+      imgId,
+      label: `Delete image "${imgName}"?`,
+    });
+  }
+
+  async function handleConfirm() {
+    if (!confirm) return;
+    setConfirmLoading(true);
+    try {
+      if (confirm.type === "category") {
+        await deleteCategory(confirm.catId).unwrap();
+        refetch();
+        onSaved("Category deleted");
+      } else if (confirm.type === "image" && confirm.imgId) {
+        await deleteCategoryImage({
+          categoryId: confirm.catId,
+          imageUrl: confirm.imgId,
+        }).unwrap();
+        refetch();
+        if (lightbox && lightbox.img.id === confirm.imgId) setLightbox(null);
+        onSaved("Image deleted successfully!");
+      }
+    } catch {
+      onSaved(
+        confirm.type === "category"
+          ? "Failed to delete category"
+          : "Failed to delete image",
+        "error",
+      );
+    } finally {
+      setConfirmLoading(false);
+      setConfirm(null);
+    }
+  }
+
+  async function addImage(catId: string, file: File) {
+    setUploadingCatId(catId);
+    try {
+      const formData = new FormData();
+      formData.append("files", file);
+      await categoryImgUpload({ id: catId, body: formData }).unwrap();
+      refetch();
+      onSaved("Image uploaded successfully!");
+    } catch {
+      onSaved("Failed to upload image", "error");
+    } finally {
+      setUploadingCatId(null);
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {confirm && (
+        <ConfirmDialog
+          message={confirm.label}
+          onConfirm={handleConfirm}
+          onCancel={() => !confirmLoading && setConfirm(null)}
+          loading={confirmLoading}
+        />
+      )}
+      {lightbox && (
+        <Lightbox
+          img={lightbox.img}
+          onClose={() => setLightbox(null)}
+          onDelete={() => {
+            const { img, catId } = lightbox;
+            setLightbox(null);
+            requestDeleteImage(catId, img.id, img.name);
+          }}
+        />
+      )}
+
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Category Values</h2>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {categories.length} categories · unlimited images per category
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setAdding(true);
+              setTimeout(() => newNameRef.current?.focus(), 50);
+            }}
+            disabled={createLoading}
+            className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-95 disabled:opacity-60"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Category
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4 px-5 pb-1">
+          <div className="w-7 shrink-0" />
+          <span className="min-w-0 flex-1 text-xs font-bold uppercase tracking-wider text-gray-400">
+            Category Name
+          </span>
+          <div className="w-7 shrink-0" />
+          <span className="shrink-0 pr-1 text-xs font-bold uppercase tracking-wider text-gray-400">
+            Images
+          </span>
+        </div>
+
+        {adding && (
+          <div
+            className="flex items-center gap-3 rounded-2xl border-2 border-orange-400 bg-orange-50/40 px-5 py-3.5"
+            style={{ animation: "slideUp 0.2s ease" }}
+          >
+            <span className="h-7 w-7 shrink-0" />
+            <input
+              ref={newNameRef}
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitAdd();
+                if (e.key === "Escape") {
+                  setAdding(false);
+                  setNewName("");
+                }
+              }}
+              placeholder="Enter category name…"
+              className="flex-1 bg-transparent text-sm font-semibold text-gray-800 outline-none placeholder:text-gray-300"
+            />
+            <div className="flex shrink-0 gap-2">
+              <button
+                onClick={commitAdd}
+                disabled={createLoading}
+                className="rounded-xl bg-orange-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
+              >
+                {createLoading ? "Adding…" : "Add"}
+              </button>
+              <button
+                onClick={() => {
+                  setAdding(false);
+                  setNewName("");
+                }}
+                className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-700"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-2.5">
+          {categories.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
+                <svg
+                  className="h-6 w-6 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-gray-400">
+                No categories yet
+              </p>
+              <p className="mt-1 text-xs text-gray-300">
+                Click "+ Add Category" to get started
+              </p>
+            </div>
+          )}
+          {categories.map((cat, idx) => (
+            <div
+              key={cat.id}
+              style={{ animation: `slideUp 0.2s ease ${idx * 0.03}s both` }}
+            >
+              <CategoryRow
+                category={cat}
+                onDeleteCategory={() => requestDeleteCategory(cat)}
+                onAddImage={(file) => addImage(cat.id, file)}
+                onDeleteImage={(imgId) => {
+                  const img = cat.images.find((i) => i.id === imgId);
+                  if (img) requestDeleteImage(cat.id, imgId, img.name);
+                }}
+                onImageClick={(img) => setLightbox({ img, catId: cat.id })}
+                onRename={(newName) => renameCategory(cat.id, newName)}
+                uploadingImg={uploadingCatId === cat.id}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── General Tab ──────────────────────────────────────────────────────────────
+function GeneralTab({
+  onSaved,
+}: {
+  onSaved: (msg: string, type?: "success" | "error") => void;
+}) {
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConf, setShowConf] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const avatarRef = useRef<HTMLInputElement>(null);
+
+  const { data: profileData, isLoading: profileFetching } =
+    useGetMeProfileQuery("");
+  const profile = profileData?.data;
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<GeneralForm>({
+    defaultValues: {
+      name: "",
+      companyEmail: "",
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  React.useEffect(() => {
+    if (profile) {
+      reset({
+        name: profile.name ?? "",
+        companyEmail: profile.email ?? "",
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      if (profile.picture) setAvatarPreview(profile.picture);
+    }
+  }, [profile, reset]);
+
+  const [profileUpdate, { isLoading: profileLoading }] =
+    useProfileUpdatesMutation();
+  const newPassword = watch("newPassword");
+
+  function handleAvatarFile(file: File) {
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  }
+
+  async function onSubmit(data: GeneralForm) {
+    try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      if (avatarFile) formData.append("files", avatarFile);
+      if (data.oldPassword) formData.append("oldPassword", data.oldPassword);
+      if (data.newPassword) formData.append("newPassword", data.newPassword);
+      if (data.confirmPassword)
+        formData.append("confirmPassword", data.confirmPassword);
+      await profileUpdate(formData).unwrap();
+      onSaved("General settings saved successfully!");
+    } catch {
+      onSaved("Failed to save settings", "error");
+    }
+  }
+
+  if (profileFetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="space-y-6">
+          <h2 className="text-lg font-bold text-gray-900">General Settings</h2>
+
+          <div>
+            <FieldLabel>Profile Picture</FieldLabel>
+            <div className="flex items-center gap-4">
+              <div
+                className="relative h-20 w-20 cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 transition-colors hover:border-orange-400"
+                onClick={() => avatarRef.current?.click()}
+              >
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-1">
+                    <svg
+                      className="h-7 w-7 text-gray-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                )}
+                <input
+                  ref={avatarRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleAvatarFile(f);
+                  }}
+                />
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => avatarRef.current?.click()}
+                  className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:border-orange-400 hover:text-orange-500"
+                >
+                  {avatarPreview ? "Change Photo" : "Upload Photo"}
+                </button>
+                <p className="mt-1.5 text-xs text-gray-400">
+                  JPEG, PNG, WEBP · max 2MB
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <FieldLabel>Full Name</FieldLabel>
+            <input
+              {...register("name", { required: "Name is required" })}
+              placeholder="Full name"
+              className={errors.name ? inputError : inputNormal}
+            />
+            <FieldError message={errors.name?.message} />
+          </div>
+
+          <div>
+            <FieldLabel>Company Email</FieldLabel>
+            <div className="relative">
+              <input
+                {...register("companyEmail")}
+                type="email"
+                readOnly
+                tabIndex={-1}
+                className="w-full cursor-not-allowed select-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-sm text-gray-400 outline-none"
+              />
+              <span
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                title="Email cannot be changed"
+              >
+                <svg
+                  className="h-4 w-4 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-6a4 4 0 100-8 4 4 0 000 8z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 11V7a5 5 0 00-10 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"
+                  />
+                </svg>
               </span>
             </div>
+            <FieldHint>Email address cannot be changed</FieldHint>
+          </div>
+        </div>
 
-            <div className="flex items-center gap-1">
+        <div className="space-y-6">
+          <h2 className="text-lg font-bold text-gray-900">Change Password</h2>
+          <div>
+            <FieldLabel>Old Password</FieldLabel>
+            <div className="relative">
+              <input
+                {...register("oldPassword")}
+                type={showOld ? "text" : "password"}
+                placeholder="••••••••••"
+                className={`${inputNormal} pr-10`}
+              />
               <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1 || loading}
-                className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                type="button"
+                onClick={() => setShowOld(!showOld)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
               >
-                <svg
-                  className="h-3.5 w-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                <span className="hidden sm:inline">Previous</span>
+                <IconEye show={showOld} />
               </button>
+            </div>
+          </div>
+          <div>
+            <FieldLabel>Enter New Password</FieldLabel>
+            <div className="relative">
+              <input
+                {...register("newPassword", {
+                  minLength: { value: 8, message: "Min 8 characters" },
+                })}
+                type={showNew ? "text" : "password"}
+                placeholder="••••••••••"
+                className={`${errors.newPassword ? inputError : inputNormal} pr-10`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew(!showNew)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <IconEye show={showNew} />
+              </button>
+            </div>
+            <FieldError message={errors.newPassword?.message} />
+          </div>
+          <div>
+            <FieldLabel>Confirm New Password</FieldLabel>
+            <div className="relative">
+              <input
+                {...register("confirmPassword", {
+                  validate: (v) =>
+                    !newPassword ||
+                    v === newPassword ||
+                    "Passwords do not match",
+                })}
+                type={showConf ? "text" : "password"}
+                placeholder="••••••••••"
+                className={`${errors.confirmPassword ? inputError : inputNormal} pr-10`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConf(!showConf)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <IconEye show={showConf} />
+              </button>
+            </div>
+            <FieldError message={errors.confirmPassword?.message} />
+          </div>
+        </div>
+      </div>
 
-              {getPageNumbers().map((p, i) =>
-                p === "..." ? (
-                  <span
-                    key={`e${i}`}
-                    className="select-none px-2 py-1.5 text-sm text-gray-400"
-                  >
-                    …
+      <div className="mt-10 flex justify-end">
+        <button
+          type="submit"
+          disabled={isSubmitting || profileLoading}
+          className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-60"
+        >
+          <IconSave />
+          {isSubmitting || profileLoading ? "Saving…" : "Update Changes"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// ─── Points Tab ───────────────────────────────────────────────────────────────
+function PointsTab({
+  onSaved,
+}: {
+  onSaved: (msg: string, type?: "success" | "error") => void;
+}) {
+  const [selectedDept, setSelectedDept] = useState("");
+  const [points, setPoints] = useState<string>("");
+  const [pointEntries, setPointEntries] = useState<PointEntry[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [pointDistribute, { isLoading: pointLoading }] =
+    usePointDristributeMutation();
+
+  async function handleAddEntry() {
+    if (!selectedDept || !points || Number(points) <= 0) return;
+    const deptLabel =
+      DEPARTMENTS.find((d) => d.value === selectedDept)?.label || selectedDept;
+    if (pointEntries.some((e) => e.department === selectedDept)) {
+      onSaved(`Points already set for ${deptLabel}`, "error");
+      return;
+    }
+    setPointEntries((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        department: selectedDept,
+        points: Number(points),
+      },
+    ]);
+    setSelectedDept("");
+    setPoints("");
+  }
+
+  function removeEntry(id: string) {
+    setPointEntries((prev) => prev.filter((e) => e.id !== id));
+  }
+
+  async function handleSubmitAll() {
+    if (pointEntries.length === 0) return;
+    setSubmitting(true);
+    let failed = 0;
+    for (const entry of pointEntries) {
+      try {
+        await pointDistribute({
+          department: entry.department,
+          points: entry.points,
+        }).unwrap();
+      } catch {
+        failed++;
+      }
+    }
+    setSubmitting(false);
+    if (failed === 0) {
+      setPointEntries([]);
+      onSaved("Points distributed successfully!");
+    } else {
+      onSaved(`${failed} department(s) failed to update`, "error");
+    }
+  }
+
+  const availableDepts = DEPARTMENTS.filter(
+    (d) => !pointEntries.some((e) => e.department === d.value),
+  );
+
+  return (
+    <div className="max-w-2xl space-y-8">
+      <h2 className="text-lg font-bold text-gray-900">Points Distribution</h2>
+      <p className="text-sm text-gray-500">
+        Assign points to departments. Select a department and enter points, then
+        add more entries before submitting.
+      </p>
+
+      <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-5">
+        <h3 className="mb-4 text-sm font-bold text-gray-700">
+          Add Department Points
+        </h3>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex-1">
+            <FieldLabel>Department</FieldLabel>
+            <select
+              value={selectedDept}
+              onChange={(e) => setSelectedDept(e.target.value)}
+              className={`${inputNormal} cursor-pointer`}
+            >
+              <option value="">Select department…</option>
+              {availableDepts.map((d) => (
+                <option key={d.value} value={d.value}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full sm:w-40">
+            <FieldLabel>Points</FieldLabel>
+            <div className="relative">
+              <input
+                type="number"
+                value={points}
+                onChange={(e) => setPoints(e.target.value)}
+                placeholder="100"
+                min={1}
+                className={`${inputNormal} pr-14`}
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-amber-500">
+                pts
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddEntry}
+            disabled={!selectedDept || !points || Number(points) <= 0}
+            className="flex h-[46px] items-center gap-2 rounded-xl bg-orange-500 px-5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-95 disabled:opacity-40"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add
+          </button>
+        </div>
+      </div>
+
+      {pointEntries.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-gray-700">
+            Pending Distribution ({pointEntries.length})
+          </h3>
+          <div className="space-y-2">
+            {pointEntries.map((entry, idx) => {
+              const deptLabel =
+                DEPARTMENTS.find((d) => d.value === entry.department)?.label ||
+                entry.department;
+              return (
+                <div
+                  key={entry.id}
+                  className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white px-5 py-3.5 shadow-sm"
+                  style={{ animation: `slideUp 0.2s ease ${idx * 0.04}s both` }}
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50">
+                    <svg
+                      className="h-4 w-4 text-orange-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
+                    </svg>
+                  </div>
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-800">
+                    {deptLabel}
                   </span>
-                ) : (
+                  <span className="shrink-0 rounded-full bg-amber-50 px-3 py-1 text-sm font-bold text-amber-600">
+                    {entry.points.toLocaleString()} pts
+                  </span>
                   <button
-                    key={p}
-                    onClick={() => setPage(p as number)}
-                    disabled={loading}
-                    className={`h-8 w-8 rounded-lg text-sm font-medium transition-colors ${
-                      page === p
-                        ? "bg-orange-500 text-white shadow-md shadow-orange-500/25"
-                        : "border border-gray-200 text-gray-600 hover:bg-gray-100"
-                    }`}
+                    onClick={() => removeEntry(entry.id)}
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
                   >
-                    {p}
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2.5}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
-                ),
-              )}
+                </div>
+              );
+            })}
+          </div>
 
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages || loading}
-                className="flex items-center gap-1 rounded-lg border border-orange-500 bg-orange-500 px-3 py-1.5 text-sm text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <span className="hidden sm:inline">Next</span>
-                <svg
-                  className="h-3.5 w-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
+          <div className="flex items-center justify-between rounded-xl bg-orange-50 px-5 py-3">
+            <span className="text-sm font-semibold text-orange-700">
+              Total Points
+            </span>
+            <span className="text-base font-black text-orange-600">
+              {pointEntries.reduce((s, e) => s + e.points, 0).toLocaleString()}{" "}
+              pts
+            </span>
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <button
+              onClick={handleSubmitAll}
+              disabled={submitting || pointLoading}
+              className="flex items-center gap-2 rounded-xl bg-orange-500 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-60"
+            >
+              <IconSave />
+              {submitting || pointLoading
+                ? "Distributing…"
+                : "Distribute Points"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {pointEntries.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100">
+            <svg
+              className="h-6 w-6 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <p className="text-sm font-semibold text-gray-400">
+            No departments added yet
+          </p>
+          <p className="mt-1 text-xs text-gray-300">
+            Select a department and enter points above
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Branding Tab ─────────────────────────────────────────────────────────────
+function BrandingTab({
+  onSaved,
+}: {
+  onSaved: (msg: string, type?: "success" | "error") => void;
+}) {
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { isSubmitting },
+  } = useForm<BrandingForm>({
+    defaultValues: { primaryColor: "#f97316", highlightColor: "#f1a455" },
+  });
+  const primaryColor = watch("primaryColor");
+  const highlightColor = watch("highlightColor");
+
+  function handleLogoFile(file: File) {
+    setLogoPreview(URL.createObjectURL(file));
+  }
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) handleLogoFile(file);
+  }
+  async function onSubmit(_data: BrandingForm) {
+    await new Promise((r) => setTimeout(r, 600));
+    onSaved("Branding preferences saved!");
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+        <div className="space-y-8">
+          <h2 className="text-lg font-bold text-gray-900">Branding</h2>
+
+          <div>
+            <FieldLabel>Company Logo</FieldLabel>
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              onClick={() => logoInputRef.current?.click()}
+              className={`cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${
+                isDragging
+                  ? "border-orange-400 bg-orange-50"
+                  : "border-gray-200 bg-gray-50 hover:border-orange-300 hover:bg-orange-50/50"
+              }`}
+            >
+              {logoPreview ? (
+                <div className="flex flex-col items-center gap-3">
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="h-20 max-w-full object-contain"
                   />
-                </svg>
-              </button>
+                  <p className="text-xs text-gray-400">Click to replace</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
+                    <svg
+                      className="h-6 w-6 text-orange-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700">
+                      Drag and drop your files
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                      JPEG, PNG formats, up to 1MB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      logoInputRef.current?.click();
+                    }}
+                    className="rounded-lg border border-gray-200 bg-white px-4 py-1.5 text-sm text-gray-600 transition-colors hover:border-orange-400 hover:text-orange-500"
+                  >
+                    Select file
+                  </button>
+                </div>
+              )}
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/jpeg,image/png"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleLogoFile(f);
+                }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <FieldLabel>Primary Color</FieldLabel>
+            <div className="flex items-center gap-3">
+              <input
+                {...register("primaryColor")}
+                type="color"
+                className="h-12 w-24 cursor-pointer rounded-xl border border-gray-200 p-1 outline-none"
+              />
+              <input
+                {...register("primaryColor")}
+                type="text"
+                className={inputNormal}
+              />
+            </div>
+          </div>
+
+          <div>
+            <FieldLabel>Highlight Point Color</FieldLabel>
+            <div className="flex items-center gap-3">
+              <input
+                {...register("highlightColor")}
+                type="color"
+                className="h-12 w-24 cursor-pointer rounded-xl border border-gray-200 p-1 outline-none"
+              />
+              <input
+                {...register("highlightColor")}
+                type="text"
+                className={inputNormal}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-600 disabled:opacity-60"
+            >
+              <IconSave />
+              {isSubmitting ? "Saving…" : "Update Changes"}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="mb-6 text-lg font-bold text-gray-900">Live Preview</h2>
+          <div
+            className="overflow-hidden rounded-2xl shadow-lg"
+            style={{ background: primaryColor }}
+          >
+            <div className="px-6 pb-4 pt-6">
+              {logoPreview ? (
+                <img
+                  src={logoPreview}
+                  alt="Logo"
+                  className="h-8 max-w-[120px] object-contain brightness-0 invert"
+                />
+              ) : (
+                <span className="text-2xl font-black tracking-tight text-white">
+                  Greetely
+                </span>
+              )}
+            </div>
+            <div className="mx-4 mb-4 rounded-xl bg-white/10 p-5">
+              <p className="mb-1 text-xs text-white/70">To:</p>
+              <h3 className="text-xl font-bold text-white">Sarah Ahmed</h3>
+              <p className="mb-4 text-xs text-white/60">
+                Engineering Department
+              </p>
+              <div className="rounded-lg bg-white/15 p-4">
+                <p className="text-sm leading-relaxed text-white">
+                  Sarah, your exceptional work on the Q4 project truly
+                  exemplifies our core value of Excellence. Your dedication and
+                  attention to detail made a significant impact on the team's
+                  success. Thank you!
+                </p>
+              </div>
+              <div className="mt-4 flex items-center justify-between">
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-bold text-white"
+                  style={{ background: highlightColor + "55" }}
+                >
+                  Teamwork
+                </span>
+                <span className="text-sm font-bold text-white">100 Pts</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
+  );
+}
+
+// ─── Main Settings Component ──────────────────────────────────────────────────
+export default function Settings() {
+  const [activeTab, setActiveTab] = useState<Tab>("general");
+  const [toast, setToast] = useState<{
+    msg: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const tabs: {
+    id: Tab;
+    label: string;
+    short: string;
+    icon: (a: boolean) => React.ReactNode;
+  }[] = [
+    {
+      id: "general",
+      label: "General",
+      short: "General",
+      icon: (a) => <IconUser active={a} />,
+    },
+    {
+      id: "points",
+      label: "Points Allocation",
+      short: "Points",
+      icon: (a) => <IconPoints active={a} />,
+    },
+    {
+      id: "category",
+      label: "Category",
+      short: "Category",
+      icon: (a) => <IconCategory active={a} />,
+    },
+    {
+      id: "department",
+      label: "Department",
+      short: "Dept",
+      icon: (a) => <IconDepartment active={a} />,
+    },
+  ];
+
+  function showToast(msg: string, type: "success" | "error" = "success") {
+    setToast({ msg, type });
+  }
+
+  return (
+    <>
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      <div>
+        {toast && (
+          <Toast
+            message={toast.msg}
+            type={toast.type}
+            onDone={() => setToast(null)}
+          />
+        )}
+
+        <div>
+          <h1 className="mb-6 text-2xl font-bold text-gray-900 lg:text-3xl">
+            Settings
+          </h1>
+
+          {/* Tab Bar */}
+          <div className="mb-8 flex items-center gap-1 border-b border-gray-200">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative flex items-center gap-2 rounded-t-xl px-4 py-2.5 text-sm font-semibold transition-all duration-150 sm:px-5 ${
+                    isActive
+                      ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                      : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                  }`}
+                >
+                  {tab.icon(isActive)}
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.short}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tab Content */}
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+            {activeTab === "general" && <GeneralTab onSaved={showToast} />}
+            {activeTab === "points" && <PointsTab onSaved={showToast} />}
+            {activeTab === "category" && <CategoryTab onSaved={showToast} />}
+            {activeTab === "department" && (
+              <DepartmentTab onSaved={showToast} />
+            )}
+            {activeTab === "branding" && <BrandingTab onSaved={showToast} />}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
